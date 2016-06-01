@@ -12,4 +12,4 @@ dofile(maidroid.modpath.."/util.lua")
 dofile(maidroid.modpath.."/api.lua")
 dofile(maidroid.modpath.."/modules.lua")
 dofile(maidroid.modpath.."/maidroids.lua")
-
+dofile(maidroid.modpath.."/recipe.lua")

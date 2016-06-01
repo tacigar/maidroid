@@ -28,6 +28,7 @@ function maidroid.register_module(module_name, def)
   minetest.register_craftitem(module_name, {
     description = def.description,
     stack_max = 1,
+    inventory_image = def.inventory_image,
   })
 end
 
@@ -139,8 +140,10 @@ function maidroid.register_maidroid(product_name, def)
     end,
   })
   -- スポーンエッグを登録
-  minetest.register_craftitem(product_name.."_swawn_egg", {
+  minetest.register_craftitem(product_name.."_spawn_egg", {
     description = def.description.." Swapn Egg",
+    inventory_image = def.inventory_image,
+    stack_max = 1,
     on_use = function(itemstack, user, pointed_thing)
       minetest.add_entity(pointed_thing.above, product_name)
       return itemstack
