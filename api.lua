@@ -87,19 +87,24 @@ function maidroid.register_maidroid(product_name, def)
       })
       inv:set_size(main_invname, main_invsize)
       inv:set_size(module_invname, module_invsize)
-      if self.module then self.module.initialize(self) end
       -- process staticdata
       if staticdata ~= "" then
 	local data = minetest.deserialize(staticdata)
-	local stack = ItemStack(data.inv.module)
-	stack:set_count(1)
-	inv:add_item(module_invname, stack)
+	if data.inv.module ~= "" then
+	  module_stack = ItemStack(data.inv.module)
+	  module_stack:set_count(1)
+	  inv:add_item(module_invname, module_stack)
+	  self.module = maidroid.registered_modules[data.inv.module]
+	end
 	for _, item in ipairs(data.inv.main) do
 	  local itemstack = ItemStack(item.name)
 	  itemstack:set_count(item.count)
 	  inv:add_item(main_invname, itemstack)
 	end
       end
+      -- initialize module
+      if self.module then self.module.initialize(self)
+      else self.object:setvelocity{x = 0, y = 0, z = 0} end
     end,
     on_step = function(self, dtime)
       if self.module then self.module.on_step(self, dtime) end
@@ -119,7 +124,8 @@ function maidroid.register_maidroid(product_name, def)
       local inv = _aux.get_maidroid_inventory(self)
       local staticdata = {}
       staticdata.inv = {}
-      staticdata.inv.module = inv:get_list(module_invname)[1]:get_name()
+      local module_name = inv:get_list(module_invname)[1]:get_name()
+      staticdata.inv.module = module_name or ""
       staticdata.inv.main = {}
       for _, item in ipairs(inv:get_list(main_invname)) do
 	local count = item:get_count()
@@ -139,21 +145,5 @@ function maidroid.register_maidroid(product_name, def)
       minetest.add_entity(pointed_thing.above, "maidroid:maidroid")
       return itemstack
     end
-  })
-  -- 野生のmaidroidのentityの登録
-  minetest.register_entity(product_name.."_wild", {
-    hp_max = def.hp_max or 1,
-    physical = true,
-    weight = def.weight or 5,
-    on_activate = function(self, staticdata)
-    end,
-    on_step = function(self, dtime)
-    end,
-    on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
-    end,
-    on_rightclick = function(self, clicker)
-    end,
-    get_staticdata = function(self)
-    end,
   })
 end

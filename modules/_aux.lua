@@ -45,9 +45,9 @@ function maidroid.modules._aux.get_upper_pos(vec)
 end
 
 -- 落ちているアイテムを拾う
-function maidroid.modules._aux.get_item(self, radius, target_pred)
+function maidroid.modules._aux.pickup_item(self, radius, target_pred)
   local pos = self.object:getpos()
-  local pred = target_list or (function() return true end)
+  local pred = target_list or (function(itemstring) return true end)
   local all_objects = minetest.get_objects_inside_radius(pos, radius)
   for _, obj in ipairs(all_objects) do
     if not obj:is_player() and obj:get_luaentity() then
@@ -57,6 +57,9 @@ function maidroid.modules._aux.get_item(self, radius, target_pred)
 	  local inv = maidroid._aux.get_maidroid_inventory(self)
 	  local stack = ItemStack(itemstring)
 	  local leftover = inv:add_item("main", stack)
+	  minetest.add_item(obj:getpos(), leftover)
+	  obj:get_luaentity().itemstring = ""
+	  obj:remove()
 	end
       end
     end

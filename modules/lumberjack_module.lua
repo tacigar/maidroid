@@ -80,6 +80,10 @@ maidroid.register_module("maidroid:lumberjack", {
 	self.object:set_animation(maidroid.animations.mine, 15, 0)
 	self.object:setvelocity{x = 0, y = 0, z = 0}
       end
+      -- 苗木を拾い集める
+      _aux.pickup_item(self, 1.5, function(itemstring)
+	return util.table_find_value(target_sapling_list, itemstring) 
+      end)
     elseif self.state == state.punch then
       if self.time_count >= max_punch_time then
 	local punch_flag, forward_upper_pos, forward_upper_node

@@ -78,6 +78,10 @@ maidroid.register_module("maidroid:farming_module", {
 	self.object:set_animation(maidroid.animations.mine, 15, 0)
 	self.object:setvelocity{x = 0, y = 0, z = 0}
       end
+      -- 種を広い集める
+      _aux.pickup_item(self, 1.5, function(itemstring)
+        return minetest.get_item_group(itemstring, "seed") > 0
+      end)
     elseif self.state == state.punch then
       if self.time_count >= max_punch_time then
 	if maidroid.util.table_find_value(target_plants_list, forward_node.name) then
