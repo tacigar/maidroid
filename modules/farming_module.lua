@@ -72,7 +72,7 @@ maidroid.register_module("maidroid:farming_module", {
       elseif pos.x == self.preposition.x or pos.z == self.preposition.z then
 	_aux.change_dir(self)
       elseif forward_node.name == "air"
-      and minetest.get_item_group(inetest.get_node(forward_under_pos).name, "wet") > 0
+      and minetest.get_item_group(minetest.get_node(forward_under_pos).name, "wet") > 0
       and has_seed_item(self) then
 	self.state = state.plant
 	self.object:set_animation(maidroid.animations.mine, 15, 0)
@@ -85,6 +85,7 @@ maidroid.register_module("maidroid:farming_module", {
     elseif self.state == state.punch then
       if self.time_count >= max_punch_time then
 	if maidroid.util.table_find_value(target_plants_list, forward_node.name) then
+	  minetest.remove_node(forward_pos)
 	  local inv = minetest.get_inventory{type = "detached", name = self.invname}
 	  local stacks = minetest.get_node_drops(forward_node.name)
 	  for _, stack in ipairs(stacks) do

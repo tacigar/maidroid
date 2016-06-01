@@ -142,7 +142,7 @@ function maidroid.register_maidroid(product_name, def)
   minetest.register_craftitem(product_name.."_swawn_egg", {
     description = def.description.." Swapn Egg",
     on_use = function(itemstack, user, pointed_thing)
-      minetest.add_entity(pointed_thing.above, "maidroid:maidroid")
+      minetest.add_entity(pointed_thing.above, product_name)
       return itemstack
     end
   })

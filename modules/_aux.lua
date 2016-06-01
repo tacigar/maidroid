@@ -47,7 +47,7 @@ end
 -- 落ちているアイテムを拾う
 function maidroid.modules._aux.pickup_item(self, radius, target_pred)
   local pos = self.object:getpos()
-  local pred = target_list or (function(itemstring) return true end)
+  local pred = target_pred or (function(itemstring) return true end)
   local all_objects = minetest.get_objects_inside_radius(pos, radius)
   for _, obj in ipairs(all_objects) do
     if not obj:is_player() and obj:get_luaentity() then
