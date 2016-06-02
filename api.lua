@@ -5,7 +5,7 @@
 
 local _aux = maidroid._aux
 
--- インベントリにユニークな値を与えるための補助関数
+-- aux function to generate serialnumber for inventories
 local gen_inv_serialnumber = (function ()
   local serialnumber = 0  
   return function ()
@@ -19,10 +19,9 @@ local main_invname = "main"
 local module_invsize = 1
 local module_invname = "module"
 
--- モジュール名と定義を対応づけるテーブル
+-- key = modulename, value = moduledef
 maidroid.registered_modules = {}
 
--- 新しいmoduleを登録する関数
 function maidroid.register_module(module_name, def)
   maidroid.registered_modules[module_name] = def
   minetest.register_craftitem(module_name, {
@@ -32,7 +31,7 @@ function maidroid.register_module(module_name, def)
   })
 end
 
--- アニメーションの区切りフレーム
+-- animation frame
 maidroid.animations = {
   stand = {x = 0, y = 79},
   lay = {x = 162, y = 166},
@@ -42,7 +41,6 @@ maidroid.animations = {
   sit = {x = 81, y = 160},
 }
 
--- 新しいmaidroidを登録する関数
 function maidroid.register_maidroid(product_name, def)
   minetest.register_entity(product_name, {
     hp_max = def.hp_max or 1,
@@ -57,6 +55,7 @@ function maidroid.register_maidroid(product_name, def)
     makes_footstep_sound = true,
     module = nil,
     invname = "",
+    
     on_activate = function(self, staticdata)
       self.invname = "maidroid"..tostring(gen_inv_serialnumber())
       local inv = minetest.create_detached_inventory(self.invname, {
@@ -107,11 +106,14 @@ function maidroid.register_maidroid(product_name, def)
       if self.module then self.module.initialize(self)
       else self.object:setvelocity{x = 0, y = 0, z = 0} end
     end,
+    
     on_step = function(self, dtime)
       if self.module then self.module.on_step(self, dtime) end
     end,
+    
     on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir)
     end,
+    
     on_rightclick = function(self, clicker)
       local formspec = "size[8,9]"
 	.."list[detached:"..self.invname..";"..main_invname..";0,0;4,4;]"
@@ -121,6 +123,7 @@ function maidroid.register_maidroid(product_name, def)
 	.."list[current_player;"..main_invname..";0,6.2;8,3;8]"
       minetest.show_formspec(clicker:get_player_name(), self.invname, formspec)
     end,
+    
     get_staticdata = function(self)
       local inv = _aux.get_maidroid_inventory(self)
       local staticdata = {}
@@ -139,7 +142,8 @@ function maidroid.register_maidroid(product_name, def)
       return minetest.serialize(staticdata)
     end,
   })
-  -- スポーンエッグを登録
+  
+  -- register spawn egg
   minetest.register_craftitem(product_name.."_spawn_egg", {
     description = def.description.." Swapn Egg",
     inventory_image = def.inventory_image,

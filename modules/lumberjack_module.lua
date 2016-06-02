@@ -12,7 +12,7 @@ local max_plant_time = 20
 local target_tree_list = { "default:tree" }
 local target_sapling_list = { "default:sapling" }
 
--- punchを始める必要があるか否かを調べる
+-- check the maidroid need to start to punch
 local function check_punch_flag(forward_pos)
   local forward_upper_pos = util.table_shallow_copy(forward_pos)
   while true do
@@ -25,7 +25,7 @@ local function check_punch_flag(forward_pos)
   return false, nil, nil
 end
 
--- 苗木を持っているかを調べる
+-- check the maidroid has sapling items
 local function has_sapling_item(self)
   local inv = maidroid._aux.get_maidroid_inventory(self)
   local stacks = inv:get_list("main")
@@ -38,10 +38,10 @@ local function has_sapling_item(self)
   return false
 end
 
--- 木こりモジュールを登録する
 maidroid.register_module("maidroid:lumberjack", {
   description = "Maidroid Module : Lumberjack",
   inventory_image = "maidroid_lumberjack_module.png",
+  
   initialize = function(self)
     self.state = state.walk
     self.time_count = 0
@@ -50,12 +50,14 @@ maidroid.register_module("maidroid:lumberjack", {
     self.preposition = self.object:getpos()
     _aux.change_dir(self)
   end,
+  
   finalize = function(self)
     self.state = nil
     self.time_count = nil
     self.preposition = nil
     self.object:setvelocity{x = 0, y = 0, z = 0}
   end,
+  
   on_step = function(self, dtime)
     local pos = self.object:getpos()
     local rpos = vector.round(pos)
@@ -66,6 +68,7 @@ maidroid.register_module("maidroid:lumberjack", {
     local forward_node = minetest.get_node(forward_pos)
     local forward_under_pos = _aux.get_under_pos(forward_pos)
     local forward_under_node = minetest.get_node(forward_under_pos)
+    
     if self.state == state.walk then
       if check_punch_flag(forward_pos) then -- punch tree node
 	self.state = state.punch
@@ -80,10 +83,11 @@ maidroid.register_module("maidroid:lumberjack", {
 	self.object:set_animation(maidroid.animations.mine, 15, 0)
 	self.object:setvelocity{x = 0, y = 0, z = 0}
       end
-      -- 苗木を拾い集める
+      -- pickup sapling items
       _aux.pickup_item(self, 1.5, function(itemstring)
 	return util.table_find_value(target_sapling_list, itemstring) 
       end)
+      
     elseif self.state == state.punch then
       if self.time_count >= max_punch_time then
 	local punch_flag, forward_upper_pos, forward_upper_node
@@ -107,6 +111,7 @@ maidroid.register_module("maidroid:lumberjack", {
       else
 	self.time_count = self.time_count + 1
       end
+      
     elseif self.state == state.plant then
       if self.time_count > max_plant_time then
 	if forward_node.name == "air"

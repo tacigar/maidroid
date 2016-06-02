@@ -6,7 +6,7 @@
 local _aux = maidroid.modules._aux
 local state = {walk = 0, punch = 1, plant = 2}
 
--- 各植物ノードの種類の最大番号を探し出す
+-- find max size of each plants
 local target_plants_list = {}
 minetest.after(0, function()
   local max = {}
@@ -24,7 +24,7 @@ end)
 local max_punch_time = 20
 local max_plant_time = 15
 
--- 種を持っているか否かを確認する
+-- check the maidroid has seed items
 local function has_seed_item(self)
   local inv = maidroid._aux.get_maidroid_inventory(self)
   local stacks = inv:get_list("main")
@@ -37,10 +37,10 @@ local function has_seed_item(self)
   return false
 end
 
--- 農業を行うモジュール
 maidroid.register_module("maidroid:farming_module", {
   description = "Maidroid Module : Farming",
   inventory_image = "maidroid_farming_module.png",
+  
   initialize = function(self)
     self.object:set_animation(maidroid.animations.walk, 15, 0)
     self.object:setacceleration{x = 0, y = -10, z = 0}
@@ -49,12 +49,14 @@ maidroid.register_module("maidroid:farming_module", {
     self.time_count = 0
     _aux.change_dir(self)
   end,
+  
   finalize = function(self)
     self.state = nil
     self.preposition = nil
     self.time_count = nil
     self.object:setvelocity{x = 0, y = 0, z = 0}
   end,
+  
   on_step = function(self, dtime)
     local pos = self.object:getpos()
     local rpos = vector.round(pos)
@@ -64,6 +66,7 @@ maidroid.register_module("maidroid:farming_module", {
     local forward_pos = vector.add(rpos, forward_vec2)
     local forward_node = minetest.get_node(forward_pos)
     local forward_under_pos = vector.subtract(forward_pos, {x = 0, y = 1, z = 0})
+    
     if self.state == state.walk then -- searching plants or spaces
       if maidroid.util.table_find_value(target_plants_list, forward_node.name) then
 	self.state = state.punch
@@ -78,10 +81,11 @@ maidroid.register_module("maidroid:farming_module", {
 	self.object:set_animation(maidroid.animations.mine, 15, 0)
 	self.object:setvelocity{x = 0, y = 0, z = 0}
       end
-      -- 種を広い集める
+      -- pickup droped seed items
       _aux.pickup_item(self, 1.5, function(itemstring)
         return minetest.get_item_group(itemstring, "seed") > 0
       end)
+      
     elseif self.state == state.punch then
       if self.time_count >= max_punch_time then
 	if maidroid.util.table_find_value(target_plants_list, forward_node.name) then
@@ -100,6 +104,7 @@ maidroid.register_module("maidroid:farming_module", {
       else
 	self.time_count = self.time_count + 1
       end
+      
     elseif self.state == state.plant then
       if self.time_count >= max_plant_time then
 	if forward_node.name == "air" and minetest.get_item_group(

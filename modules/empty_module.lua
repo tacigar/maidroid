@@ -3,7 +3,6 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
--- 何もしないモジュール
 maidroid.register_module("maidroid:empty_module", {
   description = "Maidroid Module : Empty Module",
   inventory_image = "maidroid_empty_module.png",

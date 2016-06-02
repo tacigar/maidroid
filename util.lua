@@ -5,7 +5,7 @@
 
 maidroid.util = {}
 
--- ある値を持つキーが存在するかを調べる
+-- check that the table has the value
 function maidroid.util.table_find_value(tbl, value)
   for k, v in ipairs(tbl) do
     if v == value then return true, k end
@@ -13,7 +13,7 @@ function maidroid.util.table_find_value(tbl, value)
   return false, nil
 end
 
--- テーブルの浅いコピー
+-- table shallow copy
 function maidroid.util.table_shallow_copy(source)
   local copy = {}
   for key, value in pairs(source) do
