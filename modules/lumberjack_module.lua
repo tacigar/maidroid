@@ -38,7 +38,7 @@ local function has_sapling_item(self)
   return false
 end
 
-maidroid.register_module("maidroid:lumberjack", {
+maidroid.register_module("maidroid:lumberjack_module", {
   description = "Maidroid Module : Lumberjack",
   inventory_image = "maidroid_lumberjack_module.png",
   
