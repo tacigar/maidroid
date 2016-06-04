@@ -67,7 +67,7 @@ function maidroid.register_maidroid(product_name, def)
 	    module_def.initialize(self)
 	  end
 	end,
-	arrow_put = function(inv, listname, index, stack, player)
+	allow_put = function(inv, listname, index, stack, player)
 	  local item_name = stack:get_name()
 	  local is_module = maidroid.registered_modules[item_name]
 	  if listname == main_invname
@@ -145,7 +145,7 @@ function maidroid.register_maidroid(product_name, def)
   
   -- register spawn egg
   minetest.register_craftitem(product_name.."_spawn_egg", {
-    description = def.description.." Swapn Egg",
+    description = def.description.." Spawn Egg",
     inventory_image = def.inventory_image,
     stack_max = 1,
     on_use = function(itemstack, user, pointed_thing)
