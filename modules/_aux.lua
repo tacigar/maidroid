@@ -50,14 +50,14 @@ function maidroid.modules._aux.pickup_item(self, radius, target_pred)
     if not obj:is_player() and obj:get_luaentity() then
       local itemstring = obj:get_luaentity().itemstring
       if itemstring then
-	if pred(itemstring) then
-	  local inv = maidroid._aux.get_maidroid_inventory(self)
-	  local stack = ItemStack(itemstring)
-	  local leftover = inv:add_item("main", stack)
-	  minetest.add_item(obj:getpos(), leftover)
-	  obj:get_luaentity().itemstring = ""
-	  obj:remove()
-	end
+        if pred(itemstring) then
+          local inv = maidroid._aux.get_maidroid_inventory(self)
+          local stack = ItemStack(itemstring)
+          local leftover = inv:add_item("main", stack)
+          minetest.add_item(obj:getpos(), leftover)
+          obj:get_luaentity().itemstring = ""
+          obj:remove()
+        end
       end
     end
   end

@@ -40,7 +40,7 @@ end
 maidroid.register_module("maidroid:farming_module", {
   description = "Maidroid Module : Farming",
   inventory_image = "maidroid_farming_module.png",
-  
+
   initialize = function(self)
     self.object:set_animation(maidroid.animations.walk, 15, 0)
     self.object:setacceleration{x = 0, y = -10, z = 0}
@@ -49,14 +49,14 @@ maidroid.register_module("maidroid:farming_module", {
     self.time_count = 0
     _aux.change_dir(self)
   end,
-  
+
   finalize = function(self)
     self.state = nil
     self.preposition = nil
     self.time_count = nil
     self.object:setvelocity{x = 0, y = 0, z = 0}
   end,
-  
+
   on_step = function(self, dtime)
     local pos = self.object:getpos()
     local rpos = vector.round(pos)
@@ -66,70 +66,70 @@ maidroid.register_module("maidroid:farming_module", {
     local forward_pos = vector.add(rpos, forward_vec2)
     local forward_node = minetest.get_node(forward_pos)
     local forward_under_pos = vector.subtract(forward_pos, {x = 0, y = 1, z = 0})
-    
+
     if self.state == state.walk then -- searching plants or spaces
       if maidroid.util.table_find_value(target_plants_list, forward_node.name) then
-	self.state = state.punch
-	self.object:set_animation(maidroid.animations.mine, 15, 0)
-	self.object:setvelocity{x = 0, y = 0, z = 0}
+        self.state = state.punch
+        self.object:set_animation(maidroid.animations.mine, 15, 0)
+        self.object:setvelocity{x = 0, y = 0, z = 0}
       elseif pos.x == self.preposition.x or pos.z == self.preposition.z then
-	_aux.change_dir(self)
+        _aux.change_dir(self)
       elseif forward_node.name == "air"
-      and minetest.get_item_group(minetest.get_node(forward_under_pos).name, "wet") > 0
-      and has_seed_item(self) then
-	self.state = state.plant
-	self.object:set_animation(maidroid.animations.mine, 15, 0)
-	self.object:setvelocity{x = 0, y = 0, z = 0}
-      end
-      -- pickup droped seed items
-      _aux.pickup_item(self, 1.5, function(itemstring)
-        return minetest.get_item_group(itemstring, "seed") > 0
-      end)
-      
-    elseif self.state == state.punch then
-      if self.time_count >= max_punch_time then
-	if maidroid.util.table_find_value(target_plants_list, forward_node.name) then
-	  minetest.remove_node(forward_pos)
-	  local inv = minetest.get_inventory{type = "detached", name = self.invname}
-	  local stacks = minetest.get_node_drops(forward_node.name)
-	  for _, stack in ipairs(stacks) do
-	    local leftover = inv:add_item("main", stack)
-	    minetest.add_item(forward_pos, leftover)
-	  end
-	end
-	self.state = state.walk
-	self.object:set_animation(maidroid.animations.walk, 15, 0)
-	self.time_count = 0
-	_aux.change_dir(self)
-      else
-	self.time_count = self.time_count + 1
-      end
-      
-    elseif self.state == state.plant then
-      if self.time_count >= max_plant_time then
-	if forward_node.name == "air" and minetest.get_item_group(
+        and minetest.get_item_group(minetest.get_node(forward_under_pos).name, "wet") > 0
+        and has_seed_item(self) then
+          self.state = state.plant
+          self.object:set_animation(maidroid.animations.mine, 15, 0)
+          self.object:setvelocity{x = 0, y = 0, z = 0}
+        end
+        -- pickup droped seed items
+        _aux.pickup_item(self, 1.5, function(itemstring)
+          return minetest.get_item_group(itemstring, "seed") > 0
+        end)
+
+      elseif self.state == state.punch then
+        if self.time_count >= max_punch_time then
+          if maidroid.util.table_find_value(target_plants_list, forward_node.name) then
+            minetest.remove_node(forward_pos)
+            local inv = minetest.get_inventory{type = "detached", name = self.invname}
+            local stacks = minetest.get_node_drops(forward_node.name)
+            for _, stack in ipairs(stacks) do
+              local leftover = inv:add_item("main", stack)
+              minetest.add_item(forward_pos, leftover)
+            end
+          end
+          self.state = state.walk
+          self.object:set_animation(maidroid.animations.walk, 15, 0)
+          self.time_count = 0
+          _aux.change_dir(self)
+        else
+          self.time_count = self.time_count + 1
+        end
+        
+      elseif self.state == state.plant then
+        if self.time_count >= max_plant_time then
+          if forward_node.name == "air" and minetest.get_item_group(
           minetest.get_node(forward_under_pos).name, "soil") > 0 then
-	  local inv = minetest.get_inventory{type = "detached", name = self.invname}
-	  local stacks = inv:get_list("main")
-	  for idx, stack in ipairs(stacks) do
-	    local item_name = stack:get_name()
-	    if minetest.get_item_group(item_name, "seed") > 0 then
-	      minetest.add_node(forward_pos, {name = item_name, param2 = 1})
-	      stack:take_item(1)
-	      inv:set_stack("main", idx, stack)
-	      break
-	    end
-	  end
-	end
-	self.state = state.walk
-	self.object:set_animation(maidroid.animations.walk, 15, 0)
-	self.time_count = 0
-	_aux.change_dir(self)
-      else
-	self.time_count = self.time_count + 1
+            local inv = minetest.get_inventory{type = "detached", name = self.invname}
+            local stacks = inv:get_list("main")
+            for idx, stack in ipairs(stacks) do
+              local item_name = stack:get_name()
+              if minetest.get_item_group(item_name, "seed") > 0 then
+                minetest.add_node(forward_pos, {name = item_name, param2 = 1})
+                stack:take_item(1)
+                inv:set_stack("main", idx, stack)
+                break
+              end
+            end
+          end
+          self.state = state.walk
+          self.object:set_animation(maidroid.animations.walk, 15, 0)
+          self.time_count = 0
+          _aux.change_dir(self)
+        else
+          self.time_count = self.time_count + 1
+        end
       end
+      self.preposition = pos
+      return
     end
-    self.preposition = pos
-    return
-  end
-})
+  })
