@@ -102,11 +102,6 @@ maidroid.register_module("maidroid:farming_module", {
     local rpos = vector.round(pos)
     local upos = _aux.get_under_pos(pos)
     local yaw = self.object:getyaw()
-    local forward_vec = _aux.get_forward(yaw)
-    local forward_vec2 = _aux.get_round_forward(forward_vec)
-    local forward_pos = vector.add(rpos, forward_vec2)
-    local forward_node = minetest.get_node(forward_pos)
-    local forward_under_pos = vector.subtract(forward_pos, {x = 0, y = 1, z = 0})
 
     _aux.pickup_item(self, 1.5, function(itemstring) -- pickup droped seed items
       return minetest.get_item_group(itemstring, "seed") > 0
