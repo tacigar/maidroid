@@ -11,9 +11,11 @@ local state = {
   plant = 2,
   walk_to_plant = 3,
   walk_to_soil = 4,
+  walk_avoid = 5,
 }
 local max_punch_time = 20
 local max_plant_time = 15
+local max_avoid_time = 15
 local search_lenvec = {x = 3, y = 0, z = 3}
 
 
@@ -72,6 +74,12 @@ local function to_walk(self)
   self.object:set_animation(maidroid.animations.walk, 15, 0)
   self.time_count = 0
   _aux.change_dir(self)
+end
+
+
+local function to_walk_avoid(self)
+  to_walk(self)
+  self.state = state.walk_avoid
 end
 
 
@@ -169,7 +177,7 @@ maidroid.register_module("maidroid:farming_module", {
         else to_walk(self) end
       else
         if pos.x == self.preposition.x or pos.z == self.preposition.z then
-          to_walk(self)
+          to_walk_avoid(self)
         end
       end
 
@@ -183,8 +191,16 @@ maidroid.register_module("maidroid:farming_module", {
         else to_walk(self) end
       else
         if pos.x == self.preposition.x or pos.z == self.preposition.z then
-          to_walk(self)
+          to_walk_avoid(self)
         end
+      end
+
+    elseif self.state == state.walk_avoid then
+      if self.time_count > max_avoid_time then
+        self.state = state.walk
+        self.time_count = 0
+      else
+        self.time_count = self.time_count + 1
       end
     end
     self.preposition = pos
