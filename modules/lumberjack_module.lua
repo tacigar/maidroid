@@ -6,9 +6,18 @@
 local util = maidroid.util
 local _aux = maidroid.modules._aux
 
-local state = {walk = 0, plant = 1, punch = 2}
+local state = {
+  walk = 0,
+  plant = 1,
+  punch = 2,
+  walk_to_tree = 3,
+  walk_avoid = 4,
+}
+local find_lenvec = {x = 3, y = 0, z = 3}
+local plant_lenvec = {x = 2, y = 0, z = 2}
 local max_punch_time = 20
 local max_plant_time = 20
+local max_avoid_time = 15
 local target_tree_list = { "default:tree" }
 local target_sapling_list = { "default:sapling" }
 
@@ -48,6 +57,7 @@ maidroid.register_module("maidroid:lumberjack_module", {
     self.object:setacceleration{x = 0, y = -10, z = 0}
     self.object:set_animation(maidroid.animations.walk, 15, 0)
     self.preposition = self.object:getpos()
+    self.destination = nil
     _aux.change_dir(self)
   end,
 
@@ -56,6 +66,7 @@ maidroid.register_module("maidroid:lumberjack_module", {
     self.time_count = nil
     self.preposition = nil
     self.object:setvelocity{x = 0, y = 0, z = 0}
+    self.destination = nil
   end,
 
   on_step = function(self, dtime)
@@ -70,28 +81,38 @@ maidroid.register_module("maidroid:lumberjack_module", {
     local forward_under_node = minetest.get_node(forward_under_pos)
 
     if self.state == state.walk then
-      if check_punch_flag(forward_pos) then -- punch tree node
-        self.state = state.punch
+      local b, dest = _aux.search_surrounding(self, find_lenvec, function(self, pos, node)
+        return util.table_find_value(target_tree_list, node.name)
+      end)
+      if b then -- walk to tree
+        self.state = state.walk_to_tree
+        self.destination = dest
+        _aux.change_dir_to(self, dest)
+      -- to plant sapling
+      elseif forward_node.name == "air"
+      and minetest.get_item_group(forward_under_node.name, "soil") > 0
+      and not _aux.search_surrounding(self, plant_lenvec, function(self, pos, node) -- no tree around
+        return util.table_find_value(target_tree_list, node.name)
+          or util.table_find_value(target_sapling_list, node.name)
+      end)
+      and has_sapling_item(self) then
+        self.state = state.plant
         self.object:set_animation(maidroid.animations.mine, 15, 0)
         self.object:setvelocity{x = 0, y = 0, z = 0}
-      elseif pos.x == self.preposition.x or pos.z == self.preposition.z then
-        _aux.change_dir(self)
-      elseif forward_node.name == "air"
-        and minetest.get_item_group(forward_under_node.name, "soil") > 0
-        and has_sapling_item(self) then
-          self.state = state.plant
-          self.object:set_animation(maidroid.animations.mine, 15, 0)
-          self.object:setvelocity{x = 0, y = 0, z = 0}
+      -- else continue to walk
+      else
+        if pos.x == self.preposition.x or pos.z == self.preposition.z then
+          _aux.change_dir(self)
         end
-        -- pickup sapling items
-        _aux.pickup_item(self, 1.5, function(itemstring)
-          return util.table_find_value(target_sapling_list, itemstring)
-        end)
+      end
+      -- pickup sapling items
+      _aux.pickup_item(self, 1.5, function(itemstring)
+        return util.table_find_value(target_sapling_list, itemstring)
+      end)
 
     elseif self.state == state.punch then
       if self.time_count >= max_punch_time then
-        local punch_flag, forward_upper_pos, forward_upper_node
-        = check_punch_flag(forward_pos)
+        local punch_flag, forward_upper_pos, forward_upper_node = check_punch_flag(self.destination)
         if punch_flag then
           minetest.remove_node(forward_upper_pos)
           local inv = minetest.get_inventory{type = "detached", name = self.invname}
@@ -132,6 +153,36 @@ maidroid.register_module("maidroid:lumberjack_module", {
         self.object:set_animation(maidroid.animations.walk, 15, 0)
         self.time_count = 0
         _aux.change_dir(self)
+      else
+        self.time_count = self.time_count + 1
+      end
+
+    elseif self.state == state.walk_to_tree then
+      if vector.distance(pos, self.destination) < 1.5 then -- to punch state
+        local destnode = minetest.get_node(self.destination)
+        if (util.table_find_value(target_tree_list, destnode.name)) then
+          self.state = state.punch
+          self.object:set_animation(maidroid.animations.mine, 15, 0)
+          self.object:setvelocity{x = 0, y = 0, z = 0}
+        else
+          self.state = state.walk
+          self.object:set_animation(maidroid.animations.walk, 15, 0)
+          self.time_count = 0
+          _aux.change_dir(self)
+        end
+      else
+        if pos.x == self.preposition.x or pos.z == self.preposition.z then
+          self.state = state.walk_avoid
+          self.object:set_animation(maidroid.animations.walk, 15, 0)
+          self.time_count = 0
+          _aux.change_dir(self)
+        end
+      end
+
+    elseif self.state == state.walk_avoid then
+      if self.time_count > max_avoid_time then
+        self.state = state.walk
+        self.time_count = 0
       else
         self.time_count = self.time_count + 1
       end

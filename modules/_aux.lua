@@ -83,7 +83,7 @@ function maidroid.modules._aux.search_surrounding(self, lenvec, pred)
     for yi = -lenvec.y, lenvec.y do
       for zi = -lenvec.z, lenvec.z do
         local p = {x = pos.x + xi, y = pos.y + yi, z = pos.z + zi}
-        local node = minetest.get_node(pos)
+        local node = minetest.get_node(p)
         if pred(self, p, node) then return true, p, node end
       end
     end
