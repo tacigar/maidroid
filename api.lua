@@ -149,7 +149,6 @@ function maidroid.register_maidroid(product_name, def)
     inventory_image = def.inventory_image,
     stack_max = 1,
     on_use = function(itemstack, user, pointed_thing)
-      print(pointed_thing.under, pointed_thing.above)
       if pointed_thing.above ~= nil then
         minetest.add_entity(pointed_thing.above, product_name)
         return itemstack

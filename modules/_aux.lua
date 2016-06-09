@@ -5,11 +5,22 @@
 
 maidroid.modules._aux = {}
 
+local velocity = 3
+
+-- change direction to destination and velocity vector
+function maidroid.modules._aux.change_dir_to(self, dest)
+  local pos = self.object:getpos()
+  local dir = vector.subtract(dest, pos)
+  local vel = vector.multiply(vector.normalize(dir), velocity)
+  self.object:setvelocity(vel)
+  self.object:setyaw(math.atan2(vel.z, vel.x) + math.pi / 2)
+end
+
 -- change direction and velocity vector
 function maidroid.modules._aux.change_dir(self)
   local rnd = function() return math.random(0, 5) * 2 - 5 end
   local dir = {x = rnd(), y = 0, z = rnd()}
-  local vel = vector.multiply(vector.normalize(dir), 3)
+  local vel = vector.multiply(vector.normalize(dir), velocity)
   self.object:setvelocity(vel)
   self.object:setyaw(math.atan2(vel.z, vel.x) + math.pi / 2)
 end
@@ -33,9 +44,11 @@ function maidroid.modules._aux.get_round_forward(forward)
   return rforward
 end
 
+
 function maidroid.modules._aux.get_under_pos(vec)
   return { x = vec.x, y = vec.y - 1, z = vec.z }
 end
+
 
 function maidroid.modules._aux.get_upper_pos(vec)
   return { x = vec.x, y = vec.y + 1, z = vec.z }
@@ -61,4 +74,19 @@ function maidroid.modules._aux.pickup_item(self, radius, target_pred)
       end
     end
   end
+end
+
+-- search surrounding nodes
+function maidroid.modules._aux.search_surrounding(self, lenvec, pred)
+  local pos = vector.round(self.object:getpos())
+  for xi = -lenvec.x, lenvec.x do
+    for yi = -lenvec.y, lenvec.y do
+      for zi = -lenvec.z, lenvec.z do
+        local p = {x = pos.x + xi, y = pos.y + yi, z = pos.z + zi}
+        local node = minetest.get_node(pos)
+        if pred(self, p, node) then return true, p, node end
+      end
+    end
+  end
+  return false, nil, nil
 end

@@ -12,4 +12,3 @@ function maidroid._aux.get_maidroid_inventory(self)
     name = self.invname,
   }
 end
-

@@ -88,54 +88,54 @@ maidroid.register_module("maidroid:lumberjack_module", {
           return util.table_find_value(target_sapling_list, itemstring)
         end)
 
-      elseif self.state == state.punch then
-        if self.time_count >= max_punch_time then
-          local punch_flag, forward_upper_pos, forward_upper_node
-          = check_punch_flag(forward_pos)
-          if punch_flag then
-            minetest.remove_node(forward_upper_pos)
-            local inv = minetest.get_inventory{type = "detached", name = self.invname}
-            local stacks = minetest.get_node_drops(forward_upper_node.name)
-            for _, stack in ipairs(stacks) do
-              local leftover = inv:add_item("main", stack)
-              minetest.add_item(forward_pos, leftover)
-            end
+    elseif self.state == state.punch then
+      if self.time_count >= max_punch_time then
+        local punch_flag, forward_upper_pos, forward_upper_node
+        = check_punch_flag(forward_pos)
+        if punch_flag then
+          minetest.remove_node(forward_upper_pos)
+          local inv = minetest.get_inventory{type = "detached", name = self.invname}
+          local stacks = minetest.get_node_drops(forward_upper_node.name)
+          for _, stack in ipairs(stacks) do
+            local leftover = inv:add_item("main", stack)
+            minetest.add_item(forward_pos, leftover)
           end
-          if (not forward_upper_pos) or (forward_upper_pos and
-          not check_punch_flag(_aux.get_upper_pos(forward_upper_pos))) then
-            self.state = state.walk
-            self.object:set_animation(maidroid.animations.walk, 15, 0)
-            _aux.change_dir(self)
-          end
-          self.time_count = 0
-        else
-          self.time_count = self.time_count + 1
         end
-
-      elseif self.state == state.plant then
-        if self.time_count > max_plant_time then
-          if forward_node.name == "air"
-          and minetest.get_item_group(forward_under_node.name, "soil") > 0 then
-            local inv = minetest.get_inventory{type = "detached", name = self.invname}
-            local stacks = inv:get_list("main")
-            for i, stack in ipairs(stacks) do
-              local itemname = stack:get_name()
-              if util.table_find_value(target_sapling_list, itemname) then
-                minetest.add_node(forward_pos, {name = itemname, param2 = 1})
-                stack:take_item(1)
-                inv:set_stack("main", i, stack)
-                break
-              end
-            end
-          end
+        if (not forward_upper_pos) or (forward_upper_pos and
+        not check_punch_flag(_aux.get_upper_pos(forward_upper_pos))) then
           self.state = state.walk
           self.object:set_animation(maidroid.animations.walk, 15, 0)
-          self.time_count = 0
           _aux.change_dir(self)
-        else
-          self.time_count = self.time_count + 1
         end
+        self.time_count = 0
+      else
+        self.time_count = self.time_count + 1
       end
-      self.preposition = pos
+
+    elseif self.state == state.plant then
+      if self.time_count > max_plant_time then
+        if forward_node.name == "air"
+        and minetest.get_item_group(forward_under_node.name, "soil") > 0 then
+          local inv = minetest.get_inventory{type = "detached", name = self.invname}
+          local stacks = inv:get_list("main")
+          for i, stack in ipairs(stacks) do
+            local itemname = stack:get_name()
+            if util.table_find_value(target_sapling_list, itemname) then
+              minetest.add_node(forward_pos, {name = itemname, param2 = 1})
+              stack:take_item(1)
+              inv:set_stack("main", i, stack)
+              break
+            end
+          end
+        end
+        self.state = state.walk
+        self.object:set_animation(maidroid.animations.walk, 15, 0)
+        self.time_count = 0
+        _aux.change_dir(self)
+      else
+        self.time_count = self.time_count + 1
+      end
     end
-  })
+    self.preposition = pos
+  end
+})
