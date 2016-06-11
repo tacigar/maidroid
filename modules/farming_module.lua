@@ -26,7 +26,7 @@ minetest.after(0, function()
   for name, node in pairs(minetest.registered_nodes) do
     if minetest.get_item_group(name, "plant") > 0 then
       local s, i = string.match(name, "(.+)_(%d+)")
-      if max[s] == nil or max[s] < i then max[s] = i end
+      if (s and i) and (max[s] == nil or max[s] < i) then max[s] = i end
     end
   end
   for s, i in pairs(max) do
