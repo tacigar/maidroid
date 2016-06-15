@@ -104,7 +104,10 @@ function maidroid.register_maidroid(product_name, def)
       end
       -- initialize module
       if self.module then self.module.initialize(self)
-      else self.object:setvelocity{x = 0, y = 0, z = 0} end
+      else
+        self.object:setvelocity{x = 0, y = 0, z = 0}
+        self.object:setacceleration{x = 0, y = -10, z = 0}
+      end
     end,
 
     on_step = function(self, dtime)
