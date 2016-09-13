@@ -14,12 +14,47 @@ maidroid.animation_frames = {
 	WALK_MINE = {x = 200, y = 219},
 }
 
+-- maidroid.registered_maidroids represents a table that contains
+-- definitions of maidroid registered by maidroid.register_maidroid.
+maidroid.registered_maidroids = {}
+
+-- maidroid.registered_cores represents a table that contains
+-- definitions of core registered by maidroid.register_core.
+maidroid.registered_cores = {}
+
+-- maidroid.is_core reports whether a item is a core item by the name.
+function maidroid.is_core(item_name)
+	if maidroid.registered_cores[item_name] then
+		return true
+	end
+	return false
+end
+
 -- maidroid.get_inventory returns a inventory of a maidroid.
 function maidroid.get_inventory(self)
 	return minetest.get_inventory {
 		type = "detached",
 		name = self.inventory_name,
 	}
+end
+
+-- maidroid.get_core_name returns a name of a maidroid's current core.
+function maidroid.get_core_name(self)
+	local inventory = maidroid.get_inventory(self)
+	local list = inventory:get_list("core")[1]
+	if list ~= nil then
+		return list:get_name()
+	end
+	return ""
+end
+
+-- maidroid.get_core returns a maidroid's current core definition.
+function maidroid.get_core(self)
+	local name = maidroid.get_core_name(self)
+	if name ~= "" then
+		return maidroid.registered_cores[name]
+	end
+	return nil
 end
 
 -- maidroid.register_maidroid registers a definition of a new maidroid.
@@ -31,15 +66,32 @@ function maidroid.register_maidroid(product_name, def)
 
 		local inventory = minetest.create_detached_inventory(self.inventory_name, {
 			on_put = function(inv, listname, index, stack, player)
+				if listname == "core" then
+					local core_name = stack:get_name()
+					local core = registered_cores[core_name]
 
+					core.initialize(self)
+					self.core_name = core_name
+				end
 			end,
 
 			allow_put = function(inv, listname, index, stack, player)
-
+				-- only cores can put to a core inventory.
+				if listname == "main" then
+					return stack:get_count()
+				elseif listname == "core" and maidroid.is_core(stack:get_name()) then
+					return stack:get_count()
+				end
+				return 0
 			end,
 
 			on_take = function(inv, listname, index, stack, player)
+				if listname == "core" then
+					local core = registered_cores[self.core_name]
 
+					self.core_name = ""
+					core.finalize(self)
+				end
 			end,
 		})
 		inventory:set_size("main", 16)
@@ -72,7 +124,7 @@ function maidroid.register_maidroid(product_name, def)
 
 			local inventory = create_inventory(self)
 
-			if data["inventory"]["module"] ~= "" then
+			if data["inventory"]["core"] ~= "" then
 
 			end
 
@@ -82,14 +134,14 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	-- get_staticdata is a callback function that is called when the object is destroyed.
-	function get_staticdata = function(self)
+	function get_staticdata(self)
 		local inventory = maidroid.get_inventory(self)
 		local data = {
 			["product_name"] = self.product_name,
 			["manufacturing_number"] = self.manufacturing_number,
 			["inventory"] = {
 				["main"] = {},
-				["core"] = core_name, -- TODO
+				["core"] = self.core_name,
 			},
 		}
 
@@ -104,11 +156,65 @@ function maidroid.register_maidroid(product_name, def)
 		return minetest.serialize(data)
 	end
 
+	-- on_step is a callback function that is called every delta times.
+	function on_step(self, dtime)
+		if (not self.pause) and self.core_name ~= "" then
+			local core = registered_cores[self.core_name]
+			core.on_step(self, dtime)
+		end
+	end
+
+	-- on_rightclick is a callback function that is called when a player right-click them.
+	function on_rightclick(self, clicker)
+		minetest.show_formspec(
+			clicker:get_player_name(),
+			self.inventory_name,
+			self.formspec_string,
+		)
+	end
+
+	-- on_punch is a callback function that is called when a player punch then.
+	function on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		if self.pause == true then
+			self.pause = false
+			if self.core_name ~= "" then
+				local core = registered_cores[self.core_name]
+				core.on_pause(self)
+			end
+		else
+			self.pause = true
+			if self.core_name ~= "" then
+				local core = registered_cores[self.core_name]
+				core.on_resume(self)
+			end
+		end
+	end
+
 	-- register a definition of a new maidroid.
 	minetest.register_entity(product_name, {
-		product_name = "",
-		manufacturing_number = -1,
+		-- basic initial properties
+		hp_max               = def.hp_max,
+		weight               = def.weight,
+		mesh                 = def.mesh,
+		textures             = def.textures,
 
-		on_activate = on_activate,
+		physical             = true,
+		visual               = "mesh",
+		visual_size          = {x = 10, y = 10},
+		is_visible           = true,
+		makes_footstep_sound = true,
+
+		-- extra initial properties
+		pause                = false,
+		product_name         = "",
+		manufacturing_number = -1,
+		core_name            = "",
+
+		-- callback methods.
+		on_activate          = on_activate,
+		on_step              = on_step,
+		on_rightclick        = on_rightclick,
+		on_punch             = on_punch,
+		get_staticdata       = get_staticdata,
 	})
 end
