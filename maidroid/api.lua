@@ -86,14 +86,14 @@ end
 -- maidroid.maidroid.get_front_node returns a node that exists in front of the maidroid.
 function maidroid.maidroid.get_front_node(self)
 	local direction = self:get_look_direction()
-
-	if direction.x >= 0.5 then
+	print(direction.x, direction.z)
+	if math.abs(direction.x) >= 0.5 then
 		if direction.x > 0 then	direction.x = 1	else direction.x = -1 end
 	else
 		direction.x = 0
 	end
 
-	if direction.z >= 0.5 then
+	if math.abs(direction.z) >= 0.5 then
 		if direction.z > 0 then	direction.z = 1	else direction.z = -1 end
 	else
 		direction.z = 0
@@ -324,6 +324,7 @@ function maidroid.register_maidroid(product_name, def)
 		physical             = true,
 		visual               = "mesh",
 		visual_size          = {x = 10, y = 10},
+		collisionbox         = {-0.25, -0.5, -0.25, 0.25, 1.05, 0.25},
 		is_visible           = true,
 		makes_footstep_sound = true,
 
