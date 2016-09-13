@@ -3,9 +3,9 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
-maidroid_core_basic = {}
+maidroid_core = {}
 
-maidroid_core_basic.modname = "maidroid_core_basic"
-maidroid_core_basic.modpath = minetest.get_modpath(maidroid_core_basic.modname)
+maidroid_core.modname = "maidroid_core"
+maidroid_core.modpath = minetest.get_modpath(maidroid_core.modname)
 
-dofile(maidroid_core_basic.modpath .. "/register.lua")
+dofile(maidroid_core.modpath .. "/register.lua")

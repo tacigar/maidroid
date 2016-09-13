@@ -55,7 +55,7 @@ local function on_step(self, dtime)
 	end
 end
 
-maidroid.register_core("maidroid_core_basic:core_basic", {
+maidroid.register_core("maidroid_core:core_basic", {
 	description     = "maidroid core : basic",
 	inventory_image = "maidroid_core_basic.png",
 	on_start        = on_start,
