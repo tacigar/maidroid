@@ -57,6 +57,17 @@ function maidroid.get_core(self)
 	return nil
 end
 
+-- maidroid.register_core registers a definition of a new core.
+function maidroid.register_core(core_name, def)
+	maidroid.registered_cores[core_name] = def
+
+	minetest.register_craftitem(core_name, {
+		stack_max       = 1,
+		description     = def.description,
+		inventory_image = def.inventory_image,
+	})
+end
+
 -- maidroid.register_maidroid registers a definition of a new maidroid.
 function maidroid.register_maidroid(product_name, def)
 
@@ -69,7 +80,6 @@ function maidroid.register_maidroid(product_name, def)
 				if listname == "core" then
 					local core_name = stack:get_name()
 					local core = registered_cores[core_name]
-
 					core.initialize(self)
 					self.core_name = core_name
 				end
@@ -88,7 +98,6 @@ function maidroid.register_maidroid(product_name, def)
 			on_take = function(inv, listname, index, stack, player)
 				if listname == "core" then
 					local core = registered_cores[self.core_name]
-
 					self.core_name = ""
 					core.finalize(self)
 				end

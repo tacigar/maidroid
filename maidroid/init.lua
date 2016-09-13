@@ -9,3 +9,4 @@ maidroid.modname = "maidroid"
 maidroid.modpath = maidroid.get_modpath(maidroid.modname)
 
 dofile(maidroid.modpath .. "/api.lua")
+dofile(maidroid.modpath .. "/register.lua")
