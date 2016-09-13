@@ -86,7 +86,6 @@ end
 -- maidroid.maidroid.get_front_node returns a node that exists in front of the maidroid.
 function maidroid.maidroid.get_front_node(self)
 	local direction = self:get_look_direction()
-	print(direction.x, direction.z)
 	if math.abs(direction.x) >= 0.5 then
 		if direction.x > 0 then	direction.x = 1	else direction.x = -1 end
 	else
