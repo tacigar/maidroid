@@ -1,0 +1,297 @@
+------------------------------------------------------------
+-- Copyright (c) 2016 tacigar. All rights reserved.
+-- https://github.com/tacigar/maidroid
+------------------------------------------------------------
+
+-- maidroid.animation_frames represents the animation frame data
+-- of "models/maidroid.b3d".
+maidroid.animation_frames = {
+	STAND     = {x =   0, y =  79},
+	SIT       = {x =  81, y = 160},
+	LAY       = {x = 162, y = 166},
+	WALK      = {x = 168, y = 187},
+	MINE      = {x = 189, y = 198},
+	WALK_MINE = {x = 200, y = 219},
+}
+
+-- maidroid.registered_maidroids represents a table that contains
+-- definitions of maidroid registered by maidroid.register_maidroid.
+maidroid.registered_maidroids = {}
+
+-- maidroid.registered_cores represents a table that contains
+-- definitions of core registered by maidroid.register_core.
+maidroid.registered_cores = {}
+
+-- maidroid.is_core reports whether a item is a core item by the name.
+function maidroid.is_core(item_name)
+	if maidroid.registered_cores[item_name] then
+		return true
+	end
+	return false
+end
+
+---------------------------------------------------------------------
+
+-- maidroid.maidroid represents a table that contains common methods
+-- for maidroid object.
+-- this table must be contains by a metatable.__index of maidroid self tables.
+-- minetest.register_entity set initial properties as a metatable.__index, so
+-- this table's methods must be put there.
+maidroid.maidroid = {}
+
+-- maidroid.maidroid.get_inventory returns a inventory of a maidroid.
+function maidroid.maidroid.get_inventory(self)
+	return minetest.get_inventory {
+		type = "detached",
+		name = self.inventory_name,
+	}
+end
+
+-- maidroid.maidroid.get_core_name returns a name of a maidroid's current core.
+function maidroid.maidroid.get_core_name(self)
+	return self.core_name
+end
+
+-- maidroid.maidroid.get_core returns a maidroid's current core definition.
+function maidroid.maidroid.get_core(self)
+	local name = self:get_core_name(self)
+	if name ~= "" then
+		return maidroid.registered_cores[name]
+	end
+	return nil
+end
+
+---------------------------------------------------------------------
+
+-- maidroid.manufacturing_data represents a table that contains manufacturing data.
+-- this table's keys are product names, and values are manufacturing numbers
+-- that has been already manufactured.
+maidroid.manufacturing_data = (function()
+	local file_name = minetest.get_worldpath() .. "/manufacturing_data"
+
+	minetest.register_on_shutdown(function()
+		local file = io.open(file_name, "w")
+		file:write(minetest.serialize(maidroid.manufacturing_data))
+		file:close()
+	end)
+
+	local file = io.open(file_name, "r")
+	if file ~= nil then
+		local data = file:read("*a")
+		file:close()
+		return minetest.deserialize(data)
+	end
+	return {}
+end) ()
+
+---------------------------------------------------------------------
+
+-- maidroid.register_core registers a definition of a new core.
+function maidroid.register_core(core_name, def)
+	maidroid.registered_cores[core_name] = def
+
+	minetest.register_craftitem(core_name, {
+		stack_max       = 1,
+		description     = def.description,
+		inventory_image = def.inventory_image,
+	})
+end
+
+-- maidroid.register_maidroid registers a definition of a new maidroid.
+function maidroid.register_maidroid(product_name, def)
+	-- initialize manufacturing number of a new maidroid.
+	if maidroid.manufacturing_data[product_name] == nil then
+		maidroid.manufacturing_data[product_name] = 0
+	end
+
+	-- create_inventory creates a new inventory, and returns it.
+	function create_inventory(self)
+		self.inventory_name = self.product_name .. tostring(self.manufacturing_number)
+		local inventory = minetest.create_detached_inventory(self.inventory_name, {
+			on_put = function(inv, listname, index, stack, player)
+				if listname == "core" then
+					local core_name = stack:get_name()
+					local core = registered_cores[core_name]
+					core.initialize(self)
+					self.core_name = core_name
+				end
+			end,
+
+			allow_put = function(inv, listname, index, stack, player)
+				-- only cores can put to a core inventory.
+				if listname == "main" then
+					return stack:get_count()
+				elseif listname == "core" and maidroid.is_core(stack:get_name()) then
+					return stack:get_count()
+				end
+				return 0
+			end,
+
+			on_take = function(inv, listname, index, stack, player)
+				if listname == "core" then
+					local core = registered_cores[self.core_name]
+					self.core_name = ""
+					core.finalize(self)
+				end
+			end,
+		})
+		inventory:set_size("main", 16)
+		inventory:set_size("core",  1)
+
+		return inventory
+	end
+
+	-- create_formspec_string returns a string that represents a formspec definition.
+	function create_formspec_string(self)
+		return "size[8,9]"
+			.. "list[detached:"..self.inventory_name..";main;0,0;4,4;]"
+			.. "label[5,0;core]"
+			.. "list[detached:"..self.inventory_name..";core;6,0;1,1;]"
+			.. "list[current_player;main;0,5;8,1;]"
+			.. "list[current_player;main;0,6.2;8,3;8]"
+	end
+
+	-- on_activate is a callback function that is called when the object is created or recreated.
+	function on_activate(self, staticdata)
+		-- parse the staticdata, and compose a inventory.
+		if staticdata == "" then
+			self.product_name = product_name
+			self.manufacturing_number = maidroid.manufacturing_data[product_name]
+			print(self.manufacturing_number, "KOKO")
+			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
+			create_inventory(self)
+		else
+			-- if static data is not empty string, this object has beed already created.
+			local data = minetest.deserialize(staticdata)
+
+			self.product_name = data["product_name"]
+			self.manufacturing_number = data["manufacturing_number"]
+
+			local inventory = create_inventory(self)
+			local core_name = data["inventory"]["core"]
+			local items = data["inventory"]["main"]
+
+			if core_name ~= "" then -- set a core
+				core_stack = ItemStack(core_name)
+				core_stack:set_count(1)
+				inventory:add_item("core", core_stack)
+				self.core_name = core_name
+			end
+
+			for _, item in ipairs(items) do -- set items
+				local item_stack = ItemStack(item["name"])
+				item_stack:set_count(item["count"])
+				inventory:add_item("main", item_stack)
+			end
+		end
+
+		self.formspec_string = create_formspec_string(self)
+	end
+
+	-- get_staticdata is a callback function that is called when the object is destroyed.
+	function get_staticdata(self)
+		local inventory = self:get_inventory()
+		local data = {
+			["product_name"] = self.product_name,
+			["manufacturing_number"] = self.manufacturing_number,
+			["inventory"] = {
+				["main"] = {},
+				["core"] = self.core_name,
+			},
+		}
+
+		for _, item in ipairs(inventory:get_list("main")) do
+			local count = item:get_count()
+			local itemname = item:get_name()
+			if count ~= 0 then
+				local itemdata = {count = count, name = itemname}
+				table.insert(data["inventory"]["main"], itemdata)
+			end
+		end
+		return minetest.serialize(data)
+	end
+
+	-- on_step is a callback function that is called every delta times.
+	function on_step(self, dtime)
+		if (not self.pause) and self.core_name ~= "" then
+			local core = registered_cores[self.core_name]
+			core.on_step(self, dtime)
+		end
+	end
+
+	-- on_rightclick is a callback function that is called when a player right-click them.
+	function on_rightclick(self, clicker)
+		minetest.show_formspec(
+			clicker:get_player_name(),
+			self.inventory_name,
+			self.formspec_string
+		)
+	end
+
+	-- on_punch is a callback function that is called when a player punch then.
+	function on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		print(self.product_name .. tostring(self.manufacturing_number))
+		if self.pause == true then
+			self.pause = false
+			if self.core_name ~= "" then
+				local core = registered_cores[self.core_name]
+				core.on_pause(self)
+			end
+		else
+			self.pause = true
+			if self.core_name ~= "" then
+				local core = registered_cores[self.core_name]
+				core.on_resume(self)
+			end
+		end
+	end
+
+	-- register a definition of a new maidroid.
+	minetest.register_entity(product_name, {
+		-- basic initial properties
+		hp_max               = def.hp_max,
+		weight               = def.weight,
+		mesh                 = def.mesh,
+		textures             = def.textures,
+
+		physical             = true,
+		visual               = "mesh",
+		visual_size          = {x = 10, y = 10},
+		is_visible           = true,
+		makes_footstep_sound = true,
+
+		-- extra initial properties
+		pause                = false,
+		product_name         = "",
+		manufacturing_number = -1,
+		core_name            = "",
+
+		-- callback methods.
+		on_activate          = on_activate,
+		on_step              = on_step,
+		on_rightclick        = on_rightclick,
+		on_punch             = on_punch,
+		get_staticdata       = get_staticdata,
+
+		-- extra methods.
+		get_inventory        = maidroid.maidroid.get_inventory,
+		get_core             = maidroid.maidroid.get_core,
+		get_core_name        = maidroid.maidroid.get_core_name,
+	})
+
+	-- register a spawner for debugging maidroid mods.
+	if maidroid.debug_mode then
+		minetest.register_craftitem(product_name .. "_spawner", {
+			description     = product_name .. " spawner",
+			inventory_image = "maidroid_debug_spawner.png",
+			stack_max       = 1,
+			on_use  = function(item_stack, user, pointed_thing)
+				if pointed_thing.above ~= nil then
+					minetest.add_entity(pointed_thing.above, product_name)
+					return itemstack
+				end
+				return nil
+			end,
+		})
+	end
+end
