@@ -30,32 +30,37 @@ function maidroid.is_core(item_name)
 	return false
 end
 
--- maidroid.get_inventory returns a inventory of a maidroid.
-function maidroid.get_inventory(self)
+---------------------------------------------------------------------
+
+-- maidroid.maidroid represents a table that contains common methods
+-- for maidroid object.
+-- this table must be a metatable of maidroid self tables.
+maidroid.maidroid = {}
+maidroid.maidroid.__index = maidroid
+
+-- maidroid.maidroid.get_inventory returns a inventory of a maidroid.
+function maidroid.maidroid.get_inventory(self)
 	return minetest.get_inventory {
 		type = "detached",
 		name = self.inventory_name,
 	}
 end
 
--- maidroid.get_core_name returns a name of a maidroid's current core.
-function maidroid.get_core_name(self)
-	local inventory = maidroid.get_inventory(self)
-	local list = inventory:get_list("core")[1]
-	if list ~= nil then
-		return list:get_name()
-	end
-	return ""
+-- maidroid.maidroid.get_core_name returns a name of a maidroid's current core.
+function maidroid.maidroid.get_core_name(self)
+	return self.core_name
 end
 
--- maidroid.get_core returns a maidroid's current core definition.
-function maidroid.get_core(self)
-	local name = maidroid.get_core_name(self)
+-- maidroid.maidroid.get_core returns a maidroid's current core definition.
+function maidroid.maidroid.get_core(self)
+	local name = self:get_core_name(self)
 	if name ~= "" then
 		return maidroid.registered_cores[name]
 	end
 	return nil
 end
+
+---------------------------------------------------------------------
 
 -- maidroid.register_core registers a definition of a new core.
 function maidroid.register_core(core_name, def)
@@ -121,6 +126,11 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_activate is a callback function that is called when the object is created or recreated.
 	function on_activate(self, staticdata)
+		-- first, set maidroid metatable to self table.
+		if getmetatable(self) == nil then
+			setmetatable(self, maidroid.maidroid)
+		end
+
 		if staticdata == "" then
 			self.product_name = product_name
 			create_inventory(self)
@@ -178,7 +188,7 @@ function maidroid.register_maidroid(product_name, def)
 		minetest.show_formspec(
 			clicker:get_player_name(),
 			self.inventory_name,
-			self.formspec_string,
+			self.formspec_string
 		)
 	end
 
@@ -225,5 +235,18 @@ function maidroid.register_maidroid(product_name, def)
 		on_rightclick        = on_rightclick,
 		on_punch             = on_punch,
 		get_staticdata       = get_staticdata,
+	})
+
+	minetest.register_craftitem(product_name .. "_spawner", {
+		description     = " Spawner",
+		inventory_image = def.inventory_image,
+		stack_max       = 1,
+		on_use          = function(item_stack, user, pointed_thing)
+			if pointed_thing.above ~= nil then
+				minetest.add_entity(pointed_thing.above, product_name)
+				return itemstack
+			end
+			return nil
+		end,
 	})
 end

@@ -6,7 +6,7 @@
 maidroid = {}
 
 maidroid.modname = "maidroid"
-maidroid.modpath = maidroid.get_modpath(maidroid.modname)
+maidroid.modpath = minetest.get_modpath(maidroid.modname)
 
 dofile(maidroid.modpath .. "/api.lua")
 dofile(maidroid.modpath .. "/register.lua")
