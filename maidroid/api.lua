@@ -81,6 +81,40 @@ function maidroid.maidroid.get_nearest_player(self, range_distance)
 	return player
 end
 
+-- maidroid.maidroid.get_front_node returns a node that exists in front of the maidroid.
+function maidroid.maidroid.get_front_node(self)
+	local direction = self.object:get_look_dir()
+	direction.y = 0
+	direction = vector.normalize(direction)
+
+	if direction.x >= 0.5 then
+		if direction.x > 0 then	direction.x = 1	else direction.x = -1 end
+	else
+		direction.x = 0
+	end
+
+	if direction.z >= 0.5 then
+		if direction.z > 0 then	direction.z = 1	else direction.z = -1 end
+	else
+		direction.z = 0
+	end
+
+	local front = vector.add(vector.round(self.object:getpos()), direction)
+	return minetest.get_node(front)
+end
+
+-- maidroid.maidroid.set_animation sets the maidroid's animation.
+-- this method is wrapper for self.object:set_animation.
+function maidroid.maidroid.set_animation(self, frame)
+	self.object:set_animation(frame, 15, 0)
+end
+
+-- maidroid.maidroid.set_yaw_by_direction sets the maidroid's yaw
+-- by a direction vector.
+function maidroid.maidroid.set_yaw_by_direction(self, direction)
+	self.object:setyaw(math.atan2(direction.z, direction.x) + math.pi / 2)
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -298,6 +332,9 @@ function maidroid.register_maidroid(product_name, def)
 		get_core             = maidroid.maidroid.get_core,
 		get_core_name        = maidroid.maidroid.get_core_name,
 		get_nearest_player   = maidroid.maidroid.get_nearest_player,
+		get_front_node       = maidroid.maidroid.get_front_node,
+		set_animation        = maidroid.maidroid.set_animation,
+		set_yaw_by_direction = maidroid.maidroid.set_yaw_by_direction,
 	})
 
 	-- register a spawner for debugging maidroid mods.
