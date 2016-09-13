@@ -34,9 +34,10 @@ end
 
 -- maidroid.maidroid represents a table that contains common methods
 -- for maidroid object.
--- this table must be a metatable of maidroid self tables.
+-- this table must be contains by a metatable.__index of maidroid self tables.
+-- minetest.register_entity set initial properties as metatable, so
+-- thie table's methods will be put there.
 maidroid.maidroid = {}
-maidroid.maidroid.__index = maidroid
 
 -- maidroid.maidroid.get_inventory returns a inventory of a maidroid.
 function maidroid.maidroid.get_inventory(self)
@@ -79,7 +80,6 @@ function maidroid.register_maidroid(product_name, def)
 	-- create_inventory creates a new inventory, and returns it.
 	function create_inventory(self)
 		self.inventory_name = self.product_name .. tostring(self.manufacturing_number)
-
 		local inventory = minetest.create_detached_inventory(self.inventory_name, {
 			on_put = function(inv, listname, index, stack, player)
 				if listname == "core" then
@@ -126,12 +126,7 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_activate is a callback function that is called when the object is created or recreated.
 	function on_activate(self, staticdata)
-		-- first, set maidroid metatable to self table.
-		if getmetatable(self) == nil then
-			setmetatable(self, maidroid.maidroid)
-		end
-
-		-- second, parse the staticdata, and compose a inventory.
+		-- parse the staticdata, and compose a inventory.
 		if staticdata == "" then
 			self.product_name = product_name
 			self.manufacturing_number = 0
@@ -166,7 +161,7 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- get_staticdata is a callback function that is called when the object is destroyed.
 	function get_staticdata(self)
-		local inventory = maidroid.get_inventory(self)
+		local inventory = self:get_inventory()
 		local data = {
 			["product_name"] = self.product_name,
 			["manufacturing_number"] = self.manufacturing_number,
@@ -247,10 +242,15 @@ function maidroid.register_maidroid(product_name, def)
 		on_rightclick        = on_rightclick,
 		on_punch             = on_punch,
 		get_staticdata       = get_staticdata,
+
+		-- extra methods.
+		get_inventory        = maidroid.maidroid.get_inventory,
+		get_core             = maidroid.maidroid.get_core,
+		get_core_name        = maidroid.maidroid.get_core_name,
 	})
 
 	minetest.register_craftitem(product_name .. "_spawner", {
-		description     = " Spawner",
+		description     = product_name .. " spawner",
 		inventory_image = def.inventory_image,
 		stack_max       = 1,
 		on_use          = function(item_stack, user, pointed_thing)
