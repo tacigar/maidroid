@@ -61,6 +61,26 @@ function maidroid.maidroid.get_core(self)
 	return nil
 end
 
+-- maidroid.maidroid.get_nearest_player returns a player object who
+-- is the nearest to the maidroid.
+function maidroid.maidroid.get_nearest_player(self, range_distance)
+	local player, min_distance = nil, range_distance
+	local position = self.object:getpos()
+
+	local all_objects = minetest.get_objects_inside_radius(position, range_distance)
+	for _, object in pairs(all_objects) do
+		if object:is_player() then
+			local player_position = object:getpos()
+			local distance = vector.distance(position, player_position)
+
+			if distance < min_distance then
+				player = object
+			end
+		end
+	end
+	return player
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -112,7 +132,7 @@ function maidroid.register_maidroid(product_name, def)
 				if listname == "core" then
 					local core_name = stack:get_name()
 					local core = registered_cores[core_name]
-					core.initialize(self)
+					core.on_start(self)
 					self.core_name = core_name
 				end
 			end,
@@ -131,7 +151,7 @@ function maidroid.register_maidroid(product_name, def)
 				if listname == "core" then
 					local core = registered_cores[self.core_name]
 					self.core_name = ""
-					core.finalize(self)
+					core.on_stop(self)
 				end
 			end,
 		})
@@ -277,6 +297,7 @@ function maidroid.register_maidroid(product_name, def)
 		get_inventory        = maidroid.maidroid.get_inventory,
 		get_core             = maidroid.maidroid.get_core,
 		get_core_name        = maidroid.maidroid.get_core_name,
+		get_nearest_player   = maidroid.maidroid.get_nearest_player,
 	})
 
 	-- register a spawner for debugging maidroid mods.
