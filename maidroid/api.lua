@@ -35,8 +35,8 @@ end
 -- maidroid.maidroid represents a table that contains common methods
 -- for maidroid object.
 -- this table must be contains by a metatable.__index of maidroid self tables.
--- minetest.register_entity set initial properties as metatable, so
--- thie table's methods will be put there.
+-- minetest.register_entity set initial properties as a metatable.__index, so
+-- this table's methods must be put there.
 maidroid.maidroid = {}
 
 -- maidroid.maidroid.get_inventory returns a inventory of a maidroid.
@@ -63,6 +63,29 @@ end
 
 ---------------------------------------------------------------------
 
+-- maidroid.manufacturing_data represents a table that contains manufacturing data.
+-- this table's keys are product names, and values are manufacturing numbers
+-- that has been already manufactured.
+maidroid.manufacturing_data = (function()
+	local file_name = minetest.get_worldpath() .. "/manufacturing_data"
+
+	minetest.register_on_shutdown(function()
+		local file = io.open(file_name, "w")
+		file:write(minetest.serialize(maidroid.manufacturing_data))
+		file:close()
+	end)
+
+	local file = io.open(file_name)
+	if file ~= nil then
+		local data = file:read("*a")
+		file:close()
+		return minetest.deserialize(data)
+	end
+	return {}
+end) ()
+
+---------------------------------------------------------------------
+
 -- maidroid.register_core registers a definition of a new core.
 function maidroid.register_core(core_name, def)
 	maidroid.registered_cores[core_name] = def
@@ -76,6 +99,8 @@ end
 
 -- maidroid.register_maidroid registers a definition of a new maidroid.
 function maidroid.register_maidroid(product_name, def)
+	-- initialize manufacturing number of a new maidroid.
+	maidroid.manufacturing_data[product_name] = 0
 
 	-- create_inventory creates a new inventory, and returns it.
 	function create_inventory(self)
@@ -129,7 +154,8 @@ function maidroid.register_maidroid(product_name, def)
 		-- parse the staticdata, and compose a inventory.
 		if staticdata == "" then
 			self.product_name = product_name
-			self.manufacturing_number = 0
+			self.manufacturing_number = maidroid.manufacturing_data[product_name]
+			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
 		else
 			-- if static data is not empty string, this object has beed already created.
@@ -201,6 +227,7 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_punch is a callback function that is called when a player punch then.
 	function on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		print(self.product_name .. tostring(self.manufacturing_number))
 		if self.pause == true then
 			self.pause = false
 			if self.core_name ~= "" then
