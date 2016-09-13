@@ -31,10 +31,10 @@ local function on_step(self, dtime)
 	local direction = vector.subtract(player_position, position)
 	local velocity = self.object:getvelocity()
 
-	if vector.length(dir) < 3 then
+	if vector.length(direction) < 3 then
 		if self.state == state.ACCOMPANY then
 			self:set_animation(maidroid.animation_frames.STAND)
-			self.state = state.idle
+			self.state = state.IDLE
 			self.object:setvelocity{x = 0, y = velocity.y, z = 0}
 		end
 	else
@@ -47,7 +47,7 @@ local function on_step(self, dtime)
 	self:set_yaw_by_direction(direction)
 
 	-- if maidroid is stoped by obstacle, the maidroid must jump.
-	if velocity == 0 and self.state = state.ACCOMPANY then
+	if velocity == 0 and self.state == state.ACCOMPANY then
 		local front_node = self:get_front_node()
 		if front_node.name ~= "air" then
 			self.object:setvelocity{x = direction.x, y = 3, z = direction.z}

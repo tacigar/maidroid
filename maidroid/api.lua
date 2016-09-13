@@ -3,6 +3,8 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
+maidroid.debug_mode = true
+
 -- maidroid.animation_frames represents the animation frame data
 -- of "models/maidroid.b3d".
 maidroid.animation_frames = {
@@ -165,7 +167,7 @@ function maidroid.register_maidroid(product_name, def)
 			on_put = function(inv, listname, index, stack, player)
 				if listname == "core" then
 					local core_name = stack:get_name()
-					local core = registered_cores[core_name]
+					local core = maidroid.registered_cores[core_name]
 					core.on_start(self)
 					self.core_name = core_name
 				end
@@ -178,12 +180,13 @@ function maidroid.register_maidroid(product_name, def)
 				elseif listname == "core" and maidroid.is_core(stack:get_name()) then
 					return stack:get_count()
 				end
+				print("KOKO", listname, maidroid.is_core(stack:get_name()))
 				return 0
 			end,
 
 			on_take = function(inv, listname, index, stack, player)
 				if listname == "core" then
-					local core = registered_cores[self.core_name]
+					local core = maidroid.registered_cores[self.core_name]
 					self.core_name = ""
 					core.on_stop(self)
 				end
@@ -268,7 +271,7 @@ function maidroid.register_maidroid(product_name, def)
 	-- on_step is a callback function that is called every delta times.
 	function on_step(self, dtime)
 		if (not self.pause) and self.core_name ~= "" then
-			local core = registered_cores[self.core_name]
+			local core = maidroid.registered_cores[self.core_name]
 			core.on_step(self, dtime)
 		end
 	end
@@ -288,13 +291,13 @@ function maidroid.register_maidroid(product_name, def)
 		if self.pause == true then
 			self.pause = false
 			if self.core_name ~= "" then
-				local core = registered_cores[self.core_name]
+				local core = maidroid.registered_cores[self.core_name]
 				core.on_pause(self)
 			end
 		else
 			self.pause = true
 			if self.core_name ~= "" then
-				local core = registered_cores[self.core_name]
+				local core = maidroid.registered_cores[self.core_name]
 				core.on_resume(self)
 			end
 		end

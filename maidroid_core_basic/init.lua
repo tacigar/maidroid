@@ -8,4 +8,4 @@ maidroid_core_basic = {}
 maidroid_core_basic.modname = "maidroid_core_basic"
 maidroid_core_basic.modpath = minetest.get_modpath(maidroid_core_basic.modname)
 
-dofile(maidroid.modpath .. "/register.lua")
+dofile(maidroid_core_basic.modpath .. "/register.lua")
