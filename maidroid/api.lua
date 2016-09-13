@@ -131,8 +131,10 @@ function maidroid.register_maidroid(product_name, def)
 			setmetatable(self, maidroid.maidroid)
 		end
 
+		-- second, parse the staticdata, and compose a inventory.
 		if staticdata == "" then
 			self.product_name = product_name
+			self.manufacturing_number = 0
 			create_inventory(self)
 		else
 			-- if static data is not empty string, this object has beed already created.
@@ -142,11 +144,21 @@ function maidroid.register_maidroid(product_name, def)
 			self.manufacturing_number = data["manufacturing_number"]
 
 			local inventory = create_inventory(self)
+			local core_name = data["inventory"]["core"]
+			local items = data["inventory"]["main"]
 
-			if data["inventory"]["core"] ~= "" then
-
+			if core_name ~= "" then -- set a core
+				core_stack = ItemStack(core_name)
+				core_stack:set_count(1)
+				inventory:add_item("core", core_stack)
+				self.core_name = core_name
 			end
 
+			for _, item in ipairs(items) do -- set items
+				local item_stack = ItemStack(item["name"])
+				item_stack:set_count(item["count"])
+				inventory:add_item("main", item_stack)
+			end
 		end
 
 		self.formspec_string = create_formspec_string(self)
