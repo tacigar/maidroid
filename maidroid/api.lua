@@ -3,6 +3,8 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
+maidroid.debug_mode = true
+
 -- maidroid.animation_frames represents the animation frame data
 -- of "models/maidroid.b3d".
 maidroid.animation_frames = {
@@ -61,6 +63,64 @@ function maidroid.maidroid.get_core(self)
 	return nil
 end
 
+-- maidroid.maidroid.get_nearest_player returns a player object who
+-- is the nearest to the maidroid.
+function maidroid.maidroid.get_nearest_player(self, range_distance)
+	local player, min_distance = nil, range_distance
+	local position = self.object:getpos()
+
+	local all_objects = minetest.get_objects_inside_radius(position, range_distance)
+	for _, object in pairs(all_objects) do
+		if object:is_player() then
+			local player_position = object:getpos()
+			local distance = vector.distance(position, player_position)
+
+			if distance < min_distance then
+				player = object
+			end
+		end
+	end
+	return player
+end
+
+-- maidroid.maidroid.get_front_node returns a node that exists in front of the maidroid.
+function maidroid.maidroid.get_front_node(self)
+	local direction = self:get_look_direction()
+	if math.abs(direction.x) >= 0.5 then
+		if direction.x > 0 then	direction.x = 1	else direction.x = -1 end
+	else
+		direction.x = 0
+	end
+
+	if math.abs(direction.z) >= 0.5 then
+		if direction.z > 0 then	direction.z = 1	else direction.z = -1 end
+	else
+		direction.z = 0
+	end
+
+	local front = vector.add(vector.round(self.object:getpos()), direction)
+	return minetest.get_node(front)
+end
+
+-- maidroid.maidroid.get_look_direction returns a normalized vector that is
+-- the maidroid's looking direction.
+function maidroid.maidroid.get_look_direction(self)
+	local yaw = self.object:getyaw()
+	return vector.normalize{x = math.sin(yaw), y = 0.0, z = -math.cos(yaw)}
+end
+
+-- maidroid.maidroid.set_animation sets the maidroid's animation.
+-- this method is wrapper for self.object:set_animation.
+function maidroid.maidroid.set_animation(self, frame)
+	self.object:set_animation(frame, 15, 0)
+end
+
+-- maidroid.maidroid.set_yaw_by_direction sets the maidroid's yaw
+-- by a direction vector.
+function maidroid.maidroid.set_yaw_by_direction(self, direction)
+	self.object:setyaw(math.atan2(direction.z, direction.x) + math.pi / 2)
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -111,8 +171,8 @@ function maidroid.register_maidroid(product_name, def)
 			on_put = function(inv, listname, index, stack, player)
 				if listname == "core" then
 					local core_name = stack:get_name()
-					local core = registered_cores[core_name]
-					core.initialize(self)
+					local core = maidroid.registered_cores[core_name]
+					core.on_start(self)
 					self.core_name = core_name
 				end
 			end,
@@ -129,9 +189,9 @@ function maidroid.register_maidroid(product_name, def)
 
 			on_take = function(inv, listname, index, stack, player)
 				if listname == "core" then
-					local core = registered_cores[self.core_name]
+					local core = maidroid.registered_cores[self.core_name]
 					self.core_name = ""
-					core.finalize(self)
+					core.on_stop(self)
 				end
 			end,
 		})
@@ -157,7 +217,6 @@ function maidroid.register_maidroid(product_name, def)
 		if staticdata == "" then
 			self.product_name = product_name
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
-			print(self.manufacturing_number, "KOKO")
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
 		else
@@ -186,6 +245,14 @@ function maidroid.register_maidroid(product_name, def)
 		end
 
 		self.formspec_string = create_formspec_string(self)
+
+		local core = self:get_core()
+		if core ~= nil then
+			core.on_start(self)
+		else
+			self.object:setvelocity{x = 0, y = 0, z = 0}
+			self.object:setacceleration{x = 0, y = -10, z = 0}
+		end
 	end
 
 	-- get_staticdata is a callback function that is called when the object is destroyed.
@@ -214,7 +281,7 @@ function maidroid.register_maidroid(product_name, def)
 	-- on_step is a callback function that is called every delta times.
 	function on_step(self, dtime)
 		if (not self.pause) and self.core_name ~= "" then
-			local core = registered_cores[self.core_name]
+			local core = maidroid.registered_cores[self.core_name]
 			core.on_step(self, dtime)
 		end
 	end
@@ -230,17 +297,16 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_punch is a callback function that is called when a player punch then.
 	function on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
-		print(self.product_name .. tostring(self.manufacturing_number))
 		if self.pause == true then
 			self.pause = false
 			if self.core_name ~= "" then
-				local core = registered_cores[self.core_name]
+				local core = maidroid.registered_cores[self.core_name]
 				core.on_pause(self)
 			end
 		else
 			self.pause = true
 			if self.core_name ~= "" then
-				local core = registered_cores[self.core_name]
+				local core = maidroid.registered_cores[self.core_name]
 				core.on_resume(self)
 			end
 		end
@@ -257,6 +323,7 @@ function maidroid.register_maidroid(product_name, def)
 		physical             = true,
 		visual               = "mesh",
 		visual_size          = {x = 10, y = 10},
+		collisionbox         = {-0.25, -0.5, -0.25, 0.25, 1.05, 0.25},
 		is_visible           = true,
 		makes_footstep_sound = true,
 
@@ -277,6 +344,11 @@ function maidroid.register_maidroid(product_name, def)
 		get_inventory        = maidroid.maidroid.get_inventory,
 		get_core             = maidroid.maidroid.get_core,
 		get_core_name        = maidroid.maidroid.get_core_name,
+		get_nearest_player   = maidroid.maidroid.get_nearest_player,
+		get_front_node       = maidroid.maidroid.get_front_node,
+		get_look_direction   = maidroid.maidroid.get_look_direction,
+		set_animation        = maidroid.maidroid.set_animation,
+		set_yaw_by_direction = maidroid.maidroid.set_yaw_by_direction,
 	})
 
 	-- register a spawner for debugging maidroid mods.
