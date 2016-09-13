@@ -85,9 +85,7 @@ end
 
 -- maidroid.maidroid.get_front_node returns a node that exists in front of the maidroid.
 function maidroid.maidroid.get_front_node(self)
-	local direction = self.object:get_look_dir()
-	direction.y = 0
-	direction = vector.normalize(direction)
+	local direction = self:get_look_direction()
 
 	if direction.x >= 0.5 then
 		if direction.x > 0 then	direction.x = 1	else direction.x = -1 end
@@ -103,6 +101,13 @@ function maidroid.maidroid.get_front_node(self)
 
 	local front = vector.add(vector.round(self.object:getpos()), direction)
 	return minetest.get_node(front)
+end
+
+-- maidroid.maidroid.get_look_direction returns a normalized vector that is
+-- the maidroid's looking direction.
+function maidroid.maidroid.get_look_direction(self)
+	local yaw = self.object:getyaw()
+	return vector.normalize{x = math.sin(yaw), y = 0.0, z = -math.cos(yaw)}
 end
 
 -- maidroid.maidroid.set_animation sets the maidroid's animation.
@@ -180,7 +185,6 @@ function maidroid.register_maidroid(product_name, def)
 				elseif listname == "core" and maidroid.is_core(stack:get_name()) then
 					return stack:get_count()
 				end
-				print("KOKO", listname, maidroid.is_core(stack:get_name()))
 				return 0
 			end,
 
@@ -214,7 +218,6 @@ function maidroid.register_maidroid(product_name, def)
 		if staticdata == "" then
 			self.product_name = product_name
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
-			print(self.manufacturing_number, "KOKO")
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
 		else
@@ -243,6 +246,14 @@ function maidroid.register_maidroid(product_name, def)
 		end
 
 		self.formspec_string = create_formspec_string(self)
+
+		local core = self:get_core()
+		if core ~= nil then
+			core.on_start(self)
+		else
+			self.object:setvelocity{x = 0, y = 0, z = 0}
+			self.object:setacceleration{x = 0, y = -10, z = 0}
+		end
 	end
 
 	-- get_staticdata is a callback function that is called when the object is destroyed.
@@ -287,7 +298,6 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_punch is a callback function that is called when a player punch then.
 	function on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
-		print(self.product_name .. tostring(self.manufacturing_number))
 		if self.pause == true then
 			self.pause = false
 			if self.core_name ~= "" then
@@ -336,6 +346,7 @@ function maidroid.register_maidroid(product_name, def)
 		get_core_name        = maidroid.maidroid.get_core_name,
 		get_nearest_player   = maidroid.maidroid.get_nearest_player,
 		get_front_node       = maidroid.maidroid.get_front_node,
+		get_look_direction   = maidroid.maidroid.get_look_direction,
 		set_animation        = maidroid.maidroid.set_animation,
 		set_yaw_by_direction = maidroid.maidroid.set_yaw_by_direction,
 	})

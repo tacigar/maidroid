@@ -47,10 +47,11 @@ local function on_step(self, dtime)
 	self:set_yaw_by_direction(direction)
 
 	-- if maidroid is stoped by obstacle, the maidroid must jump.
-	if velocity == 0 and self.state == state.ACCOMPANY then
+	if velocity.y == 0 and self.state == state.ACCOMPANY then
 		local front_node = self:get_front_node()
+		print(front_node.name)
 		if front_node.name ~= "air" then
-			self.object:setvelocity{x = direction.x, y = 3, z = direction.z}
+			self.object:setvelocity{x = direction.x, y = 5, z = direction.z}
 		end
 	end
 end
