@@ -7,8 +7,8 @@ maidroid._aux = {}
 
 -- get inventory of the maidroid
 function maidroid._aux.get_maidroid_inventory(self)
-  return minetest.get_inventory{
-    type = "detached",
-    name = self.invname,
-  }
+    return minetest.get_inventory{
+        type = "detached",
+        name = self.invname,
+    }
 end
