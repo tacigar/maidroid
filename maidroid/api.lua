@@ -1,5 +1,5 @@
 ------------------------------------------------------------
--- Copyright (c) 2016 tacigar
+-- Copyright (c) 2016 tacigar. All rights reserved.
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
@@ -75,7 +75,7 @@ maidroid.manufacturing_data = (function()
 		file:close()
 	end)
 
-	local file = io.open(file_name)
+	local file = io.open(file_name, "r")
 	if file ~= nil then
 		local data = file:read("*a")
 		file:close()
@@ -100,7 +100,9 @@ end
 -- maidroid.register_maidroid registers a definition of a new maidroid.
 function maidroid.register_maidroid(product_name, def)
 	-- initialize manufacturing number of a new maidroid.
-	maidroid.manufacturing_data[product_name] = 0
+	if maidroid.manufacturing_data[product_name] == nil then
+		maidroid.manufacturing_data[product_name] = 0
+	end
 
 	-- create_inventory creates a new inventory, and returns it.
 	function create_inventory(self)
@@ -155,6 +157,7 @@ function maidroid.register_maidroid(product_name, def)
 		if staticdata == "" then
 			self.product_name = product_name
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
+			print(self.manufacturing_number, "KOKO")
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
 		else
@@ -276,16 +279,19 @@ function maidroid.register_maidroid(product_name, def)
 		get_core_name        = maidroid.maidroid.get_core_name,
 	})
 
-	minetest.register_craftitem(product_name .. "_spawner", {
-		description     = product_name .. " spawner",
-		inventory_image = def.inventory_image,
-		stack_max       = 1,
-		on_use          = function(item_stack, user, pointed_thing)
-			if pointed_thing.above ~= nil then
-				minetest.add_entity(pointed_thing.above, product_name)
-				return itemstack
-			end
-			return nil
-		end,
-	})
+	-- register a spawner for debugging maidroid mods.
+	if maidroid.debug_mode then
+		minetest.register_craftitem(product_name .. "_spawner", {
+			description     = product_name .. " spawner",
+			inventory_image = "maidroid_debug_spawner.png",
+			stack_max       = 1,
+			on_use  = function(item_stack, user, pointed_thing)
+				if pointed_thing.above ~= nil then
+					minetest.add_entity(pointed_thing.above, product_name)
+					return itemstack
+				end
+				return nil
+			end,
+		})
+	end
 end
