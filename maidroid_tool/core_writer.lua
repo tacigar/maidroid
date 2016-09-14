@@ -17,7 +17,7 @@
 		},
 	}
 
-	function can_dig(pos, player)
+	local function can_dig(pos, player)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
 		return (
@@ -27,7 +27,7 @@
 		)
 	end
 
-	function allow_metadata_inventory_put(pos, listname, index, stack, player)
+	local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
 		local itemname = stack:get_name()
@@ -42,7 +42,7 @@
 		return 0
 	end
 
-	function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
+	local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
 		local stack = inventory:get_stack(from_list, from_index)
@@ -66,7 +66,7 @@
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]"
 
-		function on_construct(pos)
+		local function on_construct(pos)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("formspec", formspec_string)
 
@@ -76,11 +76,11 @@
 			inventory:set_size("dye", 1)
 		end
 
-		function on_metadata_inventory_move(pos)
+		local function on_metadata_inventory_move(pos)
 
 		end
 
-		function allow_metadata_inventory_take(pos, listname, index, stack, player)
+		local function allow_metadata_inventory_take(pos, listname, index, stack, player)
 			return stack:get_count() -- maybe add more.
 		end
 
@@ -125,7 +125,7 @@
 			},
 		}
 
-		function allow_metadata_inventory_take(pos, listname, index, stack, player)
+		local function allow_metadata_inventory_take(pos, listname, index, stack, player)
 			return stack:get_count() -- maybe add more.
 		end
 
