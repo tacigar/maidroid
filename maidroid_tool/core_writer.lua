@@ -266,15 +266,31 @@ end) ()
 		paramtype2  = "facedir",
 	})
 
+	local function on_activate(self, staticdata)
+		self.object:set_properties{
+			textures = {"maidroid_tool:core_node"},
+		}
+	end
+
+	local function start_rotate(self)
+		self.object:set_properties{
+			automatic_rotate = 1,
+		}
+	end
+
+	local function stop_rotate(self)
+		self.object:set_properties{
+			automatic_rotate = 0,
+		}
+	end
+
 	minetest.register_entity("maidroid_tool:core_entity", {
 		physical       = false,
 		visual         = "wielditem",
 		visual_size    = {x = 0.5, y = 0.5},
 		collisionbox   = {0, 0, 0, 0, 0, 0},
 
-		on_activate = function(self, staticdata)
-			self.object:set_properties{textures = {"maidroid_tool:core_node"}}
-		end,
+		on_activate    = on_activate,
 
 		on_step = function(self, dtime)
 			local yaw = self.object:getyaw()
