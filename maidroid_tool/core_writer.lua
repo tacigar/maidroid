@@ -3,6 +3,10 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
+local dye_core_map = {
+	["dye:red"] = "maidroid_core:basic",
+}
+
 -- register a definition of a core writer.
 (function()
 	local node_box = {
@@ -37,7 +41,21 @@
 
 	-- on_timer is a common callback for the core writer.
 	local function on_timer(pos, elapsed)
+		local meta = minetest.get_meta(pos)
+		local inventory = meta:get_inventory()
 
+		local core_list = inventory:get_list("core")
+		local fuel_list = inventory:get_list("fuel")
+		local dye_list = inventory:get_list("dye")
+
+		local writing_time = meta:get_float("writing_time")
+		local writing_total_time = 100
+
+		if writing_time < writing_total_time then
+
+		else
+
+		end
 	end
 
 	-- allow_metadata_inventory_put is a common callback for the core writer.
@@ -111,6 +129,7 @@
 			selection_box                  = selection_box,
 			tiles                          = tiles,
 			can_dig                        = can_dig,
+			on_timer                       = on_timer,
 			on_construct                   = on_construct,
 			on_metadata_inventory_move     = on_metadata_inventory_move,
 			allow_metadata_inventory_put   = allow_metadata_inventory_put,
@@ -170,6 +189,7 @@
 			selection_box                  = selection_box,
 			tiles                          = tiles,
 			can_dig                        = can_dig,
+			on_timer                       = on_timer,
 			allow_metadata_inventory_put   = allow_metadata_inventory_put,
 			allow_metadata_inventory_move  = allow_metadata_inventory_move,
 			allow_metadata_inventory_take  = allow_metadata_inventory_take,
