@@ -41,20 +41,47 @@ end) ();
 
 -- register a definition of a core entity.
 (function()
-	minetest.register_node("maidroid_tool:core_node", {
-		tiles = {"maidroid_core_empty.png"},
+	local node_box = {
+		type = "fixed",
+		fixed = {
+			{   -0.5,    -0.5,  -0.125,     0.5, -0.4375,   0.125},
+			{ -0.125,    -0.5,    -0.5,   0.125, -0.4375,     0.5},
+			{  -0.25,    -0.5, -0.4375,    0.25, -0.4375,  0.4375},
+			{ -0.375,    -0.5,  -0.375,   0.375, -0.4375,   0.375},
+			{-0.4375,    -0.5,   -0.25,  0.4375, -0.4375,    0.25},
+		},
+	}
 
+	local tiles = {
+		"maidroid_tool_core_top.png",
+		"maidroid_tool_core_top.png",
+		"maidroid_tool_core_right.png",
+		"maidroid_tool_core_right.png",
+		"maidroid_tool_core_right.png",
+		"maidroid_tool_core_right.png",
+	}
+
+	minetest.register_node("maidroid_tool:core_node", {
+		drawtype    = "nodebox",
+		tiles       = tiles,
+		node_box    = node_box,
+		paramtype   = "light",
+		paramtype2  = "facedir",
 	})
 
-
 	minetest.register_entity("maidroid_tool:core_entity", {
-		physical     = false,
-		visual       = "wielditem",
-		visual_size  = {x = 0.5, y = 0.5},
-		nodename     = "maidroid_tool:core_node",
+		physical       = false,
+		visual         = "wielditem",
+		visual_size    = {x = 0.5, y = 0.5},
+		collisionbox  = {0, 0, 0, 0, 0, 0},
 
 		on_activate = function(self, staticdata)
 			self.object:set_properties{textures = {"maidroid_tool:core_node"}}
+		end,
+
+		on_step = function(self, dtime)
+			local yaw = self.object:getyaw()
+			self.object:setyaw(yaw + 0.1)
 		end,
 	})
 
