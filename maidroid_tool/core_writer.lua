@@ -3,6 +3,10 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
+local dye_core_map = {
+	["dye:red"] = "maidroid_core:basic",
+}
+
 -- register a definition of a core writer.
 (function()
 	local node_box = {
@@ -37,7 +41,48 @@
 
 	-- on_timer is a common callback for the core writer.
 	local function on_timer(pos, elapsed)
+		local meta = minetest.get_meta(pos)
+		local inventory = meta:get_inventory()
 
+		local core_list = inventory:get_list("core")
+		local fuel_list = inventory:get_list("fuel")
+		local dye_list = inventory:get_list("dye")
+
+		local writing_time = meta:get_float("writing_time")
+		local writing_total_time = 20
+		local output_core = meta:get_string("output_core")
+
+		-- if writing time is positive, the core writer is active.
+		if writing_time >= 0 then
+			if writing_time <= writing_total_time then
+				meta:set_float("writing_time", writing_time + 1)
+
+			else -- else place output core to core list.
+				meta:set_float("writing_time", -1)
+				meta:set_string("output_core", "")
+				inventory:set_stack("core", 1, ItemStack(output_core))
+				minetest.swap_node(pos, {name = "maidroid_tool:core_writer"})
+			end
+
+		else -- else the core writer is inactive.
+			local core_name = core_list[1]:get_name()
+
+			if core_name == "maidroid_core:empty" and (not fuel_list[1]:is_empty()) and (not dye_list[1]:is_empty()) then
+				meta:set_float("writing_time", 0)
+				meta:set_string("output_core", dye_core_map[dye_list[1]:get_name()])
+
+				local fuel_stack = fuel_list[1]
+				fuel_stack:take_item()
+				inventory:set_stack("fuel", 1, fuel_stack)
+
+				local dye_stack = dye_list[1]
+				dye_stack:take_item()
+				inventory:set_stack("dye", 1, dye_stack)
+
+				minetest.swap_node(pos, {name = "maidroid_tool:core_writer_active"})
+			end
+		end
+		return true
 	end
 
 	-- allow_metadata_inventory_put is a common callback for the core writer.
@@ -78,12 +123,17 @@
 		}
 
 		local formspec_string =	"size[8,9]"
+			.. "list[current_name;core;2.75,0.5;1,1;]"
+			.. "list[current_name;fuel;2.75,2.5;1,1;]"
+			.. "list[current_name;dye;2.75,1.5;1,1;]"
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]"
 
 		local function on_construct(pos)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("formspec", formspec_string)
+			meta:set_string("output_core", "")
+			meta:set_float("writing_time", -1)
 
 			local inventory = meta:get_inventory()
 			inventory:set_size("core", 1)
@@ -91,8 +141,14 @@
 			inventory:set_size("dye", 1)
 		end
 
-		local function on_metadata_inventory_move(pos)
+		local function on_metadata_inventory_put(pos)
+			local timer = minetest.get_node_timer(pos)
+			timer:start(1.0)
+		end
 
+		local function on_metadata_inventory_move(pos)
+			local timer = minetest.get_node_timer(pos)
+			timer:start(1.0)
 		end
 
 		local function allow_metadata_inventory_take(pos, listname, index, stack, player)
@@ -111,7 +167,9 @@
 			selection_box                  = selection_box,
 			tiles                          = tiles,
 			can_dig                        = can_dig,
+			on_timer                       = on_timer,
 			on_construct                   = on_construct,
+			on_metadata_inventory_put      = on_metadata_inventory_put,
 			on_metadata_inventory_move     = on_metadata_inventory_move,
 			allow_metadata_inventory_put   = allow_metadata_inventory_put,
 			allow_metadata_inventory_move  = allow_metadata_inventory_move,
@@ -170,6 +228,7 @@
 			selection_box                  = selection_box,
 			tiles                          = tiles,
 			can_dig                        = can_dig,
+			on_timer                       = on_timer,
 			allow_metadata_inventory_put   = allow_metadata_inventory_put,
 			allow_metadata_inventory_move  = allow_metadata_inventory_move,
 			allow_metadata_inventory_take  = allow_metadata_inventory_take,
