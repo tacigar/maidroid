@@ -25,7 +25,7 @@
 			inventory:is_empty("fuel") and
 			inventory:is_empty("dye")
 		)
-	end;
+	end
 
 	function allow_metadata_inventory_put(pos, listname, index, stack, player)
 		local meta = minetest.get_meta(pos)
@@ -36,7 +36,7 @@
 			return stack:get_count()
 		elseif listname == "dye" and minetest.get_item_group(itemname, "dye") > 0 then
 			return stack:get_count()
-		else if listname == "core" and maidroid.is_core(itemname then
+		elseif listname == "core" and maidroid.is_core(itemname) then
 			return stack:get_count()
 		end
 		return 0
@@ -52,7 +52,7 @@
 
 	--------------------------------------------------------------------
 
-	(function() -- register a definition of an inactive core writer.
+	;(function() -- register a definition of an inactive core writer.
 		local tiles = {
 			"maidroid_tool_core_writer_top.png",
 			"maidroid_tool_core_writer_bottom.png",
@@ -76,7 +76,7 @@
 			inventory:set_size("dye", 1)
 		end
 
-		function on_metadata_inventory_move = function(pos)
+		function on_metadata_inventory_move(pos)
 
 		end
 
@@ -101,11 +101,11 @@
 			allow_metadata_inventory_move  = allow_metadata_inventory_move,
 			allow_metadata_inventory_take  = allow_metadata_inventory_take,
 		})
-	end) ();
+	end) ()
 
 	--------------------------------------------------------------------
 
-	(function () -- register a definition of an active core writer.
+	;(function () -- register a definition of an active core writer.
 		local tiles = {
 			"maidroid_tool_core_writer_top.png",
 			"maidroid_tool_core_writer_bottom.png",
@@ -143,11 +143,11 @@
 			allow_metadata_inventory_move  = allow_metadata_inventory_move,
 			allow_metadata_inventory_take  = allow_metadata_inventory_take,
 		})
-	end) ();
-end) ();
+	end) ()
+end) ()
 
 -- register a definition of a core entity.
-(function()
+;(function()
 	local node_box = {
 		type = "fixed",
 		fixed = {
@@ -191,4 +191,4 @@ end) ();
 			self.object:setyaw(yaw + 0.1)
 		end,
 	})
-end) ();
+end) ()
