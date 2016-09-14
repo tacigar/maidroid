@@ -12,3 +12,14 @@ maidroid.register_core("maidroid_core:empty", {
 	on_pause         = function(self) end,
 	on_step          = function(self, dtime) end,
 })
+
+-- only a recipe of the empty core is registered.
+-- other cores is created by writing on the empty core.
+minetest.register_craft{
+	output = "maidroid_core:empty",
+	recipe = {
+		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"},
+		{"default:steel_ingot",    "default:obsidian", "default:steel_ingot"},
+		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"},
+	},
+}
