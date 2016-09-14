@@ -17,18 +17,6 @@
 		},
 	};
 
-	function allow_metadata_inventory_put(pos, listname, index, stack, player)
-
-	end
-
-	function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
-
-	end
-
-	function allow_metadata_inventory_take(pos, listname, index, stack, player)
-
-	end
-
 	(function() -- register a definition of an inactive core writer.
 		local tiles = {
 			"maidroid_tool_core_writer_top.png",
@@ -55,6 +43,33 @@
 
 		function on_metadata_inventory_move = function(pos)
 
+		end
+
+		function allow_metadata_inventory_put(pos, listname, index, stack, player)
+			local meta = minetest.get_meta(pos)
+			local inventory = meta:get_inventory()
+			local itemname = stack:get_name()
+
+			if (listname == "fuel" and itemname == "default:coal_lump") then
+				return stack:get_count()
+			elseif listname == "dye" and minetest.get_item_group(itemname, "dye") > 0 then
+				return stack:get_count()
+			else if listname == "core" and maidroid.is_core(itemname then
+				return stack:get_count()
+			end
+			return 0
+		end
+
+		function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
+			local meta = minetest.get_meta(pos)
+			local inventory = meta:get_inventory()
+			local stack = inventory:get_stack(from_list, from_index)
+
+			return allow_metadata_inventory_put(pos, listname, to_index, stack, player)
+		end
+
+		function allow_metadata_inventory_take(pos, listname, index, stack, player)
+			return stack:get_count() -- maybe add more.
 		end
 
 		minetest.register_node("maidroid_tool:core_writer", {
