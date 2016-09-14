@@ -1,1 +1,3 @@
 default
+maidroid
+maidroid_core

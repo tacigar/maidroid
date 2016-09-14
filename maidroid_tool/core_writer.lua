@@ -37,9 +37,29 @@
 		node_box           = node_box,
 		tiles              = tiles,
 	})
-end) ()
+end) ();
 
 -- register a definition of a core entity.
 (function()
+	minetest.register_node("maidroid_tool:core_node", {
+		tiles = {"maidroid_core_empty.png"},
+
+	})
+
+
+	minetest.register_entity("maidroid_tool:core_entity", {
+		physical     = false,
+		visual       = "wielditem",
+		visual_size  = {x = 0.5, y = 0.5},
+		nodename     = "maidroid_tool:core_node",
+
+		on_activate = function(self, staticdata)
+			self.object:set_properties{textures = {"maidroid_tool:core_node"}}
+		end,
+	})
+
+	minetest.register_on_punchnode(function(pos, node, puncher, pointed_thing)
+		minetest.add_entity(pointed_thing.above, "maidroid_tool:core_entity")
+	end)
 
 end) ()
