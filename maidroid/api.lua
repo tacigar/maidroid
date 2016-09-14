@@ -165,7 +165,7 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	-- create_inventory creates a new inventory, and returns it.
-	function create_inventory(self)
+	local function create_inventory(self)
 		self.inventory_name = self.product_name .. tostring(self.manufacturing_number)
 		local inventory = minetest.create_detached_inventory(self.inventory_name, {
 			on_put = function(inv, listname, index, stack, player)
@@ -202,7 +202,7 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	-- create_formspec_string returns a string that represents a formspec definition.
-	function create_formspec_string(self)
+	local function create_formspec_string(self)
 		return "size[8,9]"
 			.. "list[detached:"..self.inventory_name..";main;0,0;4,4;]"
 			.. "label[5,0;core]"
@@ -212,7 +212,7 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	-- on_activate is a callback function that is called when the object is created or recreated.
-	function on_activate(self, staticdata)
+	local function on_activate(self, staticdata)
 		-- parse the staticdata, and compose a inventory.
 		if staticdata == "" then
 			self.product_name = product_name
@@ -256,7 +256,7 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	-- get_staticdata is a callback function that is called when the object is destroyed.
-	function get_staticdata(self)
+	local function get_staticdata(self)
 		local inventory = self:get_inventory()
 		local data = {
 			["product_name"] = self.product_name,
@@ -279,7 +279,7 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	-- on_step is a callback function that is called every delta times.
-	function on_step(self, dtime)
+	local function on_step(self, dtime)
 		if (not self.pause) and self.core_name ~= "" then
 			local core = maidroid.registered_cores[self.core_name]
 			core.on_step(self, dtime)
@@ -287,7 +287,7 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	-- on_rightclick is a callback function that is called when a player right-click them.
-	function on_rightclick(self, clicker)
+	local function on_rightclick(self, clicker)
 		minetest.show_formspec(
 			clicker:get_player_name(),
 			self.inventory_name,
@@ -296,7 +296,7 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	-- on_punch is a callback function that is called when a player punch then.
-	function on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
+	local function on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
 		if self.pause == true then
 			self.pause = false
 			if self.core_name ~= "" then
