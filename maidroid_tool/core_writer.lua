@@ -17,6 +17,13 @@
 		},
 	}
 
+	local selection_box = {
+		type = "fixed",
+		fixed = {
+			{-0.4375, -0.5, -0.4375, 0.4375, 0.25, 0.4375},
+		},
+	}
+
 	-- can_dig is a common callback for the core writer.
 	local function can_dig(pos, player)
 		local meta = minetest.get_meta(pos)
@@ -101,6 +108,7 @@
 			is_ground_content              = false,
 			sounds                         = default.node_sound_stone_defaults(),
 			node_box                       = node_box,
+			selection_box                  = selection_box,
 			tiles                          = tiles,
 			can_dig                        = can_dig,
 			on_construct                   = on_construct,
@@ -119,7 +127,17 @@
 			"maidroid_tool_core_writer_bottom.png",
 			"maidroid_tool_core_writer_right.png",
 			"maidroid_tool_core_writer_right.png^[transformFX",
-			"maidroid_tool_core_writer_front.png^[transformFX",
+			{
+				backface_culling = false,
+				image = "maidroid_tool_core_writer_front_active.png^[transformFX",
+
+				animation = {
+					type      = "vertical_frames",
+					aspect_w  = 16,
+					aspect_h  = 16,
+					length    = 1.5,
+				},
+			},
 			{
 				backface_culling = false,
 				image = "maidroid_tool_core_writer_front_active.png",
@@ -141,6 +159,7 @@
 		end
 
 		minetest.register_node("maidroid_tool:core_writer_active", {
+			description                    = "test",
 			drawtype                       = "nodebox",
 			paramtype                      = "light",
 			paramtype2                     = "facedir",
@@ -148,6 +167,7 @@
 			is_ground_content              = false,
 			sounds                         = default.node_sound_stone_defaults(),
 			node_box                       = node_box,
+			selection_box                  = selection_box,
 			tiles                          = tiles,
 			can_dig                        = can_dig,
 			allow_metadata_inventory_put   = allow_metadata_inventory_put,
