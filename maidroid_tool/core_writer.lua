@@ -51,10 +51,25 @@ local dye_core_map = {
 		local writing_time = meta:get_float("writing_time")
 		local writing_total_time = 100
 
-		if writing_time < writing_total_time then
+		local output_core = meta:get_string("output_core")
 
-		else
-
+		-- if writing time is positive, the core writer is active.
+		if writing_time >= 0 then
+			if writing_time <= writing_total_time then
+				meta:set_float("writing_time", writing_time + 1)
+			else -- else place output core to core list.
+				meta:set_float("writing_time", 0)
+				meta:set_string("output_core", "")
+				inventory:add_item("core", ItemStack(output_core))
+				minetest.swap_node(pos, {name = "maidroid_tool:core_writer"})
+			end
+		else -- else the core writer is inactive.
+			local core_name = core_list[1]:get_name()
+			if core_name == "maidroid_core:empty" and (not fuel_list[1]:is_empty()) and (not dye_list[1]:is_empty()) then
+				meta:set_float("writing_time", 0)
+				meta:set_string("output_core", dye_core_map[dye_list[1]:get_name()])
+				minetest.swap_node(pos, {name = "maidroid_tool:core_writer_active"})
+			end
 		end
 	end
 
