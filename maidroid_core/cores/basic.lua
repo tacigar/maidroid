@@ -3,10 +3,7 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
-local state = {
-	IDLE      = 0,
-	ACCOMPANY = 1,
-}
+local state = {IDLE = 0, ACCOMPANY = 1}
 
 local function on_start(self)
 	self.state = state.IDLE
@@ -18,6 +15,10 @@ local function on_stop(self)
 	self.state = nil
 	self.object:setvelocty{x = 0, y = 0, z = 0}
 end
+
+local on_resume = on_start
+
+local on_pause = on_stop
 
 local function on_step(self, dtime)
 	local player = self:get_nearest_player(10)
@@ -55,12 +56,13 @@ local function on_step(self, dtime)
 	end
 end
 
-maidroid.register_core("maidroid_core:core_basic", {
-	description     = "maidroid core : basic",
-	inventory_image = "maidroid_core_basic.png",
-	on_start        = on_start,
-	on_stop         = on_stop,
-	on_resume       = on_start,
-	on_pause        = on_stop,
-	on_step         = on_step,
+-- register a definition of a new core.
+maidroid.register_core("maidroid_core:basic", {
+	description      = "maidroid core : basic",
+	inventory_image  = "maidroid_core_basic.png",
+	on_start         = on_start,
+	on_stop          = on_stop,
+	on_resume        = on_resume,
+	on_pause         = on_pause,
+	on_step          = on_step,
 })
