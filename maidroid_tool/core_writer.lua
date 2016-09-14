@@ -17,6 +17,7 @@
 		},
 	}
 
+	-- can_dig is a common callback for the core writer.
 	local function can_dig(pos, player)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
@@ -27,6 +28,12 @@
 		)
 	end
 
+	-- on_timer is a common callback for the core writer.
+	local function on_timer(pos, elapsed)
+
+	end
+
+	-- allow_metadata_inventory_put is a common callback for the core writer.
 	local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
@@ -42,6 +49,7 @@
 		return 0
 	end
 
+	-- allow_metadata_inventory_move is a common callback for the core writer.
 	local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
@@ -126,7 +134,10 @@
 		}
 
 		local function allow_metadata_inventory_take(pos, listname, index, stack, player)
-			return stack:get_count() -- maybe add more.
+			if listname == "core" then
+				return 0
+			end
+			return stack:get_count()
 		end
 
 		minetest.register_node("maidroid_tool:core_writer_active", {
