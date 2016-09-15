@@ -28,6 +28,17 @@ local dye_core_map = {
 		},
 	}
 
+	-- get_nearest_core_entity returns the nearest core entity.
+	local function get_nearest_core_entity(pos)
+		local all_objects = minetest.get_objects_inside_radius(pos, 1.0)
+		for _, object in ipairs(all_objects) do
+			if object:get_luaentity().name == "maidroid_tool:core_entity" then
+				return object:get_luaentity()
+			end
+		end
+		return nil
+	end
+
 	-- can_dig is a common callback for the core writer.
 	local function can_dig(pos, player)
 		local meta = minetest.get_meta(pos)
@@ -62,6 +73,9 @@ local dye_core_map = {
 				meta:set_string("output_core", "")
 				inventory:set_stack("core", 1, ItemStack(output_core))
 				minetest.swap_node(pos, {name = "maidroid_tool:core_writer"})
+
+				local core_entity = get_nearest_core_entity(pos)
+				core_entity:stop_rotate()
 			end
 
 		else -- else the core writer is inactive.
@@ -80,6 +94,9 @@ local dye_core_map = {
 				inventory:set_stack("dye", 1, dye_stack)
 
 				minetest.swap_node(pos, {name = "maidroid_tool:core_writer_active"})
+
+				local core_entity = get_nearest_core_entity(pos)
+				core_entity:start_rotate()
 			end
 		end
 		return true
@@ -141,14 +158,32 @@ local dye_core_map = {
 			inventory:set_size("dye", 1)
 		end
 
-		local function on_metadata_inventory_put(pos)
+		local function on_metadata_inventory_put(pos, listname, index, stack, player)
 			local timer = minetest.get_node_timer(pos)
 			timer:start(1.0)
+
+			local meta = minetest.get_meta(pos)
+			if listname == "core" then
+				local entity_position = {
+					x = pos.x, y = pos.y + 0.65, z = pos.z
+				}
+				local object = minetest.add_entity(entity_position, "maidroid_tool:core_entity")
+			end
 		end
 
-		local function on_metadata_inventory_move(pos)
-			local timer = minetest.get_node_timer(pos)
-			timer:start(1.0)
+		local function on_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
+			local meta = minetest.get_meta(pos)
+			local inventory = meta:get_inventory()
+			local stack = inventory:get_stack(from_list, from_index)
+
+			on_metadata_inventory_put(pos, listname, to_index, stack, player)
+		end
+
+		local function on_metadata_inventory_take(pos, listname, index, stack, player)
+			if listname == "core" then
+				local core_entity = get_nearest_core_entity(pos)
+				core_entity.object:remove()
+			end
 		end
 
 		local function allow_metadata_inventory_take(pos, listname, index, stack, player)
@@ -171,6 +206,7 @@ local dye_core_map = {
 			on_construct                   = on_construct,
 			on_metadata_inventory_put      = on_metadata_inventory_put,
 			on_metadata_inventory_move     = on_metadata_inventory_move,
+			on_metadata_inventory_take     = on_metadata_inventory_take,
 			allow_metadata_inventory_put   = allow_metadata_inventory_put,
 			allow_metadata_inventory_move  = allow_metadata_inventory_move,
 			allow_metadata_inventory_take  = allow_metadata_inventory_take,
@@ -266,19 +302,25 @@ end) ()
 		paramtype2  = "facedir",
 	})
 
+	local function on_activate(self, staticdata)
+		self.object:set_properties{textures = {"maidroid_tool:core_node"}}
+	end
+
+	local function start_rotate(self)
+		self.object:set_properties{automatic_rotate = 1}
+	end
+
+	local function stop_rotate(self)
+		self.object:set_properties{automatic_rotate = 0}
+	end
+
 	minetest.register_entity("maidroid_tool:core_entity", {
-		physical       = false,
-		visual         = "wielditem",
-		visual_size    = {x = 0.5, y = 0.5},
-		collisionbox   = {0, 0, 0, 0, 0, 0},
-
-		on_activate = function(self, staticdata)
-			self.object:set_properties{textures = {"maidroid_tool:core_node"}}
-		end,
-
-		on_step = function(self, dtime)
-			local yaw = self.object:getyaw()
-			self.object:setyaw(yaw + 0.1)
-		end,
+		physical      = false,
+		visual        = "wielditem",
+		visual_size   = {x = 0.5, y = 0.5},
+		collisionbox  = {0, 0, 0, 0, 0, 0},
+		on_activate   = on_activate,
+		start_rotate  = start_rotate,
+		stop_rotate   = stop_rotate,
 	})
 end) ()
