@@ -29,9 +29,17 @@ local dye_core_map = {
 	}
 
 	local formspec_inactive = "size[8,9]"
-		.. "list[current_name;core;2.75,0.5;1,1;]"
-		.. "list[current_name;fuel;2.75,2.5;1,1;]"
-		.. "list[current_name;dye;2.75,1.5;1,1;]"
+		.. default.gui_bg
+		.. default.gui_bg_img
+		.. default.gui_slots
+		.. "label[3.75,0;Core]"
+		.. "list[current_name;core;3.5,0.5;1,1;]"
+		.. "label[2.75,2;Coal]"
+		.. "list[current_name;fuel;2.5,2.5;1,1;]"
+		.. "label[4.75,2;Dye]"
+		.. "list[current_name;dye;4.5,2.5;1,1;]"
+		.. "image[3.5,1.5;1,2;maidroid_tool_gui_arrow.png]"
+		.. "image[3.1,3.5;2,1;maidroid_tool_gui_meter.png^[transformR270]"
 		.. "list[current_player;main;0,5;8,1;]"
 		.. "list[current_player;main;0,6.2;8,3;8]"
 
