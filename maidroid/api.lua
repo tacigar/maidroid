@@ -313,40 +313,41 @@ function maidroid.register_maidroid(product_name, def)
 	-- register a definition of a new maidroid.
 	minetest.register_entity(product_name, {
 		-- basic initial properties
-		hp_max               = def.hp_max,
-		weight               = def.weight,
-		mesh                 = def.mesh,
-		textures             = def.textures,
+		hp_max                       = def.hp_max,
+		weight                       = def.weight,
+		mesh                         = def.mesh,
+		textures                     = def.textures,
 
-		physical             = true,
-		visual               = "mesh",
-		visual_size          = {x = 10, y = 10},
-		collisionbox         = {-0.25, -0.5, -0.25, 0.25, 1.05, 0.25},
-		is_visible           = true,
-		makes_footstep_sound = true,
+		physical                     = true,
+		visual                       = "mesh",
+		visual_size                  = {x = 10, y = 10},
+		collisionbox                 = {-0.25, -0.5, -0.25, 0.25, 1.05, 0.25},
+		is_visible                   = true,
+		makes_footstep_sound         = true,
+		automatic_face_movement_dir  = 90.0,
 
 		-- extra initial properties
-		pause                = false,
-		product_name         = "",
-		manufacturing_number = -1,
-		core_name            = "",
+		pause                        = false,
+		product_name                 = "",
+		manufacturing_number         = -1,
+		core_name                    = "",
 
 		-- callback methods.
-		on_activate          = on_activate,
-		on_step              = on_step,
-		on_rightclick        = on_rightclick,
-		on_punch             = on_punch,
-		get_staticdata       = get_staticdata,
+		on_activate                  = on_activate,
+		on_step                      = on_step,
+		on_rightclick                = on_rightclick,
+		on_punch                     = on_punch,
+		get_staticdata               = get_staticdata,
 
 		-- extra methods.
-		get_inventory        = maidroid.maidroid.get_inventory,
-		get_core             = maidroid.maidroid.get_core,
-		get_core_name        = maidroid.maidroid.get_core_name,
-		get_nearest_player   = maidroid.maidroid.get_nearest_player,
-		get_front_node       = maidroid.maidroid.get_front_node,
-		get_look_direction   = maidroid.maidroid.get_look_direction,
-		set_animation        = maidroid.maidroid.set_animation,
-		set_yaw_by_direction = maidroid.maidroid.set_yaw_by_direction,
+		get_inventory                = maidroid.maidroid.get_inventory,
+		get_core                     = maidroid.maidroid.get_core,
+		get_core_name                = maidroid.maidroid.get_core_name,
+		get_nearest_player           = maidroid.maidroid.get_nearest_player,
+		get_front_node               = maidroid.maidroid.get_front_node,
+		get_look_direction           = maidroid.maidroid.get_look_direction,
+		set_animation                = maidroid.maidroid.set_animation,
+		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
 	})
 
 	-- register a spawner for debugging maidroid mods.
