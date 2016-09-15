@@ -110,7 +110,7 @@ local dye_core_map = {
 
 		if (listname == "fuel" and itemname == "default:coal_lump") then
 			return stack:get_count()
-		elseif listname == "dye" and minetest.get_item_group(itemname, "dye") > 0 then
+		elseif listname == "dye" and dye_core_map[itemname] ~= nil then
 			return stack:get_count()
 		elseif listname == "core" and maidroid.is_core(itemname) then
 			return stack:get_count()
