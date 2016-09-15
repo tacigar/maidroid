@@ -9,3 +9,4 @@ maidroid_tool.modname = "maidroid_tool"
 maidroid_tool.modpath = minetest.get_modpath(maidroid_tool.modname)
 
 dofile(maidroid_tool.modpath .. "/core_writer.lua")
+dofile(maidroid_tool.modpath .. "/crafting.lua")
