@@ -3,8 +3,6 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
-maidroid.debug_mode = true
-
 -- maidroid.animation_frames represents the animation frame data
 -- of "models/maidroid.b3d".
 maidroid.animation_frames = {
@@ -352,18 +350,16 @@ function maidroid.register_maidroid(product_name, def)
 	})
 
 	-- register a spawner for debugging maidroid mods.
-	if maidroid.debug_mode then
-		minetest.register_craftitem(product_name .. "_spawner", {
-			description     = product_name .. " spawner",
-			inventory_image = "maidroid_debug_spawner.png",
-			stack_max       = 1,
-			on_use  = function(item_stack, user, pointed_thing)
-				if pointed_thing.above ~= nil then
-					minetest.add_entity(pointed_thing.above, product_name)
-					return itemstack
-				end
-				return nil
-			end,
-		})
-	end
+	minetest.register_craftitem(product_name .. "_spawner", {
+		description     = product_name .. " spawner",
+		inventory_image = def.inventory_image,
+		stack_max       = 1,
+		on_use  = function(item_stack, user, pointed_thing)
+			if pointed_thing.above ~= nil then
+				minetest.add_entity(pointed_thing.above, product_name)
+				return itemstack
+			end
+			return nil
+		end,
+	})
 end
