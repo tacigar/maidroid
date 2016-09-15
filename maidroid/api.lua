@@ -74,6 +74,7 @@ function maidroid.maidroid.get_nearest_player(self, range_distance)
 			local distance = vector.distance(position, player_position)
 
 			if distance < min_distance then
+				min_distance = distance
 				player = object
 			end
 		end
