@@ -253,7 +253,6 @@ local dye_core_map = {
 		end
 
 		minetest.register_node("maidroid_tool:core_writer_active", {
-			description                    = "test",
 			drawtype                       = "nodebox",
 			paramtype                      = "light",
 			paramtype2                     = "facedir",
