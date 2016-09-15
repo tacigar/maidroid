@@ -28,6 +28,13 @@ local dye_core_map = {
 		},
 	}
 
+	local formspec_inactive = "size[8,9]"
+		.. "list[current_name;core;2.75,0.5;1,1;]"
+		.. "list[current_name;fuel;2.75,2.5;1,1;]"
+		.. "list[current_name;dye;2.75,1.5;1,1;]"
+		.. "list[current_player;main;0,5;8,1;]"
+		.. "list[current_player;main;0,6.2;8,3;8]"
+
 	-- get_nearest_core_entity returns the nearest core entity.
 	local function get_nearest_core_entity(pos)
 		local all_objects = minetest.get_objects_inside_radius(pos, 1.0)
@@ -139,16 +146,9 @@ local dye_core_map = {
 			"maidroid_tool_core_writer_front.png",
 		}
 
-		local formspec_string =	"size[8,9]"
-			.. "list[current_name;core;2.75,0.5;1,1;]"
-			.. "list[current_name;fuel;2.75,2.5;1,1;]"
-			.. "list[current_name;dye;2.75,1.5;1,1;]"
-			.. "list[current_player;main;0,5;8,1;]"
-			.. "list[current_player;main;0,6.2;8,3;8]"
-
 		local function on_construct(pos)
 			local meta = minetest.get_meta(pos)
-			meta:set_string("formspec", formspec_string)
+			meta:set_string("formspec", formspec_inactive)
 			meta:set_string("output_core", "")
 			meta:set_float("writing_time", -1)
 
