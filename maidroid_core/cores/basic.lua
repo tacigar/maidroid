@@ -13,7 +13,7 @@ end
 
 local function on_stop(self)
 	self.state = nil
-	self.object:setvelocty{x = 0, y = 0, z = 0}
+	self.object:setvelocity{x = 0, y = 0, z = 0}
 end
 
 local on_resume = on_start
