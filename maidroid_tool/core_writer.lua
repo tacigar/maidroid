@@ -8,7 +8,7 @@ local dye_core_map = {
 }
 
 -- register a definition of a core writer.
-(function()
+;(function()
 	local node_box = {
 		type = "fixed",
 		fixed = {
@@ -27,6 +27,51 @@ local dye_core_map = {
 			{-0.4375, -0.5, -0.4375, 0.4375, 0.25, 0.4375},
 		},
 	}
+
+	local formspec_inactive = "size[8,9]"
+		.. default.gui_bg
+		.. default.gui_bg_img
+		.. default.gui_slots
+		.. "label[3.75,0;Core]"
+		.. "list[current_name;core;3.5,0.5;1,1;]"
+		.. "label[2.75,2;Coal]"
+		.. "list[current_name;fuel;2.5,2.5;1,1;]"
+		.. "label[4.75,2;Dye]"
+		.. "list[current_name;dye;4.5,2.5;1,1;]"
+		.. "image[3.5,1.5;1,2;maidroid_tool_gui_arrow.png]"
+		.. "image[3.1,3.5;2,1;maidroid_tool_gui_meter.png^[transformR270]"
+		.. "list[current_player;main;0,5;8,1;]"
+		.. "list[current_player;main;0,6.2;8,3;8]"
+
+	local function generate_formspec_active(writing_time)
+		local arrow_percent = (100 / 40) * writing_time
+
+		local merter_percent = 0
+		if writing_time % 16 >= 8 then
+			meter_percent = (8 - (writing_time % 8)) * (100 / 8)
+		else
+			meter_percent = (writing_time % 8) * (100 / 8)
+		end
+
+		return "size[8,9]"
+			.. default.gui_bg
+			.. default.gui_bg_img
+			.. default.gui_slots
+			.. "label[3.75,0;Core]"
+			.. "list[current_name;core;3.5,0.5;1,1;]"
+			.. "label[2.75,2;Coal]"
+			.. "list[current_name;fuel;2.5,2.5;1,1;]"
+			.. "label[4.75,2;Dye]"
+			.. "list[current_name;dye;4.5,2.5;1,1;]"
+			.. "image[3.5,1.5;1,2;maidroid_tool_gui_arrow.png^[lowpart:"
+			.. arrow_percent
+			.. ":maidroid_tool_gui_arrow_filled.png]"
+			.. "image[3.1,3.5;2,1;maidroid_tool_gui_meter.png^[lowpart:"
+			.. meter_percent
+			.. ":maidroid_tool_gui_meter_filled.png^[transformR270]"
+			.. "list[current_player;main;0,5;8,1;]"
+			.. "list[current_player;main;0,6.2;8,3;8]"
+	end
 
 	-- get_nearest_core_entity returns the nearest core entity.
 	local function get_nearest_core_entity(pos)
@@ -60,17 +105,19 @@ local dye_core_map = {
 		local dye_list = inventory:get_list("dye")
 
 		local writing_time = meta:get_float("writing_time")
-		local writing_total_time = 20
+		local writing_total_time = 40
 		local output_core = meta:get_string("output_core")
 
 		-- if writing time is positive, the core writer is active.
 		if writing_time >= 0 then
 			if writing_time <= writing_total_time then
 				meta:set_float("writing_time", writing_time + 1)
+				meta:set_string("formspec", generate_formspec_active(writing_time))
 
 			else -- else place output core to core list.
 				meta:set_float("writing_time", -1)
 				meta:set_string("output_core", "")
+				meta:set_string("formspec", formspec_inactive)
 				inventory:set_stack("core", 1, ItemStack(output_core))
 				minetest.swap_node(pos, {name = "maidroid_tool:core_writer"})
 
@@ -139,16 +186,9 @@ local dye_core_map = {
 			"maidroid_tool_core_writer_front.png",
 		}
 
-		local formspec_string =	"size[8,9]"
-			.. "list[current_name;core;2.75,0.5;1,1;]"
-			.. "list[current_name;fuel;2.75,2.5;1,1;]"
-			.. "list[current_name;dye;2.75,1.5;1,1;]"
-			.. "list[current_player;main;0,5;8,1;]"
-			.. "list[current_player;main;0,6.2;8,3;8]"
-
 		local function on_construct(pos)
 			local meta = minetest.get_meta(pos)
-			meta:set_string("formspec", formspec_string)
+			meta:set_string("formspec", formspec_inactive)
 			meta:set_string("output_core", "")
 			meta:set_float("writing_time", -1)
 
@@ -160,14 +200,14 @@ local dye_core_map = {
 
 		local function on_metadata_inventory_put(pos, listname, index, stack, player)
 			local timer = minetest.get_node_timer(pos)
-			timer:start(1.0)
+			timer:start(0.25)
 
 			local meta = minetest.get_meta(pos)
 			if listname == "core" then
 				local entity_position = {
 					x = pos.x, y = pos.y + 0.65, z = pos.z
 				}
-				local object = minetest.add_entity(entity_position, "maidroid_tool:core_entity")
+				minetest.add_entity(entity_position, "maidroid_tool:core_entity")
 			end
 		end
 
