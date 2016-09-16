@@ -163,6 +163,22 @@ function maidroid.register_maidroid(product_name, def)
 		maidroid.manufacturing_data[product_name] = 0
 	end
 
+	local function update_infotext(self)
+		if self.core_name ~= "" then
+			local infotext = ""
+			if self.pause then
+				infotext = infotext .. "this maidroid is paused\n"
+			else
+				infotext = infotext .. "this maidroid is active\n"
+			end
+			infotext = infotext .. "[Core] : " .. self.core_name
+
+			self.object:set_properties{infotext = infotext}
+			return
+		end
+		self.object:set_properties{infotext = "this maidroid is inactive"}
+	end
+
 	-- create_inventory creates a new inventory, and returns it.
 	local function create_inventory(self)
 		self.inventory_name = self.product_name .. tostring(self.manufacturing_number)
@@ -173,6 +189,8 @@ function maidroid.register_maidroid(product_name, def)
 					local core = maidroid.registered_cores[core_name]
 					core.on_start(self)
 					self.core_name = core_name
+
+					update_infotext(self)
 				end
 			end,
 
@@ -191,6 +209,8 @@ function maidroid.register_maidroid(product_name, def)
 					local core = maidroid.registered_cores[self.core_name]
 					self.core_name = ""
 					core.on_stop(self)
+
+					update_infotext(self)
 				end
 			end,
 		})
@@ -244,6 +264,7 @@ function maidroid.register_maidroid(product_name, def)
 		end
 
 		self.formspec_string = create_formspec_string(self)
+		update_infotext(self)
 
 		local core = self:get_core()
 		if core ~= nil then
@@ -326,6 +347,7 @@ function maidroid.register_maidroid(product_name, def)
 		is_visible                   = true,
 		makes_footstep_sound         = true,
 		automatic_face_movement_dir  = 90.0,
+		infotext                     = "",
 
 		-- extra initial properties
 		pause                        = false,
