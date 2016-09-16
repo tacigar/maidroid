@@ -95,6 +95,14 @@ local dye_core_map = {
 		)
 	end
 
+	-- swap_node is a helper function that swap two nodes.
+	local function swap_node(pos, name)
+		local node = minetest.get_node(pos)
+		node.name = name
+
+		minetest.swap_node(pos, node)
+	end
+
 	-- on_timer is a common callback for the core writer.
 	local function on_timer(pos, elapsed)
 		local meta = minetest.get_meta(pos)
@@ -119,7 +127,7 @@ local dye_core_map = {
 				meta:set_string("output_core", "")
 				meta:set_string("formspec", formspec_inactive)
 				inventory:set_stack("core", 1, ItemStack(output_core))
-				minetest.swap_node(pos, {name = "maidroid_tool:core_writer"})
+				swap_node(pos, "maidroid_tool:core_writer")
 
 				local core_entity = get_nearest_core_entity(pos)
 				core_entity:stop_rotate()
@@ -140,7 +148,7 @@ local dye_core_map = {
 				dye_stack:take_item()
 				inventory:set_stack("dye", 1, dye_stack)
 
-				minetest.swap_node(pos, {name = "maidroid_tool:core_writer_active"})
+				swap_node(pos, "maidroid_tool:core_writer_active")
 
 				local core_entity = get_nearest_core_entity(pos)
 				core_entity:start_rotate()
