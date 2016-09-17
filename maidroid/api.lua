@@ -222,6 +222,8 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- create_formspec_string returns a string that represents a formspec definition.
 	local function create_formspec_string(self)
+		local nametag = self.object:get_nametag_attributes().text
+
 		return "size[8,9]"
 			.. default.gui_bg
 			.. default.gui_bg_img
@@ -232,16 +234,22 @@ function maidroid.register_maidroid(product_name, def)
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]"
 			.. "button[7,0.25;1,0.875;apply_name;Apply]"
-			.. "field[4.5,0.5;2.75,1;name;name;" .. self.nametag .. "]"
+			.. "field[4.5,0.5;2.75,1;name;name;" .. nametag .. "]"
 	end
 
 	local function register_on_player_receive_fields(self)
 		minetest.register_on_player_receive_fields(function(player, formname, fields)
 			if formname == self.inventory_name then
-				if fields[name] == nil or fields[name] == "" then
-					self.nametag = self.inventory_name
-				else
-					self.nametag = fields[name]
+				if fields.name ~= nil then
+					if fields.name == "" then
+						self.object:set_nametag_attributes{
+							text = self.inventory_name
+						}
+					else
+						self.object:set_nametag_attributes{
+							text = fields.name
+						}
+					end
 				end
 			end
 		end)
@@ -255,6 +263,10 @@ function maidroid.register_maidroid(product_name, def)
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
+
+			self.object:set_nametag_attributes{
+				text = self.inventory_name
+			}
 			register_on_player_receive_fields(self)
 
 		else
@@ -281,8 +293,6 @@ function maidroid.register_maidroid(product_name, def)
 				inventory:add_item("main", item_stack)
 			end
 		end
-
-		self.formspec_string = create_formspec_string(self)
 		update_infotext(self)
 
 		local core = self:get_core()
@@ -330,7 +340,7 @@ function maidroid.register_maidroid(product_name, def)
 		minetest.show_formspec(
 			clicker:get_player_name(),
 			self.inventory_name,
-			self.formspec_string
+			create_formspec_string(self)
 		)
 	end
 
