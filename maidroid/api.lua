@@ -147,6 +147,26 @@ end) ()
 
 local formspec_opened_selves = {}
 
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+    if formname ~= "maidroid:gui" then return end
+
+    local self = formspec_opened_selves[player]
+
+    if not self then return end
+
+    if fields.name then
+        if fields.name == "" then
+            self.nametag = self.inventory_name
+        else
+            self.nametag = fields.name
+        end
+
+        self.object:set_nametag_attributes{
+            text = self.nametag
+        }
+    end
+end)
+
 -- maidroid.register_core registers a definition of a new core.
 function maidroid.register_core(core_name, def)
 	maidroid.registered_cores[core_name] = def
@@ -404,23 +424,3 @@ function maidroid.register_maidroid(product_name, def)
 		end,
 	})
 end
-
-minetest.register_on_player_receive_fields(function(player, formname, fields)
-    if formname ~= "maidroid:gui" then return end
-
-    local self = formspec_opened_selves[player]
-
-    if not self then return end
-
-    if fields.name then
-        if fields.name == "" then
-            self.nametag = self.inventory_name
-        else
-            self.nametag = fields.name
-        end
-
-        self.object:set_nametag_attributes{
-            text = self.nametag
-        }
-    end
-end)
