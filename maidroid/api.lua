@@ -223,7 +223,6 @@ function maidroid.register_maidroid(product_name, def)
 	-- create_formspec_string returns a string that represents a formspec definition.
 	local function create_formspec_string(self)
 		local nametag = self.object:get_nametag_attributes().text
-
 		return "size[8,9]"
 			.. default.gui_bg
 			.. default.gui_bg_img
@@ -242,14 +241,14 @@ function maidroid.register_maidroid(product_name, def)
 			if formname == self.inventory_name then
 				if fields.name ~= nil then
 					if fields.name == "" then
-						self.object:set_nametag_attributes{
-							text = self.inventory_name
-						}
+						self.nametag = self.inventory_name
 					else
-						self.object:set_nametag_attributes{
-							text = fields.name
-						}
+						self.nametag = fields.name
 					end
+
+					self.object:set_nametag_attributes{
+						text = self.nametag
+					}
 				end
 			end
 		end)
@@ -257,17 +256,16 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_activate is a callback function that is called when the object is created or recreated.
 	local function on_activate(self, staticdata)
+
+		--
+
 		-- parse the staticdata, and compose a inventory.
 		if staticdata == "" then
 			self.product_name = product_name
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
-
-			self.object:set_nametag_attributes{
-				text = self.inventory_name
-			}
-			register_on_player_receive_fields(self)
+			self.nametag = self.inventory_name
 
 		else
 			-- if static data is not empty string, this object has beed already created.
@@ -275,6 +273,7 @@ function maidroid.register_maidroid(product_name, def)
 
 			self.product_name = data["product_name"]
 			self.manufacturing_number = data["manufacturing_number"]
+			self.nametag = data["nametag"]
 
 			local inventory = create_inventory(self)
 			local core_name = data["inventory"]["core"]
@@ -295,6 +294,14 @@ function maidroid.register_maidroid(product_name, def)
 		end
 		update_infotext(self)
 
+		-- set nametag attributes, and callback function.
+		if self.object:get_nametag_attributes().text == "" then
+			register_on_player_receive_fields(self)
+		end
+		self.object:set_nametag_attributes{
+			text = self.nametag
+		}
+
 		local core = self:get_core()
 		if core ~= nil then
 			core.on_start(self)
@@ -310,6 +317,7 @@ function maidroid.register_maidroid(product_name, def)
 		local data = {
 			["product_name"] = self.product_name,
 			["manufacturing_number"] = self.manufacturing_number,
+			["nametag"] = self.nametag,
 			["inventory"] = {
 				["main"] = {},
 				["core"] = self.core_name,
@@ -377,6 +385,7 @@ function maidroid.register_maidroid(product_name, def)
 		makes_footstep_sound         = true,
 		automatic_face_movement_dir  = 90.0,
 		infotext                     = "",
+		nametag                      = "",
 
 		-- extra initial properties
 		pause                        = false,
