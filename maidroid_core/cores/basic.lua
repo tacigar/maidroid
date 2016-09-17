@@ -6,7 +6,6 @@
 local state = {IDLE = 0, ACCOMPANY = 1}
 
 local function on_start(self)
-	print("KOKO")
 	self.state = state.IDLE
 	self.object:setacceleration{x = 0, y = -10, z = 0}
 	self.object:setvelocity{x = 0, y = 0, z = 0}
@@ -46,6 +45,7 @@ local function on_step(self, dtime)
 		end
 		self.object:setvelocity{x = direction.x, y = velocity.y, z = direction.z} -- TODO
 	end
+	self:set_yaw_by_direction(direction)
 
 	-- if maidroid is stoped by obstacle, the maidroid must jump.
 	if velocity.y == 0 and self.state == state.ACCOMPANY then

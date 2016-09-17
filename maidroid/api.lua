@@ -388,7 +388,6 @@ function maidroid.register_maidroid(product_name, def)
 		collisionbox                 = {-0.25, -0.5, -0.25, 0.25, 1.05, 0.25},
 		is_visible                   = true,
 		makes_footstep_sound         = true,
-		automatic_face_movement_dir  = 90.0,
 		infotext                     = "",
 		nametag                      = "",
 
