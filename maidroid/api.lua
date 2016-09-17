@@ -143,16 +143,19 @@ maidroid.manufacturing_data = (function()
 	return {}
 end) ()
 
----------------------------------------------------------------------
-
-local formspec_opened_selves = {}
+-- formspec_opened_selves represents a table that contains player names and
+-- maidroids whose formspec is opened.
+local formspec_opened_maidroids = {}
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-    if formname ~= "maidroid:gui" then return end
+    if formname ~= "maidroid:gui" then
+		return
+	end
 
-    local self = formspec_opened_selves[player]
-
-    if not self then return end
+    local self = formspec_opened_maidroids[player]
+    if not self then -- if the maidroid is dead now.
+		return
+	end
 
     if fields.name then
         if fields.name == "" then
@@ -160,12 +163,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         else
             self.nametag = fields.name
         end
-
         self.object:set_nametag_attributes{
             text = self.nametag
         }
     end
 end)
+
+---------------------------------------------------------------------
 
 -- maidroid.register_core registers a definition of a new core.
 function maidroid.register_core(core_name, def)
@@ -342,7 +346,7 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_rightclick is a callback function that is called when a player right-click them.
 	local function on_rightclick(self, clicker)
-		formspec_opened_selves[clicker] = self
+		formspec_opened_maidroids[clicker] = self
 
 		minetest.show_formspec(
 			clicker:get_player_name(),
@@ -415,6 +419,7 @@ function maidroid.register_maidroid(product_name, def)
 		description     = product_name .. " spawner",
 		inventory_image = def.inventory_image,
 		stack_max       = 1,
+
 		on_use  = function(item_stack, user, pointed_thing)
 			if pointed_thing.above ~= nil then
 				minetest.add_entity(pointed_thing.above, product_name)
