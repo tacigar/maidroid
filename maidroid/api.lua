@@ -148,25 +148,25 @@ end) ()
 local formspec_opened_maidroids = {}
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-    if formname ~= "maidroid:gui" then
+	if formname ~= "maidroid:gui" then
 		return
 	end
 
-    local self = formspec_opened_maidroids[player]
-    if not self then -- if the maidroid is dead now.
+	local self = formspec_opened_maidroids[player]
+	if not self then -- if the maidroid is dead now.
 		return
 	end
 
-    if fields.name then
-        if fields.name == "" then
-            self.nametag = self.inventory_name
-        else
-            self.nametag = fields.name
-        end
-        self.object:set_nametag_attributes{
-            text = self.nametag
-        }
-    end
+	if fields.name then
+		if fields.name == "" then
+			self.nametag = self.inventory_name
+		else
+			self.nametag = fields.name
+		end
+		self.object:set_nametag_attributes{
+			text = self.nametag
+		}
+	end
 end)
 
 ---------------------------------------------------------------------
