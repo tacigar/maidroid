@@ -223,6 +223,9 @@ function maidroid.register_maidroid(product_name, def)
 	-- create_formspec_string returns a string that represents a formspec definition.
 	local function create_formspec_string(self)
 		return "size[8,9]"
+			.. default.gui_bg
+			.. default.gui_bg_img
+			.. default.gui_slots
 			.. "list[detached:"..self.inventory_name..";main;0,0;4,4;]"
 			.. "label[5,0;core]"
 			.. "list[detached:"..self.inventory_name..";core;6,0;1,1;]"
