@@ -181,7 +181,7 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- create_inventory creates a new inventory, and returns it.
 	local function create_inventory(self)
-		self.inventory_name = self.product_name .. tostring(self.manufacturing_number)
+		self.inventory_name = self.product_name .. "_" .. tostring(self.manufacturing_number)
 		local inventory = minetest.create_detached_inventory(self.inventory_name, {
 			on_put = function(inv, listname, index, stack, player)
 				if listname == "core" then
@@ -227,10 +227,24 @@ function maidroid.register_maidroid(product_name, def)
 			.. default.gui_bg_img
 			.. default.gui_slots
 			.. "list[detached:"..self.inventory_name..";main;0,0;4,4;]"
-			.. "label[5,0;core]"
-			.. "list[detached:"..self.inventory_name..";core;6,0;1,1;]"
+			.. "label[6,3;core]"
+			.. "list[detached:"..self.inventory_name..";core;6,4;1,1;]"
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]"
+			.. "button[7,0.25;1,0.875;apply_name;Apply]"
+			.. "field[4.5,0.5;2.75,1;name;name;" .. self.nametag .. "]"
+	end
+
+	local function register_on_player_receive_fields(self)
+		minetest.register_on_player_receive_fields(function(player, formname, fields)
+			if formname == self.inventory_name then
+				if fields[name] == nil or fields[name] == "" then
+					self.nametag = self.inventory_name
+				else
+					self.nametag = fields[name]
+				end
+			end
+		end)
 	end
 
 	-- on_activate is a callback function that is called when the object is created or recreated.
@@ -241,6 +255,8 @@ function maidroid.register_maidroid(product_name, def)
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
+			register_on_player_receive_fields(self)
+
 		else
 			-- if static data is not empty string, this object has beed already created.
 			local data = minetest.deserialize(staticdata)
