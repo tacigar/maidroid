@@ -181,7 +181,7 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- create_inventory creates a new inventory, and returns it.
 	local function create_inventory(self)
-		self.inventory_name = self.product_name .. tostring(self.manufacturing_number)
+		self.inventory_name = self.product_name .. "_" .. tostring(self.manufacturing_number)
 		local inventory = minetest.create_detached_inventory(self.inventory_name, {
 			on_put = function(inv, listname, index, stack, player)
 				if listname == "core" then
@@ -222,28 +222,58 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- create_formspec_string returns a string that represents a formspec definition.
 	local function create_formspec_string(self)
+		local nametag = self.object:get_nametag_attributes().text
 		return "size[8,9]"
+			.. default.gui_bg
+			.. default.gui_bg_img
+			.. default.gui_slots
 			.. "list[detached:"..self.inventory_name..";main;0,0;4,4;]"
-			.. "label[5,0;core]"
-			.. "list[detached:"..self.inventory_name..";core;6,0;1,1;]"
+			.. "label[5.5,1;core]"
+			.. "list[detached:"..self.inventory_name..";core;5.5,1.5;1,1;]"
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]"
+			.. "button[7,0.25;1,0.875;apply_name;Apply]"
+			.. "field[4.5,0.5;2.75,1;name;name;" .. nametag .. "]"
+	end
+
+	local function register_on_player_receive_fields(self)
+		minetest.register_on_player_receive_fields(function(player, formname, fields)
+			if formname == self.inventory_name then
+				if fields.name ~= nil then
+					if fields.name == "" then
+						self.nametag = self.inventory_name
+					else
+						self.nametag = fields.name
+					end
+
+					self.object:set_nametag_attributes{
+						text = self.nametag
+					}
+				end
+			end
+		end)
 	end
 
 	-- on_activate is a callback function that is called when the object is created or recreated.
 	local function on_activate(self, staticdata)
+
+		--
+
 		-- parse the staticdata, and compose a inventory.
 		if staticdata == "" then
 			self.product_name = product_name
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
+			self.nametag = self.inventory_name
+
 		else
 			-- if static data is not empty string, this object has beed already created.
 			local data = minetest.deserialize(staticdata)
 
 			self.product_name = data["product_name"]
 			self.manufacturing_number = data["manufacturing_number"]
+			self.nametag = data["nametag"]
 
 			local inventory = create_inventory(self)
 			local core_name = data["inventory"]["core"]
@@ -262,9 +292,15 @@ function maidroid.register_maidroid(product_name, def)
 				inventory:add_item("main", item_stack)
 			end
 		end
-
-		self.formspec_string = create_formspec_string(self)
 		update_infotext(self)
+
+		-- set nametag attributes, and callback function.
+		if self.object:get_nametag_attributes().text == "" then
+			register_on_player_receive_fields(self)
+		end
+		self.object:set_nametag_attributes{
+			text = self.nametag
+		}
 
 		local core = self:get_core()
 		if core ~= nil then
@@ -281,6 +317,7 @@ function maidroid.register_maidroid(product_name, def)
 		local data = {
 			["product_name"] = self.product_name,
 			["manufacturing_number"] = self.manufacturing_number,
+			["nametag"] = self.nametag,
 			["inventory"] = {
 				["main"] = {},
 				["core"] = self.core_name,
@@ -311,7 +348,7 @@ function maidroid.register_maidroid(product_name, def)
 		minetest.show_formspec(
 			clicker:get_player_name(),
 			self.inventory_name,
-			self.formspec_string
+			create_formspec_string(self)
 		)
 	end
 
@@ -348,6 +385,7 @@ function maidroid.register_maidroid(product_name, def)
 		makes_footstep_sound         = true,
 		automatic_face_movement_dir  = 90.0,
 		infotext                     = "",
+		nametag                      = "",
 
 		-- extra initial properties
 		pause                        = false,
