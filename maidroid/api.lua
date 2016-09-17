@@ -264,9 +264,9 @@ function maidroid.register_maidroid(product_name, def)
 		if staticdata == "" then
 			self.product_name = product_name
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
-			self.nametag = self.inventory_name
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
+			self.nametag = self.inventory_name
 		else
 			-- if static data is not empty string, this object has beed already created.
 			local data = minetest.deserialize(staticdata)
