@@ -370,6 +370,8 @@ function maidroid.register_maidroid(product_name, def)
 				core.on_resume(self)
 			end
 		end
+
+		update_infotext(self)
 	end
 
 	-- register a definition of a new maidroid.
