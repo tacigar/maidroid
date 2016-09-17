@@ -6,6 +6,7 @@
 local state = {IDLE = 0, ACCOMPANY = 1}
 
 local function on_start(self)
+	print("KOKO")
 	self.state = state.IDLE
 	self.object:setacceleration{x = 0, y = -10, z = 0}
 	self.object:setvelocity{x = 0, y = 0, z = 0}

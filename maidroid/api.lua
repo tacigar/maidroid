@@ -361,15 +361,17 @@ function maidroid.register_maidroid(product_name, def)
 			self.pause = false
 			if self.core_name ~= "" then
 				local core = maidroid.registered_cores[self.core_name]
-				core.on_pause(self)
+				core.on_resume(self)
 			end
 		else
 			self.pause = true
 			if self.core_name ~= "" then
 				local core = maidroid.registered_cores[self.core_name]
-				core.on_resume(self)
+				core.on_pause(self)
 			end
 		end
+
+		update_infotext(self)
 	end
 
 	-- register a definition of a new maidroid.
