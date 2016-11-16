@@ -226,6 +226,8 @@ function maidroid.register_maidroid(product_name, def)
 					return stack:get_count()
 				elseif listname == "core" and maidroid.is_core(stack:get_name()) then
 					return stack:get_count()
+				elseif listname == "wield_item" then
+					return 0
 				end
 				return 0
 			end,
@@ -239,9 +241,17 @@ function maidroid.register_maidroid(product_name, def)
 					update_infotext(self)
 				end
 			end,
+
+			allow_take = function(inv, listname, index, stack, player)
+				if listname == "wield_item" then
+					return 0
+				end
+				return stack:get_count()
+			end,
 		})
 		inventory:set_size("main", 16)
 		inventory:set_size("core",  1)
+		inventory:set_size("wield_item", 1)
 
 		return inventory
 	end
@@ -260,6 +270,8 @@ function maidroid.register_maidroid(product_name, def)
 			.. "list[current_player;main;0,6.2;8,3;8]"
 			.. "button[7,0.25;1,0.875;apply_name;Apply]"
 			.. "field[4.5,0.5;2.75,1;name;name;" .. nametag .. "]"
+			.. "label[5.5,1;wield]"
+			.. "list[detached:"..self.inventory_name..";wield_item;5.5,1.5;1,1;]"
 	end
 
 	-- on_activate is a callback function that is called when the object is created or recreated.
