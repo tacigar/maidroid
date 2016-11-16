@@ -264,8 +264,8 @@ function maidroid.register_maidroid(product_name, def)
 			.. default.gui_bg_img
  			.. default.gui_slots
 			.. "list[detached:"..self.inventory_name..";main;0,0;4,4;]"
-			.. "label[5.5,1;core]"
-			.. "list[detached:"..self.inventory_name..";core;5.5,1.5;1,1;]"
+			.. "label[4.5,1;core]"
+			.. "list[detached:"..self.inventory_name..";core;4.5,1.5;1,1;]"
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]"
 			.. "button[7,0.25;1,0.875;apply_name;Apply]"
