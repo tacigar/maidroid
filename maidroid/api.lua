@@ -129,6 +129,24 @@ function maidroid.maidroid.get_wield_item_stack(self)
 	return inv:get_stack("wield_item", 1)
 end
 
+-- maidroid.maidroid.move_main_to_wield moves itemstack from main to wield.
+-- if this function fails then returns false, else returns true.
+function maidroid.maidroid.move_main_to_wield(self, itemname)
+	local inv = self:get_inventory()
+	local main_size = inv:get_size("main")
+	
+	for i = 1, main_size do
+		local stack = inv:get_stack("main", i)
+		if stack:get_name() == itemname then
+			local wield_stack = inv:get_stack("wield_item", 1)
+			inv:set_stack("wield_item", 1, stack)
+			inv:set_stack("main", i, wield_stack)
+			return true
+		end
+	end
+	return false
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -368,7 +386,6 @@ function maidroid.register_maidroid(product_name, def)
 	-- on_rightclick is a callback function that is called when a player right-click them.
 	local function on_rightclick(self, clicker)
 		formspec_opened_maidroids[clicker] = self
-
 		minetest.show_formspec(
 			clicker:get_player_name(),
 			"maidroid:gui",
@@ -435,6 +452,7 @@ function maidroid.register_maidroid(product_name, def)
 		set_animation                = maidroid.maidroid.set_animation,
 		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
 		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
+		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
 	})
 
 	-- register a spawner for debugging maidroid mods.
