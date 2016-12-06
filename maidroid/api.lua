@@ -120,6 +120,15 @@ function maidroid.maidroid.set_yaw_by_direction(self, direction)
 	self.object:setyaw(math.atan2(direction.z, direction.x) + math.pi / 2)
 end
 
+-- maidroid.maidroid.get_wield_item_info returns the maidroid's wield item's stack.
+function maidroid.maidroid.get_wield_item_stack(self)
+	local inv = self:get_inventory()
+	if inv:is_empty("wield_item") then
+		return nil
+	end
+	return inv:get_stack("wield_item", 1)
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -425,6 +434,7 @@ function maidroid.register_maidroid(product_name, def)
 		get_look_direction           = maidroid.maidroid.get_look_direction,
 		set_animation                = maidroid.maidroid.set_animation,
 		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
+		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
 	})
 
 	-- register a spawner for debugging maidroid mods.
