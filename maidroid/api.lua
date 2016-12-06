@@ -126,7 +126,7 @@ function maidroid.maidroid.get_wield_item_stack(self)
 	if inv:is_empty("wield_item") then
 		return nil
 	end
-	return inv:get_stack(1)
+	return inv:get_stack("wield_item", 1)
 end
 
 ---------------------------------------------------------------------
