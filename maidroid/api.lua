@@ -434,6 +434,7 @@ function maidroid.register_maidroid(product_name, def)
 		get_look_direction           = maidroid.maidroid.get_look_direction,
 		set_animation                = maidroid.maidroid.set_animation,
 		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
+		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
 	})
 
 	-- register a spawner for debugging maidroid mods.
