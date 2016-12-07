@@ -30,6 +30,14 @@ function maidroid.is_core(item_name)
 	return false
 end
 
+-- maidroid.is_maidroid reports whether a name is maidroid's name.
+function maidroid.is_maidroid(name)
+	if maidroid.registered_maidroids[name] then
+		return true
+	end
+	return false
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.maidroid represents a table that contains common methods
@@ -196,6 +204,42 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 end)
 
+--------------------------------------------------------------------
+
+-- register empty item entity definition.
+-- this entity may be hold by maidroid's hands.
+;(function ()
+	local function on_activate(self, staticdata)
+		-- attach to the nearest maidroid.
+		local all_objects = minetest.get_objects_inside_radius(self.object:getpos(), 0.1)
+		for _, obj in ipairs(all_objects) do
+			local luaentity = obj:get_luaentity()
+
+			if maidroid.is_maidroid(luaentity.name) then
+				self.object:set_attach(obj, "Arm_R", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+				break
+			end
+		end
+		self.object:set_properties{textures={"default:pick_stone"}}
+	end
+
+	local function on_step(self, dtime)
+		
+	end
+		
+	minetest.register_entity("maidroid:dummy_item", {
+		hp_max		= 1,
+		visual		= "wielditem",
+		visual_size	= {x = 0.025, y = 0.025},
+		collisionbox	= {0, 0, 0, 0, 0, 0},
+		physical	= false,
+		textures	= {"air"},
+		on_activate	= on_activate,
+		on_step         = on_step,
+		item_name       = "",
+	})
+ end) ()
+
 ---------------------------------------------------------------------
 
 -- maidroid.register_core registers a definition of a new core.
@@ -211,6 +255,8 @@ end
 
 -- maidroid.register_maidroid registers a definition of a new maidroid.
 function maidroid.register_maidroid(product_name, def)
+	maidroid.registered_maidroids[product_name] = def
+	
 	-- initialize manufacturing number of a new maidroid.
 	if maidroid.manufacturing_data[product_name] == nil then
 		maidroid.manufacturing_data[product_name] = 0
@@ -377,6 +423,7 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_step is a callback function that is called every delta times.
 	local function on_step(self, dtime)
+		-- do core method.
 		if (not self.pause) and self.core_name ~= "" then
 			local core = maidroid.registered_cores[self.core_name]
 			core.on_step(self, dtime)
@@ -385,6 +432,10 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_rightclick is a callback function that is called when a player right-click them.
 	local function on_rightclick(self, clicker)
+		local obj = minetest.add_entity(self.object:getpos(), "maidroid:dummy_item")
+		obj:set_attach(
+			self.object, "Arm_R", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+		
 		formspec_opened_maidroids[clicker] = self
 		minetest.show_formspec(
 			clicker:get_player_name(),
