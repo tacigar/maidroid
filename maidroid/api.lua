@@ -125,15 +125,12 @@ end
 -- maidroid.maidroid.set_yaw_by_direction sets the maidroid's yaw
 -- by a direction vector.
 function maidroid.maidroid.set_yaw_by_direction(self, direction)
-	self.object:setyaw(math.atan2(direction.z, direction.x) + math.pi / 2)
+	self.object:setyaw(math.atan2(direction.z, direction.x) - math.pi / 2)
 end
 
 -- maidroid.maidroid.get_wield_item_info returns the maidroid's wield item's stack.
 function maidroid.maidroid.get_wield_item_stack(self)
 	local inv = self:get_inventory()
-	if inv:is_empty("wield_item") then
-		return nil
-	end
 	return inv:get_stack("wield_item", 1)
 end
 
@@ -216,17 +213,34 @@ end)
 			local luaentity = obj:get_luaentity()
 
 			if maidroid.is_maidroid(luaentity.name) then
-				self.object:set_attach(obj, "Arm_R", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+				self.object:set_attach(obj, "Arm_R", {x = 0.075, y = 0.60, z = -0.20}, {x = 0, y = 90, z = 0})
+				self.object:set_properties{textures="air"}
 				break
 			end
 		end
-		self.object:set_properties{textures={"default:pick_stone"}}
 	end
 
-	local function on_step(self, dtime)
-		
+	local function on_step(self, staticdata)
+		local all_objects = minetest.get_objects_inside_radius(self.object:getpos(), 0.1)
+		for _, obj in ipairs(all_objects) do
+			local luaentity = obj:get_luaentity()
+
+			if maidroid.is_maidroid(luaentity.name) then
+				local stack = luaentity:get_wield_item_stack()
+				if stack:get_name() ~= itemname then
+					if stack:is_empty() then
+						self.itemname = "air"
+						self.object:set_properties{textures=self.itemname}
+					else
+						self.itemname = stack:get_name()
+						self.object:set_properties{textures=self.itemname}
+					end
+				end
+				break
+			end
+		end
 	end
-		
+
 	minetest.register_entity("maidroid:dummy_item", {
 		hp_max		= 1,
 		visual		= "wielditem",
@@ -236,7 +250,7 @@ end)
 		textures	= {"air"},
 		on_activate	= on_activate,
 		on_step         = on_step,
-		item_name       = "",
+		itemname        = "air",
 	})
  end) ()
 
@@ -356,6 +370,9 @@ function maidroid.register_maidroid(product_name, def)
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
 			self.nametag = self.inventory_name
+
+			-- attach dummy item to new maidroid.
+			minetest.add_entity(self.object:getpos(), "maidroid:dummy_item")
 		else
 			-- if static data is not empty string, this object has beed already created.
 			local data = minetest.deserialize(staticdata)
@@ -432,10 +449,6 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_rightclick is a callback function that is called when a player right-click them.
 	local function on_rightclick(self, clicker)
-		local obj = minetest.add_entity(self.object:getpos(), "maidroid:dummy_item")
-		obj:set_attach(
-			self.object, "Arm_R", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-		
 		formspec_opened_maidroids[clicker] = self
 		minetest.show_formspec(
 			clicker:get_player_name(),
