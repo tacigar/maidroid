@@ -227,7 +227,7 @@ end)
 
 			if maidroid.is_maidroid(luaentity.name) then
 				local stack = luaentity:get_wield_item_stack()
-				if stack:get_name() ~= itemname then
+				if stack:get_name() ~= self.itemname then
 					if stack:is_empty() then
 						self.itemname = "air"
 						self.object:set_properties{textures=self.itemname}
