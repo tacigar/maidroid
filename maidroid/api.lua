@@ -206,6 +206,10 @@ end)
 -- register empty item entity definition.
 -- this entity may be hold by maidroid's hands.
 ;(function ()
+	minetest.register_craftitem("maidroid:dummy_empty_craftitem", {
+		wield_image = "maidroid_dummy_empty_craftitem.png",
+	})
+	
 	local function on_activate(self, staticdata)
 		-- attach to the nearest maidroid.
 		local all_objects = minetest.get_objects_inside_radius(self.object:getpos(), 0.1)
@@ -214,7 +218,7 @@ end)
 
 			if maidroid.is_maidroid(luaentity.name) then
 				self.object:set_attach(obj, "Arm_R", {x = 0.075, y = 0.60, z = -0.20}, {x = 0, y = 90, z = 0})
-				self.object:set_properties{textures="air"}
+				self.object:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
 				break
 			end
 		end
@@ -229,8 +233,8 @@ end)
 				local stack = luaentity:get_wield_item_stack()
 				if stack:get_name() ~= self.itemname then
 					if stack:is_empty() then
-						self.itemname = "air"
-						self.object:set_properties{textures=self.itemname}
+						self.itemname = ""
+						self.object:set_properties{textures="maidroid:dummy_empty_craftitem"}
 					else
 						self.itemname = stack:get_name()
 						self.object:set_properties{textures=self.itemname}
@@ -250,7 +254,7 @@ end)
 		textures	= {"air"},
 		on_activate	= on_activate,
 		on_step         = on_step,
-		itemname        = "air",
+		itemname        = "",
 	})
  end) ()
 
