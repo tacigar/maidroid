@@ -3,13 +3,13 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
-local dye_core_map = {
-	["dye:red"] = "maidroid_core:basic",
-}
+do -- register core writer
 
--- register a definition of a core writer.
-;(function()
-	local node_box = {
+	local dye_core_map = {
+		["dye:red"] = "maidroid_core:basic",
+	}
+
+	local nodebox = {
 		type = "fixed",
 		fixed = {
 			{-0.4375,   -0.25, -0.4375,  0.4375,  0.1875,  0.4375},
@@ -28,32 +28,8 @@ local dye_core_map = {
 		},
 	}
 
-	local formspec_inactive = "size[8,9]"
-		.. default.gui_bg
-		.. default.gui_bg_img
-		.. default.gui_slots
-		.. "label[3.75,0;Core]"
-		.. "list[current_name;core;3.5,0.5;1,1;]"
-		.. "label[2.75,2;Coal]"
-		.. "list[current_name;fuel;2.5,2.5;1,1;]"
-		.. "label[4.75,2;Dye]"
-		.. "list[current_name;dye;4.5,2.5;1,1;]"
-		.. "image[3.5,1.5;1,2;maidroid_tool_gui_arrow.png]"
-		.. "image[3.1,3.5;2,1;maidroid_tool_gui_meter.png^[transformR270]"
-		.. "list[current_player;main;0,5;8,1;]"
-		.. "list[current_player;main;0,6.2;8,3;8]"
-
-	local function generate_formspec_active(writing_time)
-		local arrow_percent = (100 / 40) * writing_time
-
-		local merter_percent = 0
-		if writing_time % 16 >= 8 then
-			meter_percent = (8 - (writing_time % 8)) * (100 / 8)
-		else
-			meter_percent = (writing_time % 8) * (100 / 8)
-		end
-
-		return "size[8,9]"
+	local formspec = {
+		["inactive"] = "size[8,9]"
 			.. default.gui_bg
 			.. default.gui_bg_img
 			.. default.gui_slots
@@ -63,15 +39,79 @@ local dye_core_map = {
 			.. "list[current_name;fuel;2.5,2.5;1,1;]"
 			.. "label[4.75,2;Dye]"
 			.. "list[current_name;dye;4.5,2.5;1,1;]"
-			.. "image[3.5,1.5;1,2;maidroid_tool_gui_arrow.png^[lowpart:"
-			.. arrow_percent
-			.. ":maidroid_tool_gui_arrow_filled.png]"
-			.. "image[3.1,3.5;2,1;maidroid_tool_gui_meter.png^[lowpart:"
-			.. meter_percent
-			.. ":maidroid_tool_gui_meter_filled.png^[transformR270]"
+			.. "image[3.5,1.5;1,2;maidroid_tool_gui_arrow.png]"
+			.. "image[3.1,3.5;2,1;maidroid_tool_gui_meter.png^[transformR270]"
 			.. "list[current_player;main;0,5;8,1;]"
-			.. "list[current_player;main;0,6.2;8,3;8]"
-	end
+			.. "list[current_player;main;0,6.2;8,3;8]",
+
+		["active"] = function(t)
+			local arrow_percent = (100 / 40) * writing_time
+			local merter_percent = 0
+			if writing_time % 16 >= 8 then
+				meter_percent = (8 - (writing_time % 8)) * (100 / 8)
+			else
+				meter_percent = (writing_time % 8) * (100 / 8)
+			end
+			return "size[8,9]"
+				.. default.gui_bg
+				.. default.gui_bg_img
+				.. default.gui_slots
+				.. "label[3.75,0;Core]"
+				.. "list[current_name;core;3.5,0.5;1,1;]"
+				.. "label[2.75,2;Coal]"
+				.. "list[current_name;fuel;2.5,2.5;1,1;]"
+				.. "label[4.75,2;Dye]"
+				.. "list[current_name;dye;4.5,2.5;1,1;]"
+				.. "image[3.5,1.5;1,2;maidroid_tool_gui_arrow.png^[lowpart:"
+				.. arrow_percent
+				.. ":maidroid_tool_gui_arrow_filled.png]"
+				.. "image[3.1,3.5;2,1;maidroid_tool_gui_meter.png^[lowpart:"
+				.. meter_percent
+				.. ":maidroid_tool_gui_meter_filled.png^[transformR270]"
+				.. "list[current_player;main;0,5;8,1;]"
+				.. "list[current_player;main;0,6.2;8,3;8]"
+		end,
+	}
+
+	local tiles = {
+		["inactive"] = {
+			"maidroid_tool_core_writer_top.png",
+			"maidroid_tool_core_writer_bottom.png",
+			"maidroid_tool_core_writer_right.png",
+			"maidroid_tool_core_writer_right.png^[transformFX",
+			"maidroid_tool_core_writer_front.png^[transformFX",
+			"maidroid_tool_core_writer_front.png",
+		},
+
+		["active"] = {
+			"maidroid_tool_core_writer_top.png",
+			"maidroid_tool_core_writer_bottom.png",
+			"maidroid_tool_core_writer_right.png",
+			"maidroid_tool_core_writer_right.png^[transformFX",
+			{
+				backface_culling = false,
+				image = "maidroid_tool_core_writer_front_active.png^[transformFX",
+
+				animation = {
+					type      = "vertical_frames",
+					aspect_w  = 16,
+					aspect_h  = 16,
+					length    = 1.5,
+				},
+			},
+			{
+				backface_culling = false,
+				image = "maidroid_tool_core_writer_front_active.png",
+
+				animation = {
+					type      = "vertical_frames",
+					aspect_w  = 16,
+					aspect_h  = 16,
+					length    = 1.5,
+				},
+			},
+		}
+	}
 
 	-- get_nearest_core_entity returns the nearest core entity.
 	local function get_nearest_core_entity(pos)
@@ -84,24 +124,50 @@ local dye_core_map = {
 		return nil
 	end
 
-	-- can_dig is a common callback for the core writer.
-	local function can_dig(pos, player)
-		local meta = minetest.get_meta(pos)
-		local inventory = meta:get_inventory()
-		return (
-			inventory:is_empty("core") and
-			inventory:is_empty("fuel") and
-			inventory:is_empty("dye")
-		)
+	local function on_deactivate(pos)
+		local core_entity = get_nearest_core_entity(pos)
+		core_entity:stop_rotate()
 	end
 
-	-- swap_node is a helper function that swap two nodes.
-	local function swap_node(pos, name)
-		local node = minetest.get_node(pos)
-		node.name = name
-
-		minetest.swap_node(pos, node)
+	local function on_activate(pos)
+		local core_entity = get_nearest_core_entity(pos)
+		core_entity:start_rotate()
 	end
+
+	local function on_metadata_inventory_put_to_main(pos)
+		local entity_position = {
+			x = pos.x, y = pos.y + 0.65, z = pos.z
+		}
+		minetest.add_entity(entity_position, "maidroid_tool:core_entity")
+	end
+
+	local function on_metadata_inventory_take_from_main(pos)
+		local core_entity = get_nearest_core_entity(pos)
+		core_entity.object:remove()
+	end
+
+	maidroid_tool.register_writer("maidroid_tool:core_writer", {
+		formspec                              = formspec,
+		tiles                                 = tiles,
+		nodebox                               = nodebox,
+		selection_box                         = selection_box,
+		duration                              = 40,
+		on_activate                           = on_activate,
+		on_deactivate                         = on_deactivate,
+		empty_itemname                        = "maidroid_core:empty",
+		dye_item_map                          = dye_item_map,
+		is_mainitem                           = maidroid.is_core,
+		on_metadata_inventory_put_to_main     = on_metadata_inventory_put_to_main,
+		on_metadata_inventory_take_from_main  = on_metadata_inventory_take_from_main,
+	}
+
+end
+
+
+
+
+
+
 
 	-- on_timer is a common callback for the core writer.
 	local function on_timer(pos, elapsed)
