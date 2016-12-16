@@ -10,4 +10,5 @@ maidroid_tool.modpath = minetest.get_modpath(maidroid_tool.modname)
 
 dofile(maidroid_tool.modpath .. "/api.lua")
 dofile(maidroid_tool.modpath .. "/core_writer.lua")
+dofile(maidroid_tool.modpath .. "/egg_writer.lua")
 dofile(maidroid_tool.modpath .. "/crafting.lua")
