@@ -11,6 +11,8 @@ function maidroid_tool.register_writer(options)
 	local nodename                              = options.node_name
 	local formspecs                             = options.formspecs
 	local tiles                                 = options.tiles
+	local nodebox                               = options.nodebox
+	local selection_box                         = options.selection_box
 	local duration                              = options.duration
 	local on_activate                           = options.on_activate
 	local on_deactivate                         = options.on_deactivate
@@ -168,8 +170,8 @@ function maidroid_tool.register_writer(options)
 			groups                         = {cracky = 2},
 			is_ground_content              = false,
 			sounds                         = default.node_sound_stone_defaults(),
-			node_box                       = options.node_box,
-			selection_box                  = options.selection_box,
+			node_box                       = node_box,
+			selection_box                  = selection_box,
 			tiles                          = tiles.inactive,
 			can_dig                        = can_dig,
 			on_timer                       = on_timer,
@@ -199,8 +201,8 @@ function maidroid_tool.register_writer(options)
 			groups                         = {cracky = 2},
 			is_ground_content              = false,
 			sounds                         = default.node_sound_stone_defaults(),
-			node_box                       = options.node_box,
-			selection_box                  = options.selection_box,
+			node_box                       = node_box,
+			selection_box                  = selection_box,
 			tiles                          = tiles.active,
 			can_dig                        = can_dig,
 			on_timer                       = on_timer,
