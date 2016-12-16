@@ -44,13 +44,13 @@ do -- register core writer
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]",
 
-		["active"] = function(t)
-			local arrow_percent = (100 / 40) * writing_time
+		["active"] = function(time)
+			local arrow_percent = (100 / 40) * time
 			local merter_percent = 0
-			if writing_time % 16 >= 8 then
-				meter_percent = (8 - (writing_time % 8)) * (100 / 8)
+			if time % 16 >= 8 then
+				meter_percent = (8 - (time % 8)) * (100 / 8)
 			else
-				meter_percent = (writing_time % 8) * (100 / 8)
+				meter_percent = (time % 8) * (100 / 8)
 			end
 			return "size[8,9]"
 				.. default.gui_bg
