@@ -8,16 +8,17 @@ maidroid_tool.shared = {}
 -- maidroid_tool.shared.generate_writer is a shared
 -- function called for registering egg writer and core writer.
 function maidroid_tool.shared.generate_writer(options)
-	local nodename                             = options.node_name
-	local formspecs                            = options.formspecs
-	local duration                             = options.duration
-	local on_activate                          = options.on_activate
-	local on_deactivate                        = options.on_deactivate
-	local empty_itemname                       = options.empty_itemname
-	local dye_item_map                         = options.dye_item_map
-	local is_mainitem                          = options.is_mainitem
-	local on_metadata_inventory_put_to_main    = options.on_metadata_inventory_put_to_main
-	local on_metadata_inventory_take_from_main = options.on_metadata_inventory_take_from_main
+	local nodename                              = options.node_name
+	local formspecs                             = options.formspecs
+	local tiles                                 = options.tiles
+	local duration                              = options.duration
+	local on_activate                           = options.on_activate
+	local on_deactivate                         = options.on_deactivate
+	local empty_itemname                        = options.empty_itemname
+	local dye_item_map                          = options.dye_item_map
+	local is_mainitem                           = options.is_mainitem
+	local on_metadata_inventory_put_to_main     = options.on_metadata_inventory_put_to_main
+	local on_metadata_inventory_take_from_main  = options.on_metadata_inventory_take_from_main
 
 	-- can_dig is a common callback.
 	local function can_dig(pos, player)
@@ -169,7 +170,7 @@ function maidroid_tool.shared.generate_writer(options)
 			sounds                         = default.node_sound_stone_defaults(),
 			node_box                       = options.node_box,
 			selection_box                  = options.selection_box,
-			tiles                          = inactive_tiles,
+			tiles                          = tiles.inactive,
 			can_dig                        = can_dig,
 			on_timer                       = on_timer,
 			on_construct                   = on_construct,
@@ -200,7 +201,7 @@ function maidroid_tool.shared.generate_writer(options)
 			sounds                         = default.node_sound_stone_defaults(),
 			node_box                       = options.node_box,
 			selection_box                  = options.selection_box,
-			tiles                          = tiles,
+			tiles                          = tiles.active,
 			can_dig                        = can_dig,
 			on_timer                       = on_timer,
 			allow_metadata_inventory_put   = allow_metadata_inventory_put,
