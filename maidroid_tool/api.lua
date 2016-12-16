@@ -7,7 +7,7 @@ maidroid_tool.shared = {}
 
 -- maidroid_tool.shared.generate_writer is a shared
 -- function called for registering egg writer and core writer.
-function maidroid_tool.generate_writer(options)
+function maidroid_tool.register_writer(options)
 	local nodename                              = options.node_name
 	local formspecs                             = options.formspecs
 	local tiles                                 = options.tiles
