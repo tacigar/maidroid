@@ -523,13 +523,13 @@ function maidroid.register_maidroid(product_name, def)
 		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
 	})
 
-	-- register a spawner for debugging maidroid mods.
-	minetest.register_craftitem(product_name .. "_spawner", {
-		description     = product_name .. " spawner",
-		inventory_image = def.inventory_image,
+	-- register maidroid egg.
+	minetest.register_craftitem(product_name .. "_egg", {
+		description     = production_name .. " egg",
+		inventory_image = def.egg_image,
 		stack_max       = 1,
 
-		on_use  = function(item_stack, user, pointed_thing)
+		on_use = function(item_stack, user, pointed_thing)
 			if pointed_thing.above ~= nil then
 				minetest.add_entity(pointed_thing.above, product_name)
 				return itemstack
