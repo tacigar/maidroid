@@ -3,6 +3,11 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
+maidroid.register_egg("maidroid:empty_egg", {
+	description     = "Empty Egg",
+	inventory_image = "maidroid_empty_egg.png",
+})
+
 maidroid.register_maidroid("maidroid:maidroid_mk1", {
 	hp_max     = 10,
 	weight     = 20,
