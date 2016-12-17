@@ -7,7 +7,8 @@ Maidroid MOD は, Minecraft のMOD `littleMaidMob` にインスパイアされ�
 Maidroid を作り出すには, まず空の卵と卵に命を吹き込むための, Maidroid-Egg Writer を作成しなければなりません.
 それらのレシピを以下に示します.
 
-画像
+<img src="http://i.imgur.com/6ZGQF4J.png" />
+<img src="http://i.imgur.com/Y5tzPGM.png" />
 
 次に, Maidroid-Egg Writer 設置, 右クリックし, `Egg` と書かれたスロットに先ほど作成した空の卵を置きます.
 また, `Fuel` と書かれたスロットには石炭を, `Dye` と書かれたスロットには染料を設置します.
@@ -27,7 +28,8 @@ Core を作り出す手順は Maidroid を作り出す手順と非常に似て�
 まず, 空の Core と Core に情報を書き込む為の Core Writer を作成します.
 それらのレシピを以下に示します.
 
-画像
+<img src="http://i.imgur.com/Sxnr38Y.png">
+<img src="http://i.imgur.com/97VENIl.png">
 
 Core Writer を設置 & 右クリックし, `Core` スロットに空の Core, `Fuel` スロットに石炭, `Dye` スロットに染料を設置します.
 Maidroid-Egg Writer 同様, 設置される染料の種類によって, 生成される Core の種類が変化します.
@@ -39,6 +41,7 @@ Maidroid-Egg Writer 同様, 設置される染料の種類によって, 生成�
 
 # Dependencies
 
+- bucket
 - default
 - dye
 
