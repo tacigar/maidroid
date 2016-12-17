@@ -100,9 +100,10 @@ do -- register egg writer
 		egg_entity:stop_move()
 	end
 
-	local function on_activate(pos)
+	local function on_activate(pos, output)
 		local egg_entity = get_nearest_egg_entity(pos)
-		egg_entity:start_move()
+		egg_entity.object:set_properties{textures={"maidroid:empty_egg"}}
+		egg_entity:start_move(output)
 	end
 
 	local function on_metadata_inventory_put_to_main(pos)
@@ -139,56 +140,77 @@ end -- register egg writer
 do -- register a definition of an egg entity
 	local function on_activate(self, staticdata)
 		self.object:set_properties{textures={"maidroid:empty_egg"}}
+		self.object:set_properties{automatic_rotate = 1}
 
 		if staticdata ~= "" then
 			local data = minetest.deserialize(staticdata)
-			self.is_moving = data["is_moving"]
+
+			self.is_moving       = data["is_moving"]
+			self.center_position = data["center_position"]
+			self.output          = data["output"]
+			self.current_egg     = data["current_egg"]
+
+			self.object:set_properties{textures={self.current_egg}}
+			self:initialize(self.center_position)
 
 			if self.is_moving then
 				self:start_move()
 			end
+		else
+			self.object:set_properties{textures={"maidroid:empty_egg"}}
 		end
 	end
 
-	local function start_move(self)
-		self.object:set_properties{automatic_rotate = 1}
-		is_moving = true
+	local function start_move(self, output)
+		self.is_moving = true
+		self.output = output
 	end
 
 	local function stop_move(self)
-		self.object:set_properties{automatic_rotate = 0}
-		is_moving = false
+		self.object:set_properties{textures={self.output}}
+		self.is_moving = false
+		self.current_egg = self.output
+		self.output = ""
 	end
 
 	local function get_staticdata(self)
 		local data = {
-			["is_moving"] = self.is_moving,
-			["center_position"] = self.center_position,
+			["is_moving"]        = self.is_moving,
+			["center_position"]  = self.center_position,
+			["output"]           = self.output,
+			["current_egg"]      = self.current_egg,
 		}
 		return minetest.serialize(data)
 	end
 
 	local function on_step(self, dtime)
-		if self.is_moving then
-
-		end
-		-- move up and down.
 		if self.angle >= 360 then
 			self.angle = 0
 		else
-			self.angle = self.angle + 3
+			self.angle = self.angle + 2
 		end
-		local current_pos = self.object:getpos()
-		self.object:setpos(
-			vector.add(current_pos, {
-				x = 0,
-				y = math.sin(self.angle * math.pi / 180.0) * 0.0025,
-				z = 0
+
+		if self.is_moving then
+			local length = 0.15
+			local new_position = vector.add(self.center_position, {
+				x = length * math.cos(self.angle * math.pi / 180.0),
+				y = math.sin(self.angle * math.pi / 180.0) * 0.035,
+				z = length * math.sin(self.angle * math.pi / 180.0),
 			})
-		)
+			self.object:setpos(new_position)
+		else
+			self.object:setpos(
+				vector.add(self.center_position, {
+					x = 0,
+					y = math.sin(self.angle * math.pi / 180.0) * 0.035,
+					z = 0
+				})
+			)
+		end
 	end
 
 	local function initialize(self, pos)
+		self.angle = 0
 		self.center_position = pos
 		local init_pos = vector.add(pos, {x = 0.15, y = 0, z = 0})
 		self.object:setpos(init_pos)
@@ -206,6 +228,8 @@ do -- register a definition of an egg entity
 		get_staticdata   = get_staticdata,
 		on_step          = on_step,
 		initialize       = initialize,
+		output           = "",
+		current_egg      = "",
 		center_position  = nil,
 		is_moving        = false,
 		angle            = 0,
