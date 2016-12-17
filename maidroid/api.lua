@@ -209,7 +209,7 @@ end)
 
 -- register empty item entity definition.
 -- this entity may be hold by maidroid's hands.
-;(function ()
+do
 	minetest.register_craftitem("maidroid:dummy_empty_craftitem", {
 		wield_image = "maidroid_dummy_empty_craftitem.png",
 	})
@@ -260,7 +260,7 @@ end)
 		on_step       = on_step,
 		itemname      = "",
 	})
- end) ()
+end
 
 ---------------------------------------------------------------------
 
