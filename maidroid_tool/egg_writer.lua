@@ -12,8 +12,8 @@ local formspec = { -- want to change.
 		.. default.gui_bg
 		.. default.gui_bg_img
 		.. default.gui_slots
-		.. "label[3.75,0;Core]"
-		.. "list[current_name;core;3.5,0.5;1,1;]"
+		.. "label[3.75,0;Egg]"
+		.. "list[current_name;main;3.5,0.5;1,1;]"
 		.. "label[2.75,2;Coal]"
 		.. "list[current_name;fuel;2.5,2.5;1,1;]"
 		.. "label[4.75,2;Dye]"
@@ -36,7 +36,7 @@ local formspec = { -- want to change.
 			.. default.gui_bg_img
 			.. default.gui_slots
 			.. "label[3.75,0;Core]"
-			.. "list[current_name;core;3.5,0.5;1,1;]"
+			.. "list[current_name;main;3.5,0.5;1,1;]"
 			.. "label[2.75,2;Coal]"
 			.. "list[current_name;fuel;2.5,2.5;1,1;]"
 			.. "label[4.75,2;Dye]"
