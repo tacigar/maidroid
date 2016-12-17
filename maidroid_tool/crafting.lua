@@ -11,3 +11,12 @@ minetest.register_craft{
 		{     "default:cobble",      "default:cobble",      "default:cobble"},
 	},
 }
+
+minetest.register_craft{
+	output = "maidroid_tool:egg_writer",
+	recipe = {
+		{    "default:diamond", "bucket:bucket_water",     "default:diamond"},
+		{     "default:cobble", "default:steel_ingot",      "default:cobble"},
+		{"default:steel_ingot",      "default:cobble", "default:steel_ingot"},
+	},
+}

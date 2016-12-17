@@ -1,3 +1,4 @@
+bucket
 default
 dye
 maidroid
