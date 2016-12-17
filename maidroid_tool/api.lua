@@ -3,8 +3,6 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
-maidroid_tool.shared = {}
-
 -- maidroid_tool.shared.generate_writer is a shared
 -- function called for registering egg writer and core writer.
 function maidroid_tool.register_writer(nodename, options)
