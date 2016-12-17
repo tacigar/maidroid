@@ -56,11 +56,41 @@ do -- register egg writer
 
 	local tiles = {
 		["active"] = {
-			"default_stone.png",
+			"maidroid_tool_egg_writer_top.png",
+			"maidroid_tool_egg_writer_bottom.png",
+			"maidroid_tool_egg_writer_right.png",
+			"maidroid_tool_egg_writer_right.png^[transformFX",
+			{
+				backface_culling = false,
+				image = "maidroid_tool_egg_writer_front_active.png^[transformFX",
+
+				animation = {
+					type      = "vertical_frames",
+					aspect_w  = 16,
+					aspect_h  = 16,
+					length    = 1.5,
+				},
+			},
+			{
+				backface_culling = false,
+				image = "maidroid_tool_egg_writer_front_active.png",
+
+				animation = {
+					type      = "vertical_frames",
+					aspect_w  = 16,
+					aspect_h  = 16,
+					length    = 1.5,
+				},
+			},
 		},
 
 		["inactive"] = {
-			"default_stone.png",
+			"maidroid_tool_egg_writer_top.png",
+			"maidroid_tool_egg_writer_bottom.png",
+			"maidroid_tool_egg_writer_right.png",
+			"maidroid_tool_egg_writer_right.png^[transformFX",
+			"maidroid_tool_egg_writer_front.png^[transformFX",
+			"maidroid_tool_egg_writer_front.png",
 		},
 	}
 
