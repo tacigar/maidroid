@@ -22,6 +22,10 @@ maidroid.registered_maidroids = {}
 -- definitions of core registered by maidroid.register_core.
 maidroid.registered_cores = {}
 
+-- maidroid.registered_eggs represents a table that contains
+-- definition of egg registered by maidroid.register_egg.
+maidroid.registered_eggs = {}
+
 -- maidroid.is_core reports whether a item is a core item by the name.
 function maidroid.is_core(item_name)
 	if maidroid.registered_cores[item_name] then
@@ -139,7 +143,7 @@ end
 function maidroid.maidroid.move_main_to_wield(self, itemname)
 	local inv = self:get_inventory()
 	local main_size = inv:get_size("main")
-	
+
 	for i = 1, main_size do
 		local stack = inv:get_stack("main", i)
 		if stack:get_name() == itemname then
@@ -209,7 +213,7 @@ end)
 	minetest.register_craftitem("maidroid:dummy_empty_craftitem", {
 		wield_image = "maidroid_dummy_empty_craftitem.png",
 	})
-	
+
 	local function on_activate(self, staticdata)
 		-- attach to the nearest maidroid.
 		local all_objects = minetest.get_objects_inside_radius(self.object:getpos(), 0.1)
@@ -271,10 +275,29 @@ function maidroid.register_core(core_name, def)
 	})
 end
 
+-- maidroid.register_egg registers a definition of a new egg.
+function maidroid.register_egg(egg_name, def)
+	maidroid.register_eggs[egg_name] = def
+
+	minetest.register_craftitem(egg_name, {
+		description     = def.description,
+		inventory_image = def.inventory_image,
+		stack_max       = 1,
+
+		on_use = function(item_stack, user, pointed_thing)
+			if pointed_thing.above ~= nil then
+				minetest.add_entity(pointed_thing.above, def.product_name)
+				return itemstack
+			end
+			return nil
+		end,
+	})
+end
+
 -- maidroid.register_maidroid registers a definition of a new maidroid.
 function maidroid.register_maidroid(product_name, def)
 	maidroid.registered_maidroids[product_name] = def
-	
+
 	-- initialize manufacturing number of a new maidroid.
 	if maidroid.manufacturing_data[product_name] == nil then
 		maidroid.manufacturing_data[product_name] = 0
@@ -524,17 +547,9 @@ function maidroid.register_maidroid(product_name, def)
 	})
 
 	-- register maidroid egg.
-	minetest.register_craftitem(product_name .. "_egg", {
+	maidroid.register_egg(production_name .. "_egg", {
 		description     = production_name .. " egg",
 		inventory_image = def.egg_image,
-		stack_max       = 1,
-
-		on_use = function(item_stack, user, pointed_thing)
-			if pointed_thing.above ~= nil then
-				minetest.add_entity(pointed_thing.above, product_name)
-				return itemstack
-			end
-			return nil
-		end,
+		product_name    = product_name,
 	})
 end
