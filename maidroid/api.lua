@@ -277,7 +277,7 @@ end
 
 -- maidroid.register_egg registers a definition of a new egg.
 function maidroid.register_egg(egg_name, def)
-	maidroid.register_eggs[egg_name] = def
+	maidroid.registered_eggs[egg_name] = def
 
 	minetest.register_craftitem(egg_name, {
 		description     = def.description,
@@ -547,8 +547,8 @@ function maidroid.register_maidroid(product_name, def)
 	})
 
 	-- register maidroid egg.
-	maidroid.register_egg(production_name .. "_egg", {
-		description     = production_name .. " egg",
+	maidroid.register_egg(product_name .. "_egg", {
+		description     = product_name .. " egg",
 		inventory_image = def.egg_image,
 		product_name    = product_name,
 	})

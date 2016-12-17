@@ -54,15 +54,15 @@ local formspec = { -- want to change.
 
 local tiles = {
 	["active"] = {
-		"default:stone",
+		"default_stone.png",
 	},
 
 	["inactive"] = {
-		"default:stone",
+		"default_stone.png",
 	},
 }
 
-local nodebox = {
+local node_box = {
 	type = "fixed",
 	fixed = {
 		{   -0.5,  -0.375, -0.4375,     0.5,  0.3125, 0.4375},
@@ -82,12 +82,12 @@ local selection_box = {
 }
 
 maidroid_tool.register_writer("maidroid_tool:egg_writer", {
+	description     = "maidroid tool : egg writer",
 	formspec        = formspec,
 	tiles           = tiles,
-	nodebox         = nodebox,
+	node_box        = node_box,
 	selection_box   = selection_box,
 	duration        = 30,
 	empty_itemname  = "maidroid:empty_egg",
 	dye_item_map    = dye_item_map,
-	is_mainitem     = maidroid.is_egg,
-}
+})

@@ -5,11 +5,11 @@
 
 do -- register core writer
 
-	local dye_core_map = {
+	local dye_item_map = {
 		["dye:red"] = "maidroid_core:basic",
 	}
 
-	local nodebox = {
+	local node_box = {
 		type = "fixed",
 		fixed = {
 			{-0.4375,   -0.25, -0.4375,  0.4375,  0.1875,  0.4375},
@@ -34,7 +34,7 @@ do -- register core writer
 			.. default.gui_bg_img
 			.. default.gui_slots
 			.. "label[3.75,0;Core]"
-			.. "list[current_name;core;3.5,0.5;1,1;]"
+			.. "list[current_name;main;3.5,0.5;1,1;]"
 			.. "label[2.75,2;Coal]"
 			.. "list[current_name;fuel;2.5,2.5;1,1;]"
 			.. "label[4.75,2;Dye]"
@@ -57,7 +57,7 @@ do -- register core writer
 				.. default.gui_bg_img
 				.. default.gui_slots
 				.. "label[3.75,0;Core]"
-				.. "list[current_name;core;3.5,0.5;1,1;]"
+				.. "list[current_name;main;3.5,0.5;1,1;]"
 				.. "label[2.75,2;Coal]"
 				.. "list[current_name;fuel;2.5,2.5;1,1;]"
 				.. "label[4.75,2;Dye]"
@@ -110,7 +110,7 @@ do -- register core writer
 					length    = 1.5,
 				},
 			},
-		}
+		},
 	}
 
 	-- get_nearest_core_entity returns the nearest core entity.
@@ -136,7 +136,7 @@ do -- register core writer
 
 	local function on_metadata_inventory_put_to_main(pos)
 		local entity_position = {
-			x = pos.x, y = pos.y + 0.65, z = pos.z
+			x = pos.x, y = pos.y + 0.65, z = pos.z,
 		}
 		minetest.add_entity(entity_position, "maidroid_tool:core_entity")
 	end
@@ -147,19 +147,19 @@ do -- register core writer
 	end
 
 	maidroid_tool.register_writer("maidroid_tool:core_writer", {
+		description                           = "maidroid tool : core writer",
 		formspec                              = formspec,
 		tiles                                 = tiles,
-		nodebox                               = nodebox,
+		node_box                              = node_box,
 		selection_box                         = selection_box,
 		duration                              = 40,
 		on_activate                           = on_activate,
 		on_deactivate                         = on_deactivate,
 		empty_itemname                        = "maidroid_core:empty",
 		dye_item_map                          = dye_item_map,
-		is_mainitem                           = maidroid.is_core,
 		on_metadata_inventory_put_to_main     = on_metadata_inventory_put_to_main,
 		on_metadata_inventory_take_from_main  = on_metadata_inventory_take_from_main,
-	}
+	})
 
 end
 
@@ -195,23 +195,45 @@ do
 
 	local function on_activate(self, staticdata)
 		self.object:set_properties{textures = {"maidroid_tool:core_node"}}
+
+		print(staticdata)
+
+		if staticdata ~= "" then
+			local data = minetest.deserialize(staticdata)
+			self.is_rotating = data["is_rotating"]
+
+			if self.is_rotating then
+				self:start_rotate()
+			end
+		end
 	end
 
 	local function start_rotate(self)
 		self.object:set_properties{automatic_rotate = 1}
+		self.is_rotating = true
 	end
 
 	local function stop_rotate(self)
 		self.object:set_properties{automatic_rotate = 0}
+		self.is_rotating = false
+	end
+
+	local function get_staticdata(self)
+		local data = {
+			["is_rotating"] = self.is_rotating,
+		}
+		return minetest.serialize(data)
 	end
 
 	minetest.register_entity("maidroid_tool:core_entity", {
-		physical      = false,
-		visual        = "wielditem",
-		visual_size   = {x = 0.5, y = 0.5},
-		collisionbox  = {0, 0, 0, 0, 0, 0},
-		on_activate   = on_activate,
-		start_rotate  = start_rotate,
-		stop_rotate   = stop_rotate,
+		physical        = false,
+		visual          = "wielditem",
+		visual_size     = {x = 0.5, y = 0.5},
+		collisionbox    = {0, 0, 0, 0, 0, 0},
+		on_activate     = on_activate,
+		start_rotate    = start_rotate,
+		stop_rotate     = stop_rotate,
+		get_staticdata  = get_staticdata,
+		is_rotating     = false,
 	})
 end

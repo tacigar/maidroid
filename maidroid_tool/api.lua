@@ -8,9 +8,10 @@ maidroid_tool.shared = {}
 -- maidroid_tool.shared.generate_writer is a shared
 -- function called for registering egg writer and core writer.
 function maidroid_tool.register_writer(nodename, options)
-	local formspecs                             = options.formspecs
+	local description                           = options.description
+	local formspec                              = options.formspec
 	local tiles                                 = options.tiles
-	local nodebox                               = options.nodebox
+	local node_box                              = options.node_box
 	local selection_box                         = options.selection_box
 	local duration                              = options.duration
 	local on_activate                           = options.on_activate
@@ -52,7 +53,7 @@ function maidroid_tool.register_writer(nodename, options)
 
 		-- if time is positive, this node is active.
 		if time >= 0 then
-			if time <= max_time then
+			if time <= duration then
 				meta:set_float("time", time + 1)
 				meta:set_string("formspec", formspec.active(time))
 			else
@@ -100,15 +101,15 @@ function maidroid_tool.register_writer(nodename, options)
 
 		if (listname == "fuel" and itemname == "default:coal_lump") then
 			return stack:get_count()
-		elseif listname == "dye" and dye_core_map[itemname] ~= nil then
+		elseif listname == "dye" and dye_item_map[itemname] ~= nil then
 			return stack:get_count()
-		elseif listname == "main" and is_mainitem(itemname) then
+		elseif listname == "main" and itemname == empty_itemname then
 			return stack:get_count()
 		end
 		return 0
 	end
 
-	-- allow_metadata_inventory_move is a common callback for the core writer.
+	-- allow_metadata_inventory_move is a common callback for the node.
 	local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
@@ -116,10 +117,10 @@ function maidroid_tool.register_writer(nodename, options)
 		return allow_metadata_inventory_put(pos, listname, to_index, stack, player)
 	end
 
-	do -- register a definition of an inactive core writer.
+	do -- register a definition of an inactive node.
 		local function on_construct(pos)
 			local meta = minetest.get_meta(pos)
-			meta:set_string("formspec", formspec_inactive)
+			meta:set_string("formspec", formspec.inactive)
 			meta:set_string("output", "")
 			meta:set_string("time", -1)
 
@@ -161,8 +162,8 @@ function maidroid_tool.register_writer(nodename, options)
 			return stack:get_count() -- maybe add more.
 		end
 
-		minetest.register_node("maidroid_tool:core_writer", {
-			description                    = "maidroid tool : core writer",
+		minetest.register_node(nodename, {
+			description                    = description,
 			drawtype                       = "nodebox",
 			paramtype                      = "light",
 			paramtype2                     = "facedir",
@@ -185,15 +186,15 @@ function maidroid_tool.register_writer(nodename, options)
 
 	end -- end register inactive node.
 
-	do -- register a definition of an active core writer.
+	do -- register a definition of an active node.
 		local function allow_metadata_inventory_take(pos, listname, index, stack, player)
-			if listname == "core" then
+			if listname == "main" then
 				return 0
 			end
 			return stack:get_count()
 		end
 
-		minetest.register_node("maidroid_tool:core_writer_active", {
+		minetest.register_node(nodename .. "_active", {
 			drawtype                       = "nodebox",
 			paramtype                      = "light",
 			paramtype2                     = "facedir",
