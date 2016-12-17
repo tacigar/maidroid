@@ -13,9 +13,10 @@ maidroid.register_maidroid("maidroid:maidroid_mk1", {
 	weight     = 20,
 	mesh       = "maidroid.b3d",
 	textures   = {"maidroid_mk1.png"},
-	egg_image  = "maidroid_mk1_egg.png",
+	egg_image  = "maidroid_maidroid_mk1_egg.png",
 })
 
+--[[
 maidroid.register_maidroid("maidroid:maidroid_mk2", {
 	hp_max     = 10,
 	weight     = 20,
@@ -31,3 +32,4 @@ maidroid.register_maidroid("maidroid:maidroid_mk3", {
 	textures   = {"maidroid_mk3.png"},
 	egg_image  = "maidroid_mk3_egg.png",
 })
+]]--
