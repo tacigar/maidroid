@@ -1,40 +1,50 @@
-# Maidroid
+# Overview
 
-Maidroidは、Minecraft用のMOD `littleMaidMob` にインスパイアされて開発している、Minetestの世界にメイドロボットを追加するMOD(MOD Pack)です。
+Maidroid MOD は, Minecraft のMOD `littleMaidMob` にインスパイアされて開発を始めた, 孤独な Minetest の世界にメイドのロボットを追加する MOD です。
 
 # Usage
 
-## Overview
+Maidroid を作り出すには, まず空の卵と卵に命を吹き込むための, Maidroid-Egg Writer を作成しなければなりません.
+それらのレシピを以下に示します.
 
-- MaidroidはCoreと呼ばれるチップを埋め込まれると、そのチップに埋め込まれたプログラムを実行する
-- CoreはCoreWriterと呼ばれるチップへの書き込みを行う機械を使うことで、様々なチップへ変換することができる
+画像
 
-## Core
+次に, Maidroid-Egg Writer 設置, 右クリックし, `Egg` と書かれたスロットに先ほど作成した空の卵を置きます.
+また, `Fuel` と書かれたスロットには石炭を, `Dye` と書かれたスロットには染料を設置します.
+この染料の色によって, 生成される卵の種類が変化します.
+以下に染料と, 生成される卵の対応を示します.
 
-Coreの種類とその機能の説明を以下に示す。
-
-|Core|説明|
+|染料|Egg|
 |:--|:--|
-|`maidroid_core:empty`|何もしない。CoreWriterで変換するための材料|
-|`maidroid_core:basic`|プレーヤーの後ろを付いてくる。荷物持ちくらいにはなる|
+|`dye:red`|`maidroid:maidroid_mk1_egg`|
 
-## Crafting
+しばらく待つと, 空の卵に命が吹き込まれ, 新しい卵に変換されます.
+この卵を取り出し地面に投げつけると, Maidroid が誕生します.
 
-```
-"maidroid_tool:core_writer" : {
-	{"default:steel_ingot",     "default:diamond", "default:steel_ingot"},
-	{     "default:cobble", "default:steel_ingot",      "default:cobble"},
-	{     "default:cobble",      "default:cobble",      "default:cobble"},
-}
-```
+この状態では, Maidroid は止まったままです.
+Maidroid を動かすためには, Core, つまり Maidroid の脳を埋め込む必要があります.
+Core を作り出す手順は Maidroid を作り出す手順と非常に似ています.
+まず, 空の Core と Core に情報を書き込む為の Core Writer を作成します.
+それらのレシピを以下に示します.
 
-CoreWriterを用いてEmptyCoreへの書き込みを行う際には染料が必要であり、染料と生成されるCoreの種類は一対一に対応する。
-その対応関係を以下に列挙する。
+画像
 
-|染料|生成されるCore|
-|:--|:--|
-||`maidroid_core:empty`|
-|`dye:red`|`maidroid_core:basic`|
+Core Writer を設置 & 右クリックし, `Core` スロットに空の Core, `Fuel` スロットに石炭, `Dye` スロットに染料を設置します.
+Maidroid-Egg Writer 同様, 設置される染料の種類によって, 生成される Core の種類が変化します.
+以下に染料と, 生成される Core の対応を示します.
 
+|染料|Core|説明|
+|:--|:--|:--|
+|`dye:red`|`maidroid_core:basic`|プレーヤーを追いかけてくる. |
 
+# Dependencies
 
+- default
+- dye
+
+# Lisense
+
+- Source Code : [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html) or later
+- Resources : [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) or later
+
+# Contributers
