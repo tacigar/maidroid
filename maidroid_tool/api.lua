@@ -72,8 +72,10 @@ function maidroid_tool.register_writer(nodename, options)
 			local main_name = main_list[1]:get_name()
 
 			if main_name == empty_itemname and (not fuel_list[1]:is_empty()) and (not dye_list[1]:is_empty()) then
+				local output = dye_item_map[dye_list[1]:get_name()]
+
 				meta:set_string("time", 0)
-				meta:set_string("output", dye_item_map[dye_list[1]:get_name()])
+				meta:set_string("output", output)
 
 				local fuel_stack = fuel_list[1]
 				fuel_stack:take_item()
@@ -86,7 +88,7 @@ function maidroid_tool.register_writer(nodename, options)
 				swap_node(pos, nodename .. "_active")
 
 				if on_activate ~= nil then -- call on_activate callback.
-					on_activate(pos)
+					on_activate(pos, output)
 				end
 			end
 		end

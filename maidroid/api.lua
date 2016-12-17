@@ -250,15 +250,15 @@ end)
 	end
 
 	minetest.register_entity("maidroid:dummy_item", {
-		hp_max		= 1,
-		visual		= "wielditem",
-		visual_size	= {x = 0.025, y = 0.025},
+		hp_max		    = 1,
+		visual		    = "wielditem",
+		visual_size	  = {x = 0.025, y = 0.025},
 		collisionbox	= {0, 0, 0, 0, 0, 0},
-		physical	= false,
-		textures	= {"air"},
-		on_activate	= on_activate,
-		on_step         = on_step,
-		itemname        = "",
+		physical	    = false,
+		textures	    = {"air"},
+		on_activate	  = on_activate,
+		on_step       = on_step,
+		itemname      = "",
 	})
  end) ()
 

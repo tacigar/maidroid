@@ -10,3 +10,4 @@ maidroid.modpath = minetest.get_modpath(maidroid.modname)
 
 dofile(maidroid.modpath .. "/api.lua")
 dofile(maidroid.modpath .. "/register.lua")
+dofile(maidroid.modpath .. "/crafting.lua")
