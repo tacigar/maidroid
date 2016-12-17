@@ -39,6 +39,10 @@ Maidroid-Egg Writer 同様, 設置される染料の種類によって, 生成�
 |:--|:--|:--|
 |`dye:red`|`maidroid_core:basic`|プレーヤーを追いかけてくる. |
 
+Core が生成されたら早速 Maidroid に埋め込みましょう.
+Maidroid を右クリックし, Core と書かれたスロットに先ほど作成した Core を設置します.
+すると, Maidroid が動き始めるでしょう.
+
 # Dependencies
 
 - bucket
