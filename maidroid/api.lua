@@ -285,7 +285,7 @@ function maidroid.register_egg(egg_name, def)
 		stack_max       = 1,
 
 		on_use = function(item_stack, user, pointed_thing)
-			if pointed_thing.above ~= nil then
+			if pointed_thing.above ~= nil and def.product_name ~= nil then
 				minetest.add_entity(pointed_thing.above, def.product_name)
 				return itemstack
 			end
