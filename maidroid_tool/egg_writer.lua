@@ -35,7 +35,7 @@ local formspec = { -- want to change.
 			.. default.gui_bg
 			.. default.gui_bg_img
 			.. default.gui_slots
-			.. "label[3.75,0;Core]"
+			.. "label[3.75,0;Egg]"
 			.. "list[current_name;main;3.5,0.5;1,1;]"
 			.. "label[2.75,2;Coal]"
 			.. "list[current_name;fuel;2.5,2.5;1,1;]"
@@ -87,7 +87,7 @@ maidroid_tool.register_writer("maidroid_tool:egg_writer", {
 	tiles           = tiles,
 	node_box        = node_box,
 	selection_box   = selection_box,
-	duration        = 30,
+	duration        = 40,
 	empty_itemname  = "maidroid:empty_egg",
 	dye_item_map    = dye_item_map,
 })
