@@ -224,18 +224,18 @@ do -- register a definition of an egg entity
 			local length = 0.15
 			local new_position = vector.add(self.center_position, {
 				x = length * math.cos(self.angle * math.pi / 180.0),
-				y = math.sin(self.angle * math.pi / 180.0) * 0.035,
+				y = math.sin(self.angle * math.pi / 180.0) * 0.025,
 				z = length * math.sin(self.angle * math.pi / 180.0),
 			})
 			self.object:setpos(new_position)
 		else
-			self.object:setpos(
-				vector.add(self.center_position, {
-					x = 0,
-					y = math.sin(self.angle * math.pi / 180.0) * 0.035,
-					z = 0
-				})
-			)
+			local cur_position = self.object:getpos()
+			local new_position = {
+				x = cur_position.x,
+				y = self.center_position.y + math.sin(self.angle * math.pi / 180.0) * 0.025,
+				z = cur_position.z,
+			}
+			self.object:setpos(new_position)
 		end
 	end
 
