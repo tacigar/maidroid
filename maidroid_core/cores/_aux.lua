@@ -6,7 +6,7 @@
 maidroid_core._aux = {}
 
 local default_searching_range = {
-	x = 5, y = 1, z = 5,
+	x = 5, y = 0, z = 5,
 }
 
 -- maidroid_core._aux.search_surrounding searchs maidroid surrounding.
