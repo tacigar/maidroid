@@ -1,5 +1,8 @@
 # Maidroid
 
+<img src="http://i.imgur.com/7HTh30v.png" />
+<img src="http://i.imgur.com/wF1BBe6.gif" />
+
 ## Overview
 
 Maidroid MOD is a MOD for Minetest which adds maid robots, inspired by littleMaidMob.

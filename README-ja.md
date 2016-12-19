@@ -1,8 +1,13 @@
-# Overview
+# Maidroid
+
+<img src="http://i.imgur.com/7HTh30v.png" />
+<img src="http://i.imgur.com/wF1BBe6.gif" />
+
+## Overview
 
 Maidroid MOD は, Minecraft のMOD `littleMaidMob` にインスパイアされて開発を始めた, 孤独な Minetest の世界にメイドのロボットを追加する MOD です。
 
-# Usage
+## Usage
 
 Maidroid を作り出すには, まず空の卵と卵に命を吹き込むための, Maidroid-Egg Writer を作成しなければなりません.
 それらのレシピを以下に示します.
@@ -43,15 +48,15 @@ Core が生成されたら早速 Maidroid に埋め込みましょう.
 Maidroid を右クリックし, Core と書かれたスロットに先ほど作成した Core を設置します.
 すると, Maidroid が動き始めるでしょう.
 
-# Dependencies
+## Dependencies
 
 - bucket
 - default
 - dye
 
-# Lisense
+## Lisense
 
 - Source Code : [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html) or later
 - Resources : [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) or later
 
-# Contributers
+## Contributers
