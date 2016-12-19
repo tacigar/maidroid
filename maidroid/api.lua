@@ -174,12 +174,12 @@ function maidroid.maidroid.pickup_item(self, is_target)
 
 			if cond then
 				local inv = maidroid:get_inventory()
-        local stack = ItemStack(itemstring)
-        local leftover = inv:add_item("main", stack)
+				local stack = ItemStack(itemstring)
+				local leftover = inv:add_item("main", stack)
 
-        minetest.add_item(obj:getpos(), leftover)
-        obj:get_luaentity().itemstring = ""
-        obj:remove()
+				minetest.add_item(obj:getpos(), leftover)
+				obj:get_luaentity().itemstring = ""
+				obj:remove()
 			end
 		end
 	end
