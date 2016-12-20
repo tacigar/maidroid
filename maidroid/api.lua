@@ -6,9 +6,9 @@
 -- maidroid.animation_frames represents the animation frame data
 -- of "models/maidroid.b3d".
 maidroid.animation_frames = {
-	STAND     = {x =   0, y =  79},
+	STAND     = {x =   1, y =  78},
 	SIT       = {x =  81, y = 160},
-	LAY       = {x = 162, y = 166},
+	LAY       = {x = 162, y = 165},
 	WALK      = {x = 168, y = 187},
 	MINE      = {x = 189, y = 198},
 	WALK_MINE = {x = 200, y = 219},
