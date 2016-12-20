@@ -156,6 +156,35 @@ function maidroid.maidroid.move_main_to_wield(self, itemname)
 	return false
 end
 
+-- maidroid.maidroid.pickup_item pickup items placed and put it to main slot.
+function maidroid.maidroid.pickup_item(self, is_target)
+	local pos = self.object:getpos()
+	local radius = 1.0
+	local all_objects = minetest.get_objects_inside_radius(pos, radius)
+
+	for _, obj in ipairs(all_objects) do
+		if not obj:is_player() and obj:get_luaentity() then
+			local itemstring = obj:get_luaentity().itemstring
+			local cond = false
+			if is_target == nil then
+				cond = true
+			elseif is_target(itemstring) then
+				cond = true
+			end
+
+			if cond then
+				local inv = maidroid:get_inventory()
+				local stack = ItemStack(itemstring)
+				local leftover = inv:add_item("main", stack)
+
+				minetest.add_item(obj:getpos(), leftover)
+				obj:get_luaentity().itemstring = ""
+				obj:remove()
+			end
+		end
+	end
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -235,7 +264,7 @@ do
 
 			if maidroid.is_maidroid(luaentity.name) then
 				local stack = luaentity:get_wield_item_stack()
-				if stack:get_name() ~= itemname then
+				if stack:get_name() ~= self.itemname then
 					if stack:is_empty() then
 						self.itemname = ""
 						self.object:set_properties{textures="maidroid:dummy_empty_craftitem"}
@@ -571,6 +600,7 @@ function maidroid.register_maidroid(product_name, def)
 		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
 		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
 		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
+		pickup_item                  = maidroid.maidroid.pickup_item,
 	})
 
 	-- register maidroid egg.
