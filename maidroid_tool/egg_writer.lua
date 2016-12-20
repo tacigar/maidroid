@@ -6,7 +6,21 @@
 do -- register egg writer
 
 	local dye_item_map = {
-		["dye:red"] = "maidroid:maidroid_mk1_egg",
+		["dye:white"]       = "maidroid:maidroid_mk1_egg",
+		["dye:grey"]        = "maidroid:maidroid_mk2_egg",
+		["dye:dark_grey"]   = "maidroid:maidroid_mk3_egg",
+		["dye:black"]       = "maidroid:maidroid_mk4_egg",
+		["dye:blue"]        = "maidroid:maidroid_mk5_egg",
+		["dye:cyan"]        = "maidroid:maidroid_mk6_egg",
+		["dye:green"]       = "maidroid:maidroid_mk7_egg",
+		["dye:dark_green"]  = "maidroid:maidroid_mk8_egg",
+		["dye:yellow"]      = "maidroid:maidroid_mk9_egg",
+		["dye:orange"]      = "maidroid:maidroid_mk10_egg",
+		["dye:brown"]       = "maidroid:maidroid_mk11_egg",
+		["dye:red"]         = "maidroid:maidroid_mk12_egg",
+		["dye:pink"]        = "maidroid:maidroid_mk13_egg",
+		["dye:magenta"]     = "maidroid:maidroid_mk14_egg",
+		["dye:violet"]      = "maidroid:maidroid_mk15_egg",
 	}
 
 	local formspec = { -- want to change.
