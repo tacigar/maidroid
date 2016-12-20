@@ -465,8 +465,35 @@ function maidroid.register_maidroid(product_name, def)
 		return minetest.serialize(data)
 	end
 
+	-- maidroid.maidroid.pickup_item pickup items placed and put it to main slot.
+	function pickup_item(self)
+		local pos = self.object:getpos()
+		local radius = 1.0
+		local all_objects = minetest.get_objects_inside_radius(pos, radius)
+
+		for _, obj in ipairs(all_objects) do
+			if not obj:is_player() and obj:get_luaentity() then
+				local itemstring = obj:get_luaentity().itemstring
+
+				if minetest.registered_nodes[itemstring] ~= nil or minetest.registered_items[itemstring] ~= nil
+				or minetest.registered_tools[itemstring] ~= nil or minetest.registered_craftitems[itemstring] ~= nil then
+					local inv = self:get_inventory()
+					local stack = ItemStack(itemstring)
+					local leftover = inv:add_item("main", stack)
+
+					minetest.add_item(obj:getpos(), leftover)
+					obj:get_luaentity().itemstring = ""
+					obj:remove()
+				end
+			end
+		end
+	end
+
 	-- on_step is a callback function that is called every delta times.
 	local function on_step(self, dtime)
+		-- pickup surrounding item.
+		pickup_item(self)
+
 		-- do core method.
 		if (not self.pause) and self.core_name ~= "" then
 			local core = maidroid.registered_cores[self.core_name]
