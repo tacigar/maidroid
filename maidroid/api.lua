@@ -117,7 +117,7 @@ end
 -- the maidroid's looking direction.
 function maidroid.maidroid.get_look_direction(self)
 	local yaw = self.object:getyaw()
-	return vector.normalize{x = math.sin(yaw), y = 0.0, z = -math.cos(yaw)}
+	return vector.normalize{x = -math.sin(yaw), y = 0.0, z = math.cos(yaw)}
 end
 
 -- maidroid.maidroid.set_animation sets the maidroid's animation.
