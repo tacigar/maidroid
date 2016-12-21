@@ -360,7 +360,6 @@ function maidroid.register_maidroid(product_name, def)
 			.. "list[detached:"..self.inventory_name..";core;4.5,1.5;1,1;]"
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]"
-			.. "button[7,0.25;1,0.875;apply_name;Apply]"
 			.. "label[5.5,1;wield]"
 			.. "list[detached:"..self.inventory_name..";wield_item;5.5,1.5;1,1;]"
 	end
@@ -479,7 +478,6 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_rightclick is a callback function that is called when a player right-click them.
 	local function on_rightclick(self, clicker)
-		formspec_opened_maidroids[clicker] = self
 		minetest.show_formspec(
 			clicker:get_player_name(),
 			"maidroid:gui",
