@@ -33,6 +33,8 @@ minetest.register_craftitem("maidroid_tool:nametag", {
 
 				minetest.show_formspec(player_name, "maidroid_tool:nametag", formspec)
 				maidroid_buf[player_name] = luaentity
+
+				itemstack:take_item()
 				return itemstack
 			end
 		end
