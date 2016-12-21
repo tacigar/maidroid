@@ -20,3 +20,12 @@ minetest.register_craft{
 		{"default:steel_ingot",      "default:cobble", "default:steel_ingot"},
 	},
 }
+
+minetest.register_craft{
+	output = "maidroid_tool:nametag",
+	recipe = {
+		{                   "", "farming:cotton",                    ""},
+		{      "default:paper",  "default:paper",       "default:paper"},
+		{"default:steel_ingot",      "dye:black", "default:steel_ingot"},
+	},
+}

@@ -156,6 +156,11 @@ function maidroid.maidroid.move_main_to_wield(self, itemname)
 	return false
 end
 
+-- maidroid.maidroid.is_named reports the maidroid is still named.
+function maidroid.maidroid.is_named(self)
+	return self.nametag ~= ""
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -178,32 +183,6 @@ maidroid.manufacturing_data = (function()
 	end
 	return {}
 end) ()
-
--- formspec_opened_selves represents a table that contains player names and
--- maidroids whose formspec is opened.
-local formspec_opened_maidroids = {}
-
-minetest.register_on_player_receive_fields(function(player, formname, fields)
-	if formname ~= "maidroid:gui" then
-		return
-	end
-
-	local self = formspec_opened_maidroids[player]
-	if not self then -- if the maidroid is dead now.
-		return
-	end
-
-	if fields.name then
-		if fields.name == "" then
-			self.nametag = self.inventory_name
-		else
-			self.nametag = fields.name
-		end
-		self.object:set_nametag_attributes{
-			text = self.nametag
-		}
-	end
-end)
 
 --------------------------------------------------------------------
 
@@ -372,7 +351,6 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- create_formspec_string returns a string that represents a formspec definition.
 	local function create_formspec_string(self)
-		local nametag = self.object:get_nametag_attributes().text
 		return "size[8,9]"
 			.. default.gui_bg
 			.. default.gui_bg_img
@@ -382,8 +360,6 @@ function maidroid.register_maidroid(product_name, def)
 			.. "list[detached:"..self.inventory_name..";core;4.5,1.5;1,1;]"
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]"
-			.. "button[7,0.25;1,0.875;apply_name;Apply]"
-			.. "field[4.5,0.5;2.75,1;name;name;" .. nametag .. "]"
 			.. "label[5.5,1;wield]"
 			.. "list[detached:"..self.inventory_name..";wield_item;5.5,1.5;1,1;]"
 	end
@@ -396,7 +372,6 @@ function maidroid.register_maidroid(product_name, def)
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
-			self.nametag = self.inventory_name
 
 			-- attach dummy item to new maidroid.
 			minetest.add_entity(self.object:getpos(), "maidroid:dummy_item")
@@ -503,7 +478,6 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_rightclick is a callback function that is called when a player right-click them.
 	local function on_rightclick(self, clicker)
-		formspec_opened_maidroids[clicker] = self
 		minetest.show_formspec(
 			clicker:get_player_name(),
 			"maidroid:gui",
@@ -571,6 +545,7 @@ function maidroid.register_maidroid(product_name, def)
 		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
 		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
 		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
+		is_named                     = maidroid.maidroid.is_named,
 	})
 
 	-- register maidroid egg.
