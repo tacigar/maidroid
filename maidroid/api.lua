@@ -179,32 +179,6 @@ maidroid.manufacturing_data = (function()
 	return {}
 end) ()
 
--- formspec_opened_selves represents a table that contains player names and
--- maidroids whose formspec is opened.
-local formspec_opened_maidroids = {}
-
-minetest.register_on_player_receive_fields(function(player, formname, fields)
-	if formname ~= "maidroid:gui" then
-		return
-	end
-
-	local self = formspec_opened_maidroids[player]
-	if not self then -- if the maidroid is dead now.
-		return
-	end
-
-	if fields.name then
-		if fields.name == "" then
-			self.nametag = self.inventory_name
-		else
-			self.nametag = fields.name
-		end
-		self.object:set_nametag_attributes{
-			text = self.nametag
-		}
-	end
-end)
-
 --------------------------------------------------------------------
 
 -- register empty item entity definition.
@@ -372,7 +346,6 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- create_formspec_string returns a string that represents a formspec definition.
 	local function create_formspec_string(self)
-		local nametag = self.object:get_nametag_attributes().text
 		return "size[8,9]"
 			.. default.gui_bg
 			.. default.gui_bg_img
@@ -383,7 +356,6 @@ function maidroid.register_maidroid(product_name, def)
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]"
 			.. "button[7,0.25;1,0.875;apply_name;Apply]"
-			.. "field[4.5,0.5;2.75,1;name;name;" .. nametag .. "]"
 			.. "label[5.5,1;wield]"
 			.. "list[detached:"..self.inventory_name..";wield_item;5.5,1.5;1,1;]"
 	end
@@ -396,7 +368,6 @@ function maidroid.register_maidroid(product_name, def)
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
-			self.nametag = self.inventory_name
 
 			-- attach dummy item to new maidroid.
 			minetest.add_entity(self.object:getpos(), "maidroid:dummy_item")
