@@ -27,8 +27,6 @@ minetest.register_craftitem("maidroid_tool:nametag", {
 
 		if not obj:is_player() and luaentity then
 			local name = luaentity.name
-			print(name)
-			print(luaentity:is_named())
 
 			if maidroid.registered_maidroids[name] and not luaentity:is_named() then
 				local player_name = user:get_player_name()
