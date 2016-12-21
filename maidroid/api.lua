@@ -161,6 +161,19 @@ function maidroid.maidroid.is_named(self)
 	return self.nametag ~= ""
 end
 
+-- maidroid.maidroid.has_item_in_main reports whether the maidroid has item.
+function maidroid.maidroid.has_item_in_main(self, pred)
+	local inv = self:get_inventory()
+	local stacks = inv:get_list("main")
+
+	for _, stack in ipairs(stacks) do
+		local itemname = stack:get_name()
+		if pred(itemname) then
+			return true
+		end
+	end
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -547,6 +560,7 @@ function maidroid.register_maidroid(product_name, def)
 		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
 		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
 		is_named                     = maidroid.maidroid.is_named,
+		has_item_in_main             = maidroid.maidroid.has_item_in_main,
 	})
 
 	-- register maidroid egg.
