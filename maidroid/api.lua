@@ -156,6 +156,11 @@ function maidroid.maidroid.move_main_to_wield(self, itemname)
 	return false
 end
 
+-- maidroid.maidroid.is_named reports the maidroid is still named.
+function maidroid.maidroid.is_named(self)
+	return self.nametag ~= ""
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -542,6 +547,7 @@ function maidroid.register_maidroid(product_name, def)
 		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
 		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
 		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
+		is_named                     = maidroid.maidroid.is_named,
 	})
 
 	-- register maidroid egg.
