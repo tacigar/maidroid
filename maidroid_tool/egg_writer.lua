@@ -130,21 +130,22 @@ do -- register egg writer
 	}
 
 	local function get_nearest_egg_entity(pos)
-		local all_objects = minetest.get_objects_inside_radius(pos, 1.0)
+		pos.y = pos.y + 0.25 -- egg entity is above.
+		local all_objects = minetest.get_objects_inside_radius(pos, 0.2)
 		for _, object in ipairs(all_objects) do
-			if object:get_luaentity().name == "maidroid_tool:egg_entity" then
+			if object:get_luaentity() ~= nil and object:get_luaentity().name == "maidroid_tool:egg_entity" then
 				return object:get_luaentity()
 			end
 		end
 		return nil
 	end
 
-	local function on_deactivate(pos)
+	local function on_deactivate(pos, output)
 		local egg_entity = get_nearest_egg_entity(pos)
-		egg_entity:stop_move()
+		egg_entity:stop_move(output)
 	end
 
-	local function on_activate(pos, output)
+	local function on_activate(pos)
 		local egg_entity = get_nearest_egg_entity(pos)
 		egg_entity.object:set_properties{textures={"maidroid:empty_egg"}}
 		egg_entity:start_move(output)
@@ -191,7 +192,6 @@ do -- register a definition of an egg entity
 
 			self.is_moving       = data["is_moving"]
 			self.center_position = data["center_position"]
-			self.output          = data["output"]
 			self.current_egg     = data["current_egg"]
 
 			self.object:set_properties{textures={self.current_egg}}
@@ -207,21 +207,18 @@ do -- register a definition of an egg entity
 
 	local function start_move(self, output)
 		self.is_moving = true
-		self.output = output
 	end
 
-	local function stop_move(self)
-		self.object:set_properties{textures={self.output}}
+	local function stop_move(self, output)
+		self.object:set_properties{textures={output}}
 		self.is_moving = false
-		self.current_egg = self.output
-		self.output = ""
+		self.current_egg = output
 	end
 
 	local function get_staticdata(self)
 		local data = {
 			["is_moving"]        = self.is_moving,
 			["center_position"]  = self.center_position,
-			["output"]           = self.output,
 			["current_egg"]      = self.current_egg,
 		}
 		return minetest.serialize(data)
@@ -272,8 +269,7 @@ do -- register a definition of an egg entity
 		get_staticdata   = get_staticdata,
 		on_step          = on_step,
 		initialize       = initialize,
-		output           = "",
-		current_egg      = "",
+		current_egg      = "maidroid:empty_egg",
 		center_position  = nil,
 		is_moving        = false,
 		angle            = 0,
