@@ -190,7 +190,7 @@ end
 -- maidroid.maidroid.change_direction change direction to destination and velocity vector.
 function maidroid.maidroid.change_direction(self, destination)
   local position = self.object:getpos()
-  local direction = vector.subtract(destination, posistion)
+  local direction = vector.subtract(destination, position)
 	direction.y = 0
   local velocity = vector.multiply(vector.normalize(direction), 3)
 

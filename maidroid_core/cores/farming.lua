@@ -19,13 +19,13 @@ local target_plants = {
 local _aux = maidroid_core._aux
 
 local FIND_PATH_TIME_INTERVAL = 20
-local CHANGE_DIRECTION_TIME_INTERVAL = 20
+local CHANGE_DIRECTION_TIME_INTERVAL = 30
 local MAX_WALK_TIME = 120
 
 -- is_plantable_place reports whether maidroid can plant any seed.
 local function is_plantable_place(pos)
 	local node = minetest.get_node(pos)
-	local lpos = vector.sub(pos, {x = 0, y = -1, z = 0})
+	local lpos = vector.add(pos, {x = 0, y = -1, z = 0})
 	local lnode = minetest.get_node(lpos)
 	return node.name == "air"
 		and minetest.get_item_group(lnode.name, "wet") > 0
@@ -34,10 +34,18 @@ end
 -- is_mowable_place reports whether maidroid can mow.
 local function is_mowable_place(pos)
 	local node = minetest.get_node(pos)
-	return maidroid_aux.table.find(target_plants, node.name)
+	for _, plant in ipairs(target_plants) do
+		if plant == node.name then
+			return true
+		end
+	end
+	return false
 end
 
 do -- register farming core
+
+	local walk_randomly, walk_to_plant_and_mow_common, plant, mow
+	local to_walk_randomly, to_walk_to_plant, to_walk_to_mow, to_plant, to_mow
 
 	local function on_start(self)
 		self.object:setacceleration{x = 0, y = -10, z = 0}
@@ -45,6 +53,7 @@ do -- register farming core
 		self.state = state.WALK_RANDOMLY
 		self.time_counters = {}
 		self.path = nil
+		to_walk_randomly(self)
 	end
 
 	local function on_stop(self)
@@ -53,15 +62,16 @@ do -- register farming core
 
 	local searching_range = {x = 5, y = 2, z = 5}
 
-	local function walk_randomly(self, dtime)
+	walk_randomly = function(self, dtime)
 		if self.time_counters[1] >= FIND_PATH_TIME_INTERVAL then
 			self.time_counters[1] = 0
 			self.time_counters[2] = self.time_counters[2] + 1
 
-			if self:has_item_in_main(function(itemname)	return (minetest.get_item_group(itemname, "seed") > 0)) then
-				local destination = _aux.search_surrounding(is_plantable_place, searching_range)
+			if self:has_item_in_main(function(itemname)	return (minetest.get_item_group(itemname, "seed") > 0) end) then
+				local destination = _aux.search_surrounding(self.object:getpos(), is_plantable_place, searching_range)
 				if destination ~= nil then
-					local path = minetest.find_path(self.object:getpos(), destination, 10, 1, 1)
+					local path = minetest.find_path(self.object:getpos(), destination, 10, 1, 1, "A*")
+
 					if path ~= nil then -- to walk to plant state.
 						to_walk_to_plant(self, path, destination)
 						return
@@ -69,10 +79,14 @@ do -- register farming core
 				end
 			end
 			-- if couldn't find path to plant, try to mow.
-			local destination = _aux.search_surrounding(is_mowable_place, searching_range)
+			local destination = _aux.search_surrounding(self.object:getpos(), is_mowable_place, searching_range)
 			if destination ~= nil then
-				local path = minetest.find_path(self.object:getpos(), destination, 10, 1, 1)
+				local path = minetest.find_path(self.object:getpos(), destination, 10, 1, 1, "A*")
 				if path ~= nil then -- to walk to mow state.
+					for _, p in ipairs(path) do
+						print(p.x, p.y, p.z)
+					end
+
 					to_walk_to_mow(self, path, destination)
 					return
 				end
@@ -92,36 +106,44 @@ do -- register farming core
 		end
 	end
 
-	local function to_walk_randomly(self)
+	to_walk_randomly = function(self)
+		print("to walk randomly")
 		self.state = state.WALK_RANDOMLY
 		self.time_counters[1] = 0
 		self.time_counters[2] = 0
 		self:change_direction_randomly()
+		self:set_animation(maidroid.animation_frames.WALK)
 	end
 
-	local function to_walk_to_plant(self, path, destination)
+	to_walk_to_plant = function(self, path, destination)
+		print("to walk to plant")
 		self.state = state.WALK_TO_PLANT
 		self.path = path
 		self.destination = destination
 		self.time_counters[1] = 0 -- find path interval
 		self.time_counters[2] = 0
 		self:change_direction(self.path[1])
+		self:set_animation(maidroid.animation_frames.WALK)
 	end
 
-	local function to_walk_to_mow(self, path, destination)
+	to_walk_to_mow = function(self, path, destination)
+		print("to walk to mow")
 		self.state = state.WALK_TO_MOW
 		self.path = path
 		self.destination = destination
 		self.time_counters[1] = 0 -- find path interval
 		self.time_counters[2] = 0
 		self:change_direction(self.path[1])
+		self:set_animation(maidroid.animation_frames.WALK)
 	end
 
-	local function to_plant(self)
-		if self:move_main_to_wield(function(itemname)	return (minetest.get_item_group(itemname, "seed") > 0 end)) then
+	to_plant = function(self)
+		print("to plant")
+		if self:move_main_to_wield(function(itemname)	return (minetest.get_item_group(itemname, "seed") > 0) end) then
 			self.state = state.PLANT
 			self.time_counters[1] = 0
-			self.object:set_velocity{x = 0, y = 0, z = 0}
+			self.object:setvelocity{x = 0, y = 0, z = 0}
+			self:set_animation(maidroid.animation_frames.MINE)
 			return
 		else
 			to_walk_randomly(self)
@@ -129,13 +151,25 @@ do -- register farming core
 		end
 	end
 
-	local function to_mow(self)
+	to_mow = function(self)
+		print("to mow")
 		self.state = state.MOW
 		self.time_counters[1] = 0
-		self.object:set_velocity{x = 0, y = 0, z = 0}
+		self.object:setvelocity{x = 0, y = 0, z = 0}
+		self:set_animation(maidroid.animation_frames.MINE)
 	end
 
-	local function walk_to_plant_and_mow_common(self, dtime)
+	walk_to_plant_and_mow_common = function(self, dtime)
+		if vector.distance(self.object:getpos(), self.destination) < 1.0 then
+			if self.state == state.WALK_TO_PLANT then
+				to_plant(self)
+				return
+			elseif self.state == state.WALK_TO_MOW then
+				to_mow(self)
+				return
+			end
+		end
+
 		if self.time_counters[2] >= MAX_WALK_TIME then -- time over.
 			to_walk_randomly(self)
 			return
@@ -144,7 +178,7 @@ do -- register farming core
 		if self.time_counters[1] >= FIND_PATH_TIME_INTERVAL then
 			self.time_counters[1] = 0
 			self.time_counters[2] = self.time_counters[2] + 1
-			local path = minetest.find_path(self.object:getpos(), self.destination, 10, 1, 1)
+			local path = minetest.find_path(self.object:getpos(), self.destination, 10, 1, 1, "A*")
 			if path == nil then
 				to_walk_randomly(self)
 				return
@@ -169,6 +203,7 @@ do -- register farming core
 			end
 
 		else
+			-- self:change_direction(self.path[1])
 			-- if maidroid is stopped by obstacles, the maidroid must jump.
 			local velocity = self.object:getvelocity()
 			if velocity.y == 0 then
@@ -180,23 +215,23 @@ do -- register farming core
 		end
 	end
 
-	local function plant(self, dtime)
-		if self.time_counters[1] >= 5 then
+	plant = function(self, dtime)
+		if self.time_counters[1] >= 15 then
 			if is_plantable_place(self.destination) then
 				local stack = self:get_wield_item_stack()
 				stack:take_item(1)
 				self:set_wield_item_stack(stack)
 				return
 			end
-			to_walk_randomly()
+			to_walk_randomly(self)
 			return
 		else
 			self.time_counters[1] = self.time_counters[1] + 1
 		end
 	end
 
-	local function mow(self, dtime)
-		if self.time_counters[1] >= 5 then
+	mow = function(self, dtime)
+		if self.time_counters[1] >= 15 then
 			if is_mowable_place(self.destination) then
 				local destnode = minetest.get_node(self.destination)
 				minetest.remove_node(self.destination)
@@ -207,45 +242,26 @@ do -- register farming core
 					minetest.add_item(self.destination, leftover)
 				end
 			end
-			to_walk_randomly()
+			to_walk_randomly(self)
 			return
 		else
 			self.time_counters[1] = self.time_counters[1] + 1
 		end
 	end
 
-	local function plant_and_mow_common(self, dtime)
-		if self.time_counters[1] >= 5 then
-			if (self.state == state.PLANT and not is_plantable_place(self.destination)
-			or (self.state == state.MOW   and not is_mowable_place(self.destination)) then
-
-
-				local inv = self:get_inventory()
-				local stacks = inv:get_list("main")
-
-				for idx, stack in ipairs(stacks) do
-					local item_name = stack:get_name()
-					if minetest.get_item_group(item_name, "seed") > 0 then
-						minetest.add_node(self.destination, {name = item_name, param2 = 1})
-						stack:take_item(1)
-						inv:set_stack("main", idx, stack)
-						break
-					end
-				end
-			end
-			to_walk(self)
-		else
-			self.time_count = self.time_count + 1
-		end
-	end
-
 	local function on_step(self, dtime)
 		if self.state == state.WALK_RANDOMLY then
+--			print("== now walk randomly")
 			walk_randomly(self, dtime)
 		elseif self.state == state.WALK_TO_PLANT or self.state == state.WALK_TO_MOW then
+--			print("== now walk to *")
 			walk_to_plant_and_mow_common(self, dtime)
-		elseif self.state == state.PLANT or self.state == state.MOW then
-			plant_and_mow_common(self, dtime)
+		elseif self.state == state.PLANT then
+--			print("== now plant")
+			plant(self, dtime)
+		elseif self.state == state.MOW then
+--			print("== now mow")
+			mow(self, dtime)
 		end
 	end
 
