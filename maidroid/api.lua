@@ -144,6 +144,12 @@ function maidroid.maidroid.set_wield_item_stack(self, stack)
 	inv:set_stack("wield_item", 1, stack)
 end
 
+-- maidroid.maidroid.add_item_to_main add item to main slot.
+function maidroid.maidroid.add_item_to_main(self, stack)
+	local inv = self:get_inventory()
+	inv:add_item("main", stack)
+end
+
 -- maidroid.maidroid.move_main_to_wield moves itemstack from main to wield.
 -- if this function fails then returns false, else returns true.
 function maidroid.maidroid.move_main_to_wield(self, pred)
@@ -588,6 +594,7 @@ function maidroid.register_maidroid(product_name, def)
 		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
 		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
 		set_wield_item_stack         = maidroid.maidroid.set_wield_item_stack,
+		add_item_to_main             = maidroid.maidroid.add_item_to_main,
 		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
 		is_named                     = maidroid.maidroid.is_named,
 		has_item_in_main             = maidroid.maidroid.has_item_in_main,
