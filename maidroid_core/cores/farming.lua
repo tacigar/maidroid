@@ -57,7 +57,16 @@ do -- register farming core
 	end
 
 	local function on_stop(self)
+		self.object:setvelocity{x = 0, y = 0, z = 0}
+		self.state = nil
+		self.time_counters = nil
+		self.path = nil
+	end
 
+	local function is_near(self, pos, distance)
+		local p = self.object:getpos()
+		p.y = p.y + 0.5
+		return vector.distance(p, pos) < distance
 	end
 
 	local searching_range = {x = 5, y = 2, z = 5}
@@ -160,7 +169,7 @@ do -- register farming core
 	end
 
 	walk_to_plant_and_mow_common = function(self, dtime)
-		if vector.distance(self.object:getpos(), self.destination) < 1.0 then
+		if is_near(self, self.destination, 1.0) then
 			if self.state == state.WALK_TO_PLANT then
 				to_plant(self)
 				return
@@ -175,7 +184,11 @@ do -- register farming core
 			return
 		end
 
+		self.time_counters[1] = self.time_counters[1] + 1
+		self.time_counters[2] = self.time_counters[2] + 1
+
 		if self.time_counters[1] >= FIND_PATH_TIME_INTERVAL then
+			print("KOKOKOK")
 			self.time_counters[1] = 0
 			self.time_counters[2] = self.time_counters[2] + 1
 			local path = minetest.find_path(self.object:getpos(), self.destination, 10, 1, 1, "A*")
@@ -187,7 +200,8 @@ do -- register farming core
 		end
 
 		-- follow path
-		if vector.distance(self.path[1], self.object:getpos()) < 0.01 then
+		if is_near(self, self.path[1], 0.01) then
+			print("KOK")
 			table.remove(self.path, 1)
 
 			if #self.path == 0 then -- end of path
@@ -205,6 +219,7 @@ do -- register farming core
 		else
 			-- self:change_direction(self.path[1])
 			-- if maidroid is stopped by obstacles, the maidroid must jump.
+			-- self:change_direction(self.path[1])
 			local velocity = self.object:getvelocity()
 			if velocity.y == 0 then
 				local front_node = self:get_front_node()
@@ -219,9 +234,10 @@ do -- register farming core
 		if self.time_counters[1] >= 15 then
 			if is_plantable_place(self.destination) then
 				local stack = self:get_wield_item_stack()
+				local itemname = stack:get_name()
+				minetest.add_node(self.destination, {name = itemname, param2 = 1})
 				stack:take_item(1)
 				self:set_wield_item_stack(stack)
-				return
 			end
 			to_walk_randomly(self)
 			return
