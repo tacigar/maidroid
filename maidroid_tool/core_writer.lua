@@ -115,7 +115,8 @@ do -- register core writer
 
 	-- get_nearest_core_entity returns the nearest core entity.
 	local function get_nearest_core_entity(pos)
-		local all_objects = minetest.get_objects_inside_radius(pos, 1.0)
+		pos.y = pos.y + 0.65
+		local all_objects = minetest.get_objects_inside_radius(pos, 0.1)
 		for _, object in ipairs(all_objects) do
 			if object:get_luaentity().name == "maidroid_tool:core_entity" then
 				return object:get_luaentity()
