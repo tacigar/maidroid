@@ -174,6 +174,29 @@ function maidroid.maidroid.has_item_in_main(self, pred)
 	end
 end
 
+-- maidroid.maidroid.change_direction change direction to destination and velocity vector.
+function maidroid.maidroid.change_direction(self, destination)
+  local position = self.object:getpos()
+  local direction = vector.subtract(destination, posistion)
+	direction.y = 0
+  local velocity = vector.multiply(vector.normalize(direction), 3)
+
+  self.object:setvelocity(velocity)
+	self:set_yaw_by_direction(direction)
+end
+
+-- maidroid.maidroid.change_direction_randomly change direction randonly.
+function maidroid.maidroid.change_direction_randomly(self)
+	local direction = {
+		x = math.random(0, 5) * 2 - 5,
+		y = 0,
+		z = math.random(0, 5) * 2 - 5,
+	}
+	local velocity = vector.multiply(vector.normalize(direction), 3)
+	self.object:setvelocity(velocity)
+	self:set_yaw_by_direction(direction)
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -561,6 +584,8 @@ function maidroid.register_maidroid(product_name, def)
 		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
 		is_named                     = maidroid.maidroid.is_named,
 		has_item_in_main             = maidroid.maidroid.has_item_in_main,
+		change_direction             = maidroid.maidroid.change_direction,
+		change_direction_randomly    = maidroid.maidroid.change_direction_randomly,
 	})
 
 	-- register maidroid egg.
