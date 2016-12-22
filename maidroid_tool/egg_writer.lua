@@ -130,9 +130,10 @@ do -- register egg writer
 	}
 
 	local function get_nearest_egg_entity(pos)
-		local all_objects = minetest.get_objects_inside_radius(pos, 1.0)
+		pos.y = pos.y + 0.25 -- egg entity is above.
+		local all_objects = minetest.get_objects_inside_radius(pos, 0.2)
 		for _, object in ipairs(all_objects) do
-			if object:get_luaentity().name == "maidroid_tool:egg_entity" then
+			if object:get_luaentity() ~= nil and object:get_luaentity().name == "maidroid_tool:egg_entity" then
 				return object:get_luaentity()
 			end
 		end
@@ -273,7 +274,7 @@ do -- register a definition of an egg entity
 		on_step          = on_step,
 		initialize       = initialize,
 		output           = "",
-		current_egg      = "",
+		current_egg      = "maidroid:empty_egg",
 		center_position  = nil,
 		is_moving        = false,
 		angle            = 0,
