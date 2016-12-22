@@ -134,7 +134,6 @@ do -- register egg writer
 		local all_objects = minetest.get_objects_inside_radius(pos, 0.2)
 		for _, object in ipairs(all_objects) do
 			if object:get_luaentity() ~= nil and object:get_luaentity().name == "maidroid_tool:egg_entity" then
-				print(vector.distance(object:getpos(), pos, "KOKO"))
 				return object:get_luaentity()
 			end
 		end
