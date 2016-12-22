@@ -132,10 +132,16 @@ function maidroid.maidroid.set_yaw_by_direction(self, direction)
 	self.object:setyaw(math.atan2(direction.z, direction.x) - math.pi / 2)
 end
 
--- maidroid.maidroid.get_wield_item_info returns the maidroid's wield item's stack.
+-- maidroid.maidroid.get_wield_item_stack returns the maidroid's wield item's stack.
 function maidroid.maidroid.get_wield_item_stack(self)
 	local inv = self:get_inventory()
 	return inv:get_stack("wield_item", 1)
+end
+
+-- maidroid.maidroid.set_wield_item_stack sets maidroid's wield item stack.
+function maidroid.maidroid.set_wield_item_stack(self, stack)
+	local inv = self:get_inventory()
+	inv:set_stack("wield_item", 1, stack)
 end
 
 -- maidroid.maidroid.move_main_to_wield moves itemstack from main to wield.
@@ -581,6 +587,7 @@ function maidroid.register_maidroid(product_name, def)
 		set_animation                = maidroid.maidroid.set_animation,
 		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
 		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
+		set_wield_item_stack         = maidroid.maidroid.set_wield_item_stack,
 		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
 		is_named                     = maidroid.maidroid.is_named,
 		has_item_in_main             = maidroid.maidroid.has_item_in_main,
