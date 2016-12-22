@@ -145,9 +145,10 @@ function maidroid.maidroid.set_wield_item_stack(self, stack)
 end
 
 -- maidroid.maidroid.add_item_to_main add item to main slot.
+-- and returns leftover.
 function maidroid.maidroid.add_item_to_main(self, stack)
 	local inv = self:get_inventory()
-	inv:add_item("main", stack)
+	return inv:add_item("main", stack)
 end
 
 -- maidroid.maidroid.move_main_to_wield moves itemstack from main to wield.
