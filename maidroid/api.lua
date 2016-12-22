@@ -207,7 +207,7 @@ do
 		end
 	end
 
-	local function on_step(self, staticdata)
+	local function on_step(self, dtime)
 		local all_objects = minetest.get_objects_inside_radius(self.object:getpos(), 0.1)
 		for _, obj in ipairs(all_objects) do
 			local luaentity = obj:get_luaentity()
@@ -217,10 +217,10 @@ do
 				if stack:get_name() ~= itemname then
 					if stack:is_empty() then
 						self.itemname = ""
-						self.object:set_properties{textures="maidroid:dummy_empty_craftitem"}
+						self.object:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
 					else
 						self.itemname = stack:get_name()
-						self.object:set_properties{textures=self.itemname}
+						self.object:set_properties{textures={self.itemname}}
 					end
 				end
 				break
