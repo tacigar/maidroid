@@ -63,7 +63,7 @@ function maidroid_tool.register_writer(nodename, options)
 				swap_node(pos, nodename)
 
 				if on_deactivate ~= nil then -- call on_deactivate callback.
-					on_deactivate(pos)
+					on_deactivate(pos, output)
 				end
 			end
 		else
@@ -86,7 +86,7 @@ function maidroid_tool.register_writer(nodename, options)
 				swap_node(pos, nodename .. "_active")
 
 				if on_activate ~= nil then -- call on_activate callback.
-					on_activate(pos, output)
+					on_activate(pos)
 				end
 			end
 		end
