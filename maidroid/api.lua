@@ -140,13 +140,13 @@ end
 
 -- maidroid.maidroid.move_main_to_wield moves itemstack from main to wield.
 -- if this function fails then returns false, else returns true.
-function maidroid.maidroid.move_main_to_wield(self, itemname)
+function maidroid.maidroid.move_main_to_wield(self, pred)
 	local inv = self:get_inventory()
 	local main_size = inv:get_size("main")
 
 	for i = 1, main_size do
 		local stack = inv:get_stack("main", i)
-		if stack:get_name() == itemname then
+		if pred(stack:get_name()) then
 			local wield_stack = inv:get_stack("wield_item", 1)
 			inv:set_stack("wield_item", 1, stack)
 			inv:set_stack("main", i, wield_stack)
