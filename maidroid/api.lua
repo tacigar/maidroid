@@ -251,7 +251,7 @@ do
 			if maidroid.is_maidroid(luaentity.name) then
 				self.object:set_attach(obj, "Arm_R", {x = 0.075, y = 0.60, z = -0.20}, {x = 0, y = 90, z = 0})
 				self.object:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
-				break
+				return
 			end
 		end
 	end
@@ -263,6 +263,7 @@ do
 
 			if maidroid.is_maidroid(luaentity.name) then
 				local stack = luaentity:get_wield_item_stack()
+
 				if stack:get_name() ~= itemname then
 					if stack:is_empty() then
 						self.itemname = ""
@@ -272,9 +273,12 @@ do
 						self.object:set_properties{textures={self.itemname}}
 					end
 				end
-				break
+				return
 			end
 		end
+		-- if cannot find maidroid, delete empty item.
+		self.object:remove()
+		return
 	end
 
 	minetest.register_entity("maidroid:dummy_item", {
