@@ -251,7 +251,7 @@ do
 			if maidroid.is_maidroid(luaentity.name) then
 				self.object:set_attach(obj, "Arm_R", {x = 0.075, y = 0.60, z = -0.20}, {x = 0, y = 90, z = 0})
 				self.object:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
-				break
+				return
 			end
 		end
 	end
@@ -263,6 +263,7 @@ do
 
 			if maidroid.is_maidroid(luaentity.name) then
 				local stack = luaentity:get_wield_item_stack()
+
 				if stack:get_name() ~= itemname then
 					if stack:is_empty() then
 						self.itemname = ""
@@ -272,9 +273,12 @@ do
 						self.object:set_properties{textures={self.itemname}}
 					end
 				end
-				break
+				return
 			end
 		end
+		-- if cannot find maidroid, delete empty item.
+		self.object:remove()
+		return
 	end
 
 	minetest.register_entity("maidroid:dummy_item", {
@@ -441,6 +445,7 @@ function maidroid.register_maidroid(product_name, def)
 			local inventory = create_inventory(self)
 			local core_name = data["inventory"]["core"]
 			local items = data["inventory"]["main"]
+			local wield_item = data["inventory"]["wield_item"]
 
 			if core_name ~= "" then -- set a core
 				core_stack = ItemStack(core_name)
@@ -454,6 +459,13 @@ function maidroid.register_maidroid(product_name, def)
 				item_stack:set_count(item["count"])
 				inventory:add_item("main", item_stack)
 			end
+
+			if wield_item["name"] ~= "" then
+				local item_stack = ItemStack(wield_item["name"])
+				item_stack:set_count(wield_item["count"])
+				inventory:add_item("wield_item", item_stack)
+			end
+
 		end
 
 		update_infotext(self)
@@ -481,9 +493,11 @@ function maidroid.register_maidroid(product_name, def)
 			["inventory"] = {
 				["main"] = {},
 				["core"] = self.core_name,
+				["wield_item"] = nil,
 			},
 		}
 
+		-- set main list.
 		for _, item in ipairs(inventory:get_list("main")) do
 			local count = item:get_count()
 			local itemname = item:get_name()
@@ -491,6 +505,14 @@ function maidroid.register_maidroid(product_name, def)
 				local itemdata = {count = count, name = itemname}
 				table.insert(data["inventory"]["main"], itemdata)
 			end
+		end
+
+		do -- set wield_item list.
+			local item = self:get_wield_item_stack()
+			local count = item:get_count()
+			local itemname = item:get_name()
+			local itemdata = {count = count, name = itemname}
+			data["inventory"]["wield_item"] = itemdata
 		end
 		return minetest.serialize(data)
 	end
