@@ -198,8 +198,6 @@ do
 	local function on_activate(self, staticdata)
 		self.object:set_properties{textures = {"maidroid_tool:core_node"}}
 
-		print(staticdata)
-
 		if staticdata ~= "" then
 			local data = minetest.deserialize(staticdata)
 			self.is_rotating = data["is_rotating"]
