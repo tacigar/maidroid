@@ -192,7 +192,7 @@ function maidroid.maidroid.change_direction(self, destination)
   local position = self.object:getpos()
   local direction = vector.subtract(destination, position)
 	direction.y = 0
-  local velocity = vector.multiply(vector.normalize(direction), 3)
+  local velocity = vector.multiply(vector.normalize(direction), 1.5)
 
   self.object:setvelocity(velocity)
 	self:set_yaw_by_direction(direction)
@@ -205,7 +205,7 @@ function maidroid.maidroid.change_direction_randomly(self)
 		y = 0,
 		z = math.random(0, 5) * 2 - 5,
 	}
-	local velocity = vector.multiply(vector.normalize(direction), 3)
+	local velocity = vector.multiply(vector.normalize(direction), 1.5)
 	self.object:setvelocity(velocity)
 	self:set_yaw_by_direction(direction)
 end
@@ -564,8 +564,8 @@ function maidroid.register_maidroid(product_name, def)
 
 		physical                     = true,
 		visual                       = "mesh",
-		visual_size                  = {x = 10, y = 10},
-		collisionbox                 = {-0.25, -0.5, -0.25, 0.25, 1.05, 0.25},
+		visual_size                  = {x = 7.5, y = 7.5},
+		collisionbox                 = {-0.25, -0.375, -0.25, 0.25, 0.75, 0.25},
 		is_visible                   = true,
 		makes_footstep_sound         = true,
 		infotext                     = "",
