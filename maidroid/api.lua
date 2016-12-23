@@ -132,21 +132,34 @@ function maidroid.maidroid.set_yaw_by_direction(self, direction)
 	self.object:setyaw(math.atan2(direction.z, direction.x) - math.pi / 2)
 end
 
--- maidroid.maidroid.get_wield_item_info returns the maidroid's wield item's stack.
+-- maidroid.maidroid.get_wield_item_stack returns the maidroid's wield item's stack.
 function maidroid.maidroid.get_wield_item_stack(self)
 	local inv = self:get_inventory()
 	return inv:get_stack("wield_item", 1)
 end
 
+-- maidroid.maidroid.set_wield_item_stack sets maidroid's wield item stack.
+function maidroid.maidroid.set_wield_item_stack(self, stack)
+	local inv = self:get_inventory()
+	inv:set_stack("wield_item", 1, stack)
+end
+
+-- maidroid.maidroid.add_item_to_main add item to main slot.
+-- and returns leftover.
+function maidroid.maidroid.add_item_to_main(self, stack)
+	local inv = self:get_inventory()
+	return inv:add_item("main", stack)
+end
+
 -- maidroid.maidroid.move_main_to_wield moves itemstack from main to wield.
 -- if this function fails then returns false, else returns true.
-function maidroid.maidroid.move_main_to_wield(self, itemname)
+function maidroid.maidroid.move_main_to_wield(self, pred)
 	local inv = self:get_inventory()
 	local main_size = inv:get_size("main")
 
 	for i = 1, main_size do
 		local stack = inv:get_stack("main", i)
-		if stack:get_name() == itemname then
+		if pred(stack:get_name()) then
 			local wield_stack = inv:get_stack("wield_item", 1)
 			inv:set_stack("wield_item", 1, stack)
 			inv:set_stack("main", i, wield_stack)
@@ -159,6 +172,42 @@ end
 -- maidroid.maidroid.is_named reports the maidroid is still named.
 function maidroid.maidroid.is_named(self)
 	return self.nametag ~= ""
+end
+
+-- maidroid.maidroid.has_item_in_main reports whether the maidroid has item.
+function maidroid.maidroid.has_item_in_main(self, pred)
+	local inv = self:get_inventory()
+	local stacks = inv:get_list("main")
+
+	for _, stack in ipairs(stacks) do
+		local itemname = stack:get_name()
+		if pred(itemname) then
+			return true
+		end
+	end
+end
+
+-- maidroid.maidroid.change_direction change direction to destination and velocity vector.
+function maidroid.maidroid.change_direction(self, destination)
+  local position = self.object:getpos()
+  local direction = vector.subtract(destination, position)
+	direction.y = 0
+  local velocity = vector.multiply(vector.normalize(direction), 3)
+
+  self.object:setvelocity(velocity)
+	self:set_yaw_by_direction(direction)
+end
+
+-- maidroid.maidroid.change_direction_randomly change direction randonly.
+function maidroid.maidroid.change_direction_randomly(self)
+	local direction = {
+		x = math.random(0, 5) * 2 - 5,
+		y = 0,
+		z = math.random(0, 5) * 2 - 5,
+	}
+	local velocity = vector.multiply(vector.normalize(direction), 3)
+	self.object:setvelocity(velocity)
+	self:set_yaw_by_direction(direction)
 end
 
 ---------------------------------------------------------------------
@@ -545,8 +594,13 @@ function maidroid.register_maidroid(product_name, def)
 		set_animation                = maidroid.maidroid.set_animation,
 		set_yaw_by_direction         = maidroid.maidroid.set_yaw_by_direction,
 		get_wield_item_stack         = maidroid.maidroid.get_wield_item_stack,
+		set_wield_item_stack         = maidroid.maidroid.set_wield_item_stack,
+		add_item_to_main             = maidroid.maidroid.add_item_to_main,
 		move_main_to_wield           = maidroid.maidroid.move_main_to_wield,
 		is_named                     = maidroid.maidroid.is_named,
+		has_item_in_main             = maidroid.maidroid.has_item_in_main,
+		change_direction             = maidroid.maidroid.change_direction,
+		change_direction_randomly    = maidroid.maidroid.change_direction_randomly,
 	})
 
 	-- register maidroid egg.
