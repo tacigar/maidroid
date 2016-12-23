@@ -61,6 +61,7 @@ do -- register farming core
 		self.state = nil
 		self.time_counters = nil
 		self.path = nil
+		self:set_animation(maidroid.animation_frames.STAND)
 	end
 
 	local function is_near(self, pos, distance)
@@ -76,7 +77,9 @@ do -- register farming core
 			self.time_counters[1] = 0
 			self.time_counters[2] = self.time_counters[2] + 1
 
-			if self:has_item_in_main(function(itemname)	return (minetest.get_item_group(itemname, "seed") > 0) end) then
+			local wield_stack = self:get_wield_item_stack()
+			if minetest.get_item_group(wield_stack:get_name(), "seed") > 0
+			or self:has_item_in_main(function(itemname)	return (minetest.get_item_group(itemname, "seed") > 0) end) then
 				local destination = _aux.search_surrounding(self.object:getpos(), is_plantable_place, searching_range)
 				if destination ~= nil then
 					local path = minetest.find_path(self.object:getpos(), destination, 10, 1, 1, "A*")
@@ -111,7 +114,8 @@ do -- register farming core
 			local velocity = self.object:getvelocity()
 			if velocity.y == 0 then
 				local front_node = self:get_front_node()
-				if front_node.name ~= "air" and minetest.registered_nodes[front_node.name].walkable then
+				if front_node.name ~= "air" and minetest.registered_nodes[front_node.name].walkable
+				and not (minetest.get_item_group(front_node.name, "fence") > 0) then
 					self.object:setvelocity{x = velocity.x, y = 6, z = velocity.z}
 				end
 			end
@@ -148,7 +152,9 @@ do -- register farming core
 	end
 
 	to_plant = function(self)
-		if self:move_main_to_wield(function(itemname)	return (minetest.get_item_group(itemname, "seed") > 0) end) then
+		local wield_stack = self:get_wield_item_stack()
+		if minetest.get_item_group(wield_stack:get_name(), "seed") > 0
+		or self:move_main_to_wield(function(itemname)	return (minetest.get_item_group(itemname, "seed") > 0) end) then
 			self.state = state.PLANT
 			self.time_counters[1] = 0
 			self.object:setvelocity{x = 0, y = 0, z = 0}
@@ -219,7 +225,8 @@ do -- register farming core
 			local velocity = self.object:getvelocity()
 			if velocity.y == 0 then
 				local front_node = self:get_front_node()
-				if front_node.name ~= "air" and minetest.registered_nodes[front_node.name].walkable then
+				if front_node.name ~= "air" and minetest.registered_nodes[front_node.name].walkable
+				and not (minetest.get_item_group(front_node.name, "fence") > 0) then
 					self.object:setvelocity{x = velocity.x, y = 6, z = velocity.z}
 				end
 			end
