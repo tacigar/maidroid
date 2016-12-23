@@ -314,7 +314,12 @@ function maidroid.register_egg(egg_name, def)
 
 		on_use = function(itemstack, user, pointed_thing)
 			if pointed_thing.above ~= nil and def.product_name ~= nil then
-				minetest.add_entity(pointed_thing.above, def.product_name)
+				-- set maidroid's direction.
+				local new_maidroid = minetest.add_entity(pointed_thing.above, def.product_name)
+				new_maidroid:get_luaentity():set_yaw_by_direction(
+					vector.subtract(user:getpos(), new_maidroid:getpos())
+				)
+
 				itemstack:take_item()
 				return itemstack
 			end
