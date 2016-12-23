@@ -158,6 +158,7 @@ to_plant = function(self)
 		self.time_counters[1] = 0
 		self.object:setvelocity{x = 0, y = 0, z = 0}
 		self:set_animation(maidroid.animation_frames.MINE)
+		self:set_yaw_by_direction(vector.subtract(self.destination, self.object:getpos()))
 		return
 	else
 		to_walk_randomly(self)
@@ -170,6 +171,7 @@ to_mow = function(self)
 	self.time_counters[1] = 0
 	self.object:setvelocity{x = 0, y = 0, z = 0}
 	self:set_animation(maidroid.animation_frames.MINE)
+	self:set_yaw_by_direction(vector.subtract(self.destination, self.object:getpos()))
 end
 
 walk_to_plant_and_mow_common = function(self, dtime)
@@ -218,9 +220,7 @@ walk_to_plant_and_mow_common = function(self, dtime)
 		end
 
 	else
-		-- self:change_direction(self.path[1])
 		-- if maidroid is stopped by obstacles, the maidroid must jump.
-		-- self:change_direction(self.path[1])
 		local velocity = self.object:getvelocity()
 		if velocity.y == 0 then
 			local front_node = self:get_front_node()
