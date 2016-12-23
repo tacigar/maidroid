@@ -55,6 +55,7 @@ The correspondences of dyes and cores are as follows.
 |Dye|Core|Description|
 |:--|:--|:--|
 |`dye:red`|`maidroid_core:basic`|Following the player.|
+|`dye:yello`|`maidroid_core:farming`|Farming.|
 
 When a new core is created, put it to the maidroid.
 Rightclick it, and put the core to the slot labeled `Core`.
