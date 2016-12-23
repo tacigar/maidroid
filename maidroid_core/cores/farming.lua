@@ -65,7 +65,7 @@ do -- register farming core
 
 	local function is_near(self, pos, distance)
 		local p = self.object:getpos()
-		p.y = p.y + 0.5
+		-- p.y = p.y + 0.5
 		return vector.distance(p, pos) < distance
 	end
 
@@ -92,10 +92,6 @@ do -- register farming core
 			if destination ~= nil then
 				local path = minetest.find_path(self.object:getpos(), destination, 10, 1, 1, "A*")
 				if path ~= nil then -- to walk to mow state.
-					for _, p in ipairs(path) do
-						print(p.x, p.y, p.z)
-					end
-
 					to_walk_to_mow(self, path, destination)
 					return
 				end
@@ -111,12 +107,19 @@ do -- register farming core
 		else
 			self.time_counters[1] = self.time_counters[1] + 1
 			self.time_counters[2] = self.time_counters[2] + 1
+
+			local velocity = self.object:getvelocity()
+			if velocity.y == 0 then
+				local front_node = self:get_front_node()
+				if front_node.name ~= "air" and minetest.registered_nodes[front_node.name].walkable then
+					self.object:setvelocity{x = velocity.x, y = 6, z = velocity.z}
+				end
+			end
 			return
 		end
 	end
 
 	to_walk_randomly = function(self)
-		print("to walk randomly")
 		self.state = state.WALK_RANDOMLY
 		self.time_counters[1] = 0
 		self.time_counters[2] = 0
@@ -125,7 +128,6 @@ do -- register farming core
 	end
 
 	to_walk_to_plant = function(self, path, destination)
-		print("to walk to plant")
 		self.state = state.WALK_TO_PLANT
 		self.path = path
 		self.destination = destination
@@ -136,7 +138,6 @@ do -- register farming core
 	end
 
 	to_walk_to_mow = function(self, path, destination)
-		print("to walk to mow")
 		self.state = state.WALK_TO_MOW
 		self.path = path
 		self.destination = destination
@@ -147,7 +148,6 @@ do -- register farming core
 	end
 
 	to_plant = function(self)
-		print("to plant")
 		if self:move_main_to_wield(function(itemname)	return (minetest.get_item_group(itemname, "seed") > 0) end) then
 			self.state = state.PLANT
 			self.time_counters[1] = 0
@@ -161,7 +161,6 @@ do -- register farming core
 	end
 
 	to_mow = function(self)
-		print("to mow")
 		self.state = state.MOW
 		self.time_counters[1] = 0
 		self.object:setvelocity{x = 0, y = 0, z = 0}
@@ -169,7 +168,7 @@ do -- register farming core
 	end
 
 	walk_to_plant_and_mow_common = function(self, dtime)
-		if is_near(self, self.destination, 1.0) then
+		if is_near(self, self.destination, 1.5) then
 			if self.state == state.WALK_TO_PLANT then
 				to_plant(self)
 				return
@@ -188,9 +187,7 @@ do -- register farming core
 		self.time_counters[2] = self.time_counters[2] + 1
 
 		if self.time_counters[1] >= FIND_PATH_TIME_INTERVAL then
-			print("KOKOKOK")
 			self.time_counters[1] = 0
-			self.time_counters[2] = self.time_counters[2] + 1
 			local path = minetest.find_path(self.object:getpos(), self.destination, 10, 1, 1, "A*")
 			if path == nil then
 				to_walk_randomly(self)
@@ -200,8 +197,7 @@ do -- register farming core
 		end
 
 		-- follow path
-		if is_near(self, self.path[1], 0.01) then
-			print("KOK")
+		if is_near(self, self.path[1], 0.5) then
 			table.remove(self.path, 1)
 
 			if #self.path == 0 then -- end of path
@@ -223,8 +219,8 @@ do -- register farming core
 			local velocity = self.object:getvelocity()
 			if velocity.y == 0 then
 				local front_node = self:get_front_node()
-				if front_node.name ~= "air" then
-					self.object:setvelocity{x = velocity.x, y = 3, z = velocity.z}
+				if front_node.name ~= "air" and minetest.registered_nodes[front_node.name].walkable then
+					self.object:setvelocity{x = velocity.x, y = 6, z = velocity.z}
 				end
 			end
 		end
@@ -267,16 +263,12 @@ do -- register farming core
 
 	local function on_step(self, dtime)
 		if self.state == state.WALK_RANDOMLY then
---			print("== now walk randomly")
 			walk_randomly(self, dtime)
 		elseif self.state == state.WALK_TO_PLANT or self.state == state.WALK_TO_MOW then
---			print("== now walk to *")
 			walk_to_plant_and_mow_common(self, dtime)
 		elseif self.state == state.PLANT then
---			print("== now plant")
 			plant(self, dtime)
 		elseif self.state == state.MOW then
---			print("== now mow")
 			mow(self, dtime)
 		end
 	end
