@@ -16,10 +16,6 @@ local function on_stop(self)
 	self.object:setvelocity{x = 0, y = 0, z = 0}
 end
 
-local on_resume = on_start
-
-local on_pause = on_stop
-
 local function on_step(self, dtime)
 	local player = self:get_nearest_player(10)
 	if player == nil then
@@ -50,7 +46,8 @@ local function on_step(self, dtime)
 	-- if maidroid is stoped by obstacle, the maidroid must jump.
 	if velocity.y == 0 and self.state == state.ACCOMPANY then
 		local front_node = self:get_front_node()
-		if front_node.name ~= "air" then
+		if front_node.name ~= "air" and minetest.registered_nodes[front_node.name] ~= nil
+		and minetest.registered_nodes[front_node.name].walkable then
 			self.object:setvelocity{x = direction.x, y = 5, z = direction.z}
 		end
 	end
@@ -62,7 +59,7 @@ maidroid.register_core("maidroid_core:basic", {
 	inventory_image  = "maidroid_core_basic.png",
 	on_start         = on_start,
 	on_stop          = on_stop,
-	on_resume        = on_resume,
-	on_pause         = on_pause,
+	on_resume        = on_start,
+	on_pause         = on_stop,
 	on_step          = on_step,
 })
