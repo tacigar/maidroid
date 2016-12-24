@@ -71,7 +71,7 @@ Maidroid を右クリックし, Core と書かれたスロットに先ほど作�
 
 ## Lisense
 
-- Source Code : [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html) or later
+- Source Code : [LGPLv2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt) or later
 - Resources : [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) or later
 
 ## Contributers
