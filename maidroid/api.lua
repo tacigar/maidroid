@@ -264,7 +264,7 @@ do
 			if maidroid.is_maidroid(luaentity.name) then
 				local stack = luaentity:get_wield_item_stack()
 
-				if stack:get_name() ~= itemname then
+				if stack:get_name() ~= self.itemname then
 					if stack:is_empty() then
 						self.itemname = ""
 						self.object:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
@@ -448,7 +448,7 @@ function maidroid.register_maidroid(product_name, def)
 			local wield_item = data["inventory"]["wield_item"]
 
 			if core_name ~= "" then -- set a core
-				core_stack = ItemStack(core_name)
+				local core_stack = ItemStack(core_name)
 				core_stack:set_count(1)
 				inventory:add_item("core", core_stack)
 				self.core_name = core_name
@@ -518,7 +518,7 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	-- maidroid.maidroid.pickup_item pickup items placed and put it to main slot.
-	function pickup_item(self)
+	local function pickup_item(self)
 		local pos = self.object:getpos()
 		local radius = 1.0
 		local all_objects = minetest.get_objects_inside_radius(pos, radius)
@@ -527,8 +527,7 @@ function maidroid.register_maidroid(product_name, def)
 			if not obj:is_player() and obj:get_luaentity() then
 				local itemstring = obj:get_luaentity().itemstring
 
-				if minetest.registered_nodes[itemstring] ~= nil or minetest.registered_items[itemstring] ~= nil
-				or minetest.registered_tools[itemstring] ~= nil or minetest.registered_craftitems[itemstring] ~= nil then
+				if minetest.registered_items[itemstring] ~= nil then
 					local inv = self:get_inventory()
 					local stack = ItemStack(itemstring)
 					local leftover = inv:add_item("main", stack)

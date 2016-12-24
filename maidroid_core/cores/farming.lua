@@ -113,8 +113,11 @@ walk_randomly = function(self, dtime)
 		local velocity = self.object:getvelocity()
 		if velocity.y == 0 then
 			local front_node = self:get_front_node()
-			if front_node.name ~= "air" and minetest.registered_nodes[front_node.name].walkable
-			and not (minetest.get_item_group(front_node.name, "fence") > 0) then
+
+			if minetest.get_item_group(front_node.name, "fence") > 0 then
+				self:change_direction_randomly()
+			elseif front_node.name ~= "air" and minetest.registered_nodes[front_node.name] ~= nil
+			and minetest.registered_nodes[front_node.name].walkable then
 				self.object:setvelocity{x = velocity.x, y = 6, z = velocity.z}
 			end
 		end
@@ -224,7 +227,8 @@ walk_to_plant_and_mow_common = function(self, dtime)
 		local velocity = self.object:getvelocity()
 		if velocity.y == 0 then
 			local front_node = self:get_front_node()
-			if front_node.name ~= "air" and minetest.registered_nodes[front_node.name].walkable
+			if front_node.name ~= "air" and minetest.registered_nodes[front_node.name] ~= nil
+			and minetest.registered_nodes[front_node.name].walkable
 			and not (minetest.get_item_group(front_node.name, "fence") > 0) then
 				self.object:setvelocity{x = velocity.x, y = 6, z = velocity.z}
 			end
