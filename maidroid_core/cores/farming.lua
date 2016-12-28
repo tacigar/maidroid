@@ -28,7 +28,7 @@ local function is_plantable_place(pos)
 	local lpos = vector.add(pos, {x = 0, y = -1, z = 0})
 	local lnode = minetest.get_node(lpos)
 	return node.name == "air"
-		and minetest.get_item_group(lnode.name, "wet") > 0
+		and minetest.get_item_group(lnode.name, "soil") > 1
 end
 
 -- is_mowable_place reports whether maidroid can mow.
