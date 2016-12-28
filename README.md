@@ -1,7 +1,6 @@
 # Maidroid
 
-<img src="http://i.imgur.com/7HTh30v.png" />
-<img src="http://i.imgur.com/wF1BBe6.gif" />
+<img src="http://i.imgur.com/q9fC9SQ.png" />
 
 ## Overview
 
@@ -77,5 +76,3 @@ The forum topic for this mod on the Minetest Forums is located at:
 
 - The source code of Maidroid is available under the [LGPLv2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt) or later license.
 - The resouces included in Maidroid are available under the [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) or later license.
-
-## Contributers

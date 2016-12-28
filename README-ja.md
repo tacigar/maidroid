@@ -1,7 +1,6 @@
 # Maidroid
 
-<img src="http://i.imgur.com/7HTh30v.png" />
-<img src="http://i.imgur.com/wF1BBe6.gif" />
+<img src="http://i.imgur.com/q9fC9SQ.png" />
 
 ## Overview
 
@@ -73,5 +72,3 @@ Maidroid を右クリックし, Core と書かれたスロットに先ほど作�
 
 - Source Code : [LGPLv2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt) or later
 - Resources : [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) or later
-
-## Contributers
