@@ -39,7 +39,7 @@ function maidroid_tool.register_writer(nodename, options)
 	end
 
 	-- on_timer is a common callback.
-	local function on_timer(pos)
+	local function on_timer(pos, elapsed)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
 		local main_list = inventory:get_list("main")
@@ -52,7 +52,7 @@ function maidroid_tool.register_writer(nodename, options)
 		-- if time is positive, this node is active.
 		if time >= 0 then
 			if time <= duration then
-				meta:set_float("time", time + 1)
+				meta:set_float("time", time + elapsed)
 				meta:set_string("formspec", formspec.active(time))
 			else
 				meta:set_float("time", -1)
