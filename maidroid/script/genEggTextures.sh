@@ -3,7 +3,7 @@
 . ./colors.sh
 
 for ((i=1; i<16; i++)); do
-  output="../maidroid/textures/maidroid_maidroid_mk${i}_egg.png"
+  output="../textures/maidroid_maidroid_mk${i}_egg.png"
   color=${arr[i]}
   convert +level-colors $color,White img/maidroid_egg_pattern.png img/maidroid_egg_pattern_tmp.png
   composite img/maidroid_egg_pattern_tmp.png img/maidroid_empty_egg.png $output
