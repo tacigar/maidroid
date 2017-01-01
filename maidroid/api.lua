@@ -443,29 +443,9 @@ function maidroid.register_maidroid(product_name, def)
 			self.nametag = data["nametag"]
 
 			local inventory = create_inventory(self)
-			local core_name = data["inventory"]["core"]
-			local items = data["inventory"]["main"]
-			local wield_item = data["inventory"]["wield_item"]
-
-			if core_name ~= "" then -- set a core
-				local core_stack = ItemStack(core_name)
-				core_stack:set_count(1)
-				inventory:add_item("core", core_stack)
-				self.core_name = core_name
+			for list_name, list in pairs(data["inventory"]) do
+				inventory:set_list(list_name, list)
 			end
-
-			for _, item in ipairs(items) do -- set items
-				local item_stack = ItemStack(item["name"])
-				item_stack:set_count(item["count"])
-				inventory:add_item("main", item_stack)
-			end
-
-			if wield_item["name"] ~= "" then
-				local item_stack = ItemStack(wield_item["name"])
-				item_stack:set_count(wield_item["count"])
-				inventory:add_item("wield_item", item_stack)
-			end
-
 		end
 
 		update_infotext(self)
@@ -490,30 +470,18 @@ function maidroid.register_maidroid(product_name, def)
 			["product_name"] = self.product_name,
 			["manufacturing_number"] = self.manufacturing_number,
 			["nametag"] = self.nametag,
-			["inventory"] = {
-				["main"] = {},
-				["core"] = self.core_name,
-				["wield_item"] = nil,
-			},
+			["inventory"] = {},
 		}
 
-		-- set main list.
-		for _, item in ipairs(inventory:get_list("main")) do
-			local count = item:get_count()
-			local itemname = item:get_name()
-			if count ~= 0 then
-				local itemdata = {count = count, name = itemname}
-				table.insert(data["inventory"]["main"], itemdata)
+		-- set lists.
+		for list_name, list in pairs(inventory:get_lists()) do
+			data["inventory"][list_name] = {}
+
+			for i, item in ipairs(list) do
+				data["inventory"][list_name][i] = item:to_string()
 			end
 		end
 
-		do -- set wield_item list.
-			local item = self:get_wield_item_stack()
-			local count = item:get_count()
-			local itemname = item:get_name()
-			local itemdata = {count = count, name = itemname}
-			data["inventory"]["wield_item"] = itemdata
-		end
 		return minetest.serialize(data)
 	end
 
