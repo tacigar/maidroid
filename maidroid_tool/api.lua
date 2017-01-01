@@ -16,12 +16,12 @@ function maidroid_tool.register_writer(nodename, options)
 	local on_deactivate                         = options.on_deactivate
 	local empty_itemname                        = options.empty_itemname
 	local dye_item_map                          = options.dye_item_map
-	local is_mainitem                           = options.is_mainitem
+	--~ local is_mainitem                           = options.is_mainitem
 	local on_metadata_inventory_put_to_main     = options.on_metadata_inventory_put_to_main
 	local on_metadata_inventory_take_from_main  = options.on_metadata_inventory_take_from_main
 
 	-- can_dig is a common callback.
-	local function can_dig(pos, player)
+	local function can_dig(pos)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
 		return (
@@ -52,7 +52,7 @@ function maidroid_tool.register_writer(nodename, options)
 		-- if time is positive, this node is active.
 		if time >= 0 then
 			if time <= duration then
-				meta:set_float("time", time + 1)
+				meta:set_float("time", time + elapsed)
 				meta:set_string("formspec", formspec.active(time))
 			else
 				meta:set_float("time", -1)
@@ -94,9 +94,7 @@ function maidroid_tool.register_writer(nodename, options)
 	end
 
 	-- allow_metadata_inventory_put is a common callback.
-	local function allow_metadata_inventory_put(pos, listname, index, stack, player)
-		local meta = minetest.get_meta(pos)
-		local inventory = meta:get_inventory()
+	local function allow_metadata_inventory_put(_, listname, _, stack)
 		local itemname = stack:get_name()
 
 		if (listname == "fuel" and itemname == "default:coal_lump") then
@@ -110,7 +108,7 @@ function maidroid_tool.register_writer(nodename, options)
 	end
 
 	-- allow_metadata_inventory_move is a common callback for the node.
-	local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
+	local function allow_metadata_inventory_move(pos, from_list, from_index, _, to_index, _, player)
 		local meta = minetest.get_meta(pos)
 		local inventory = meta:get_inventory()
 		local stack = inventory:get_stack(from_list, from_index)
@@ -130,11 +128,10 @@ function maidroid_tool.register_writer(nodename, options)
 			inventory:set_size("dye", 1)
 		end
 
-		local function on_metadata_inventory_put(pos, listname, index, stack, player)
+		local function on_metadata_inventory_put(pos, listname)
 			local timer = minetest.get_node_timer(pos)
 			timer:start(0.25)
 
-			local meta = minetest.get_meta(pos)
 			if listname == "main" then
 				if on_metadata_inventory_put_to_main ~= nil then
 					on_metadata_inventory_put_to_main(pos) -- call on_metadata_inventory_put_to_main callback.
@@ -142,15 +139,16 @@ function maidroid_tool.register_writer(nodename, options)
 			end
 		end
 
-		local function on_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
+		local function on_metadata_inventory_move(pos, from_list, from_index, _, to_index, _, player)
 			local meta = minetest.get_meta(pos)
 			local inventory = meta:get_inventory()
 			local stack = inventory:get_stack(from_list, from_index)
 
+			-- listname is not set here, is it? ~Hybrid Dog
 			on_metadata_inventory_put(pos, listname, to_index, stack, player)
 		end
 
-		local function on_metadata_inventory_take(pos, listname, index, stack, player)
+		local function on_metadata_inventory_take(pos, listname)
 			if listname == "main" then
 				if on_metadata_inventory_take_from_main ~= nil then
 					on_metadata_inventory_take_from_main(pos) -- call on_metadata_inventory_take_from_main callback.
@@ -158,7 +156,7 @@ function maidroid_tool.register_writer(nodename, options)
 			end
 		end
 
-		local function allow_metadata_inventory_take(pos, listname, index, stack, player)
+		local function allow_metadata_inventory_take(_,_,_, stack)
 			return stack:get_count() -- maybe add more.
 		end
 
@@ -187,7 +185,7 @@ function maidroid_tool.register_writer(nodename, options)
 	end -- end register inactive node.
 
 	do -- register a definition of an active node.
-		local function allow_metadata_inventory_take(pos, listname, index, stack, player)
+		local function allow_metadata_inventory_take(_, listname, _, stack)
 			if listname == "main" then
 				return 0
 			end
