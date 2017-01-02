@@ -8,6 +8,7 @@ do -- register core writer
 	local dye_item_map = {
 		["dye:red"]    = "maidroid_core:basic",
 		["dye:yellow"] = "maidroid_core:farming",
+		["dye:white"] = "maidroid_core:ocr",
 	}
 
 	local node_box = {
