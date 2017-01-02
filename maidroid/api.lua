@@ -61,12 +61,13 @@ end
 
 -- maidroid.maidroid.get_core_name returns a name of a maidroid's current core.
 function maidroid.maidroid.get_core_name(self)
-	return self.core_name
+	local inv = self:get_inventory()
+	return inv:get_stack("core", 1):get_name()
 end
 
 -- maidroid.maidroid.get_core returns a maidroid's current core definition.
 function maidroid.maidroid.get_core(self)
-	local name = self:get_core_name(self)
+	local name = self:get_core_name()
 	if name ~= "" then
 		return maidroid.registered_cores[name]
 	end
@@ -342,14 +343,15 @@ function maidroid.register_maidroid(product_name, def)
 	end
 
 	local function update_infotext(self)
-		if self.core_name ~= "" then
+		local core_name = self:get_core_name()
+		if core_name ~= "" then
 			local infotext = ""
 			if self.pause then
 				infotext = infotext .. "this maidroid is paused\n"
 			else
 				infotext = infotext .. "this maidroid is active\n"
 			end
-			infotext = infotext .. "[Core] : " .. self.core_name
+			infotext = infotext .. "[Core] : " .. core_name
 
 			self.object:set_properties{infotext = infotext}
 			return
@@ -366,7 +368,6 @@ function maidroid.register_maidroid(product_name, def)
 					local core_name = stack:get_name()
 					local core = maidroid.registered_cores[core_name]
 					core.on_start(self)
-					self.core_name = core_name
 
 					update_infotext(self)
 				end
@@ -386,8 +387,8 @@ function maidroid.register_maidroid(product_name, def)
 
 			on_take = function(inv, listname, index, stack, player)
 				if listname == "core" then
-					local core = maidroid.registered_cores[self.core_name]
-					self.core_name = ""
+					local core_name = stack:get_name()
+					local core = maidroid.registered_cores[core_name]
 					core.on_stop(self)
 
 					update_infotext(self)
@@ -443,29 +444,9 @@ function maidroid.register_maidroid(product_name, def)
 			self.nametag = data["nametag"]
 
 			local inventory = create_inventory(self)
-			local core_name = data["inventory"]["core"]
-			local items = data["inventory"]["main"]
-			local wield_item = data["inventory"]["wield_item"]
-
-			if core_name ~= "" then -- set a core
-				local core_stack = ItemStack(core_name)
-				core_stack:set_count(1)
-				inventory:add_item("core", core_stack)
-				self.core_name = core_name
+			for list_name, list in pairs(data["inventory"]) do
+				inventory:set_list(list_name, list)
 			end
-
-			for _, item in ipairs(items) do -- set items
-				local item_stack = ItemStack(item["name"])
-				item_stack:set_count(item["count"])
-				inventory:add_item("main", item_stack)
-			end
-
-			if wield_item["name"] ~= "" then
-				local item_stack = ItemStack(wield_item["name"])
-				item_stack:set_count(wield_item["count"])
-				inventory:add_item("wield_item", item_stack)
-			end
-
 		end
 
 		update_infotext(self)
@@ -490,30 +471,18 @@ function maidroid.register_maidroid(product_name, def)
 			["product_name"] = self.product_name,
 			["manufacturing_number"] = self.manufacturing_number,
 			["nametag"] = self.nametag,
-			["inventory"] = {
-				["main"] = {},
-				["core"] = self.core_name,
-				["wield_item"] = nil,
-			},
+			["inventory"] = {},
 		}
 
-		-- set main list.
-		for _, item in ipairs(inventory:get_list("main")) do
-			local count = item:get_count()
-			local itemname = item:get_name()
-			if count ~= 0 then
-				local itemdata = {count = count, name = itemname}
-				table.insert(data["inventory"]["main"], itemdata)
+		-- set lists.
+		for list_name, list in pairs(inventory:get_lists()) do
+			data["inventory"][list_name] = {}
+
+			for i, item in ipairs(list) do
+				data["inventory"][list_name][i] = item:to_string()
 			end
 		end
 
-		do -- set wield_item list.
-			local item = self:get_wield_item_stack()
-			local count = item:get_count()
-			local itemname = item:get_name()
-			local itemdata = {count = count, name = itemname}
-			data["inventory"]["wield_item"] = itemdata
-		end
 		return minetest.serialize(data)
 	end
 
@@ -546,8 +515,8 @@ function maidroid.register_maidroid(product_name, def)
 		pickup_item(self)
 
 		-- do core method.
-		if (not self.pause) and self.core_name ~= "" then
-			local core = maidroid.registered_cores[self.core_name]
+		local core = self:get_core()
+		if (not self.pause) and core then
 			core.on_step(self, dtime)
 		end
 	end
@@ -563,16 +532,15 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_punch is a callback function that is called when a player punch then.
 	local function on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
+		local core = self:get_core()
 		if self.pause == true then
 			self.pause = false
-			if self.core_name ~= "" then
-				local core = maidroid.registered_cores[self.core_name]
+			if core then
 				core.on_resume(self)
 			end
 		else
 			self.pause = true
-			if self.core_name ~= "" then
-				local core = maidroid.registered_cores[self.core_name]
+			if core then
 				core.on_pause(self)
 			end
 		end
@@ -601,7 +569,6 @@ function maidroid.register_maidroid(product_name, def)
 		pause                        = false,
 		product_name                 = "",
 		manufacturing_number         = -1,
-		core_name                    = "",
 
 		-- callback methods.
 		on_activate                  = on_activate,
