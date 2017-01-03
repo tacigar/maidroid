@@ -14,6 +14,7 @@ end
 local function on_stop(self)
 	self.state = nil
 	self.object:setvelocity{x = 0, y = 0, z = 0}
+	self:set_animation(maidroid.animation_frames.STAND)
 end
 
 local function on_step(self, dtime)

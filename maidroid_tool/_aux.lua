@@ -3,9 +3,11 @@
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
 
+maidroid_tool._aux = {}
+
 -- maidroid_tool.shared.generate_writer is a shared
 -- function called for registering egg writer and core writer.
-function maidroid_tool.register_writer(nodename, options)
+function maidroid_tool._aux.register_writer(nodename, options)
 	local description                           = options.description
 	local formspec                              = options.formspec
 	local tiles                                 = options.tiles
@@ -16,7 +18,6 @@ function maidroid_tool.register_writer(nodename, options)
 	local on_deactivate                         = options.on_deactivate
 	local empty_itemname                        = options.empty_itemname
 	local dye_item_map                          = options.dye_item_map
-	--~ local is_mainitem                           = options.is_mainitem
 	local on_metadata_inventory_put_to_main     = options.on_metadata_inventory_put_to_main
 	local on_metadata_inventory_take_from_main  = options.on_metadata_inventory_take_from_main
 
@@ -156,7 +157,7 @@ function maidroid_tool.register_writer(nodename, options)
 			end
 		end
 
-		local function allow_metadata_inventory_take(_,_,_, stack)
+		local function allow_metadata_inventory_take(_, _, _, stack)
 			return stack:get_count() -- maybe add more.
 		end
 
