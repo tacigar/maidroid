@@ -211,6 +211,25 @@ function maidroid.maidroid.change_direction_randomly(self)
 	self:set_yaw_by_direction(direction)
 end
 
+-- maidroid.maidroid.update_infotext updates the infotext of the maidroid.
+function maidroid.maidroid.update_infotext(self)
+	local infotext = ""
+	local core_name = self:get_core_name()
+
+	if core_name ~= "" then
+		if self.pause then
+			infotext = infotext .. "this maidroid is paused\n"
+		else
+			infotext = infotext .. "this maidroid is active\n"
+		end
+		infotext = infotext .. "[Core] : " .. core_name .. "\n"
+	else
+		infotext = infotext .. "this maidroid is inactive\n[Core] : None\n"
+	end
+	infotext = infotext .. "[Owner] : " .. self.owner_name
+	self.object:set_properties{infotext = infotext}
+end
+
 ---------------------------------------------------------------------
 
 -- maidroid.manufacturing_data represents a table that contains manufacturing data.
@@ -324,6 +343,8 @@ function maidroid.register_egg(egg_name, def)
 				new_maidroid:get_luaentity():set_yaw_by_direction(
 					vector.subtract(user:getpos(), new_maidroid:getpos())
 				)
+				new_maidroid:get_luaentity().owner_name = user:get_player_name()
+				new_maidroid:get_luaentity():update_infotext()
 
 				itemstack:take_item()
 				return itemstack
@@ -342,23 +363,6 @@ function maidroid.register_maidroid(product_name, def)
 		maidroid.manufacturing_data[product_name] = 0
 	end
 
-	local function update_infotext(self)
-		local core_name = self:get_core_name()
-		if core_name ~= "" then
-			local infotext = ""
-			if self.pause then
-				infotext = infotext .. "this maidroid is paused\n"
-			else
-				infotext = infotext .. "this maidroid is active\n"
-			end
-			infotext = infotext .. "[Core] : " .. core_name
-
-			self.object:set_properties{infotext = infotext}
-			return
-		end
-		self.object:set_properties{infotext = "this maidroid is inactive"}
-	end
-
 	-- create_inventory creates a new inventory, and returns it.
 	local function create_inventory(self)
 		self.inventory_name = self.product_name .. "_" .. tostring(self.manufacturing_number)
@@ -369,7 +373,7 @@ function maidroid.register_maidroid(product_name, def)
 					local core = maidroid.registered_cores[core_name]
 					core.on_start(self)
 
-					update_infotext(self)
+					self:update_infotext()
 				end
 			end,
 
@@ -391,7 +395,7 @@ function maidroid.register_maidroid(product_name, def)
 					local core = maidroid.registered_cores[core_name]
 					core.on_stop(self)
 
-					update_infotext(self)
+					self:update_infotext()
 				end
 			end,
 
@@ -442,6 +446,7 @@ function maidroid.register_maidroid(product_name, def)
 			self.product_name = data["product_name"]
 			self.manufacturing_number = data["manufacturing_number"]
 			self.nametag = data["nametag"]
+			self.owner_name = data["owner_name"]
 
 			local inventory = create_inventory(self)
 			for list_name, list in pairs(data["inventory"]) do
@@ -449,7 +454,7 @@ function maidroid.register_maidroid(product_name, def)
 			end
 		end
 
-		update_infotext(self)
+		self:update_infotext()
 
 		self.object:set_nametag_attributes{
 			text = self.nametag
@@ -471,6 +476,7 @@ function maidroid.register_maidroid(product_name, def)
 			["product_name"] = self.product_name,
 			["manufacturing_number"] = self.manufacturing_number,
 			["nametag"] = self.nametag,
+			["owner_name"] = self.owner_name,
 			["inventory"] = {},
 		}
 
@@ -545,7 +551,7 @@ function maidroid.register_maidroid(product_name, def)
 			end
 		end
 
-		update_infotext(self)
+		self:update_infotext()
 	end
 
 	-- register a definition of a new maidroid.
@@ -569,6 +575,7 @@ function maidroid.register_maidroid(product_name, def)
 		pause                        = false,
 		product_name                 = "",
 		manufacturing_number         = -1,
+		owner_name                   = "",
 
 		-- callback methods.
 		on_activate                  = on_activate,
@@ -594,6 +601,7 @@ function maidroid.register_maidroid(product_name, def)
 		has_item_in_main             = maidroid.maidroid.has_item_in_main,
 		change_direction             = maidroid.maidroid.change_direction,
 		change_direction_randomly    = maidroid.maidroid.change_direction_randomly,
+		update_infotext              = maidroid.maidroid.update_infotext,
 	})
 
 	-- register maidroid egg.
