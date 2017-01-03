@@ -301,7 +301,7 @@ end
 function maidroid.register_core(core_name, def)
 	maidroid.registered_cores[core_name] = def
 
-	minetest.register_craftitem(core_name, {
+	minetest.register_tool(core_name, {
 		stack_max       = 1,
 		description     = def.description,
 		inventory_image = def.inventory_image,
@@ -312,7 +312,7 @@ end
 function maidroid.register_egg(egg_name, def)
 	maidroid.registered_eggs[egg_name] = def
 
-	minetest.register_craftitem(egg_name, {
+	minetest.register_tool(egg_name, {
 		description     = def.description,
 		inventory_image = def.inventory_image,
 		stack_max       = 1,

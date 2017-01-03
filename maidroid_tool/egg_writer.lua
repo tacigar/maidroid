@@ -165,7 +165,7 @@ do -- register egg writer
 		egg_entity.object:remove()
 	end
 
-	maidroid_tool.register_writer("maidroid_tool:egg_writer", {
+	maidroid_tool._aux.register_writer("maidroid_tool:egg_writer", {
 		description                           = "maidroid tool : egg writer",
 		formspec                              = formspec,
 		tiles                                 = tiles,

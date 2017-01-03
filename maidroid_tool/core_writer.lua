@@ -148,7 +148,7 @@ do -- register core writer
 		core_entity.object:remove()
 	end
 
-	maidroid_tool.register_writer("maidroid_tool:core_writer", {
+	maidroid_tool._aux.register_writer("maidroid_tool:core_writer", {
 		description                           = "maidroid tool : core writer",
 		formspec                              = formspec,
 		tiles                                 = tiles,
