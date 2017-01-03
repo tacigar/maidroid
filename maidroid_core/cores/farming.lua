@@ -241,7 +241,14 @@ plant = function(self, dtime)
 		if is_plantable_place(self.destination) then
 			local stack = self:get_wield_item_stack()
 			local itemname = stack:get_name()
-			minetest.add_node(self.destination, {name = itemname, param2 = 1})
+
+			local pointed_thing = {
+				type = "node",
+				under = vector.add(self.destination, {x = 0, y = -1, z = 0}),
+				above = self.destination,
+			}
+			farming.place_seed(stack, minetest.get_player_by_name(self.owner_name), pointed_thing, stack:get_name())
+
 			stack:take_item(1)
 			self:set_wield_item_stack(stack)
 		end
