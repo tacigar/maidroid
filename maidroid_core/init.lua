@@ -12,3 +12,6 @@ dofile(maidroid_core.modpath .. "/cores/_aux.lua")
 dofile(maidroid_core.modpath .. "/cores/empty.lua")
 dofile(maidroid_core.modpath .. "/cores/basic.lua")
 dofile(maidroid_core.modpath .. "/cores/farming.lua")
+if pdisc then
+	dofile(maidroid_core.modpath .. "/cores/ocr.lua")
+end
