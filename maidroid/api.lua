@@ -405,7 +405,37 @@ function maidroid.register_maidroid(product_name, def)
 				end
 				return stack:get_count()
 			end,
+
+			on_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+				if to_list == "core" or from_list == "core" then
+					local core_name = inv:get_stack(to_list, to_index):get_name()
+					local core = maidroid.registered_cores[core_name]
+
+					if to_list == "core" then
+						core.on_start(self)
+					elseif from_list == "core" then
+						core.on_stop(self)
+					end
+
+					self:update_infotext()
+				end
+			end,
+
+			allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+				if to_list == "wield_item" then
+					return 0
+				end
+
+				if to_list == "main" then
+					return count
+				elseif to_list == "core" and maidroid.is_core(inv:get_stack(from_list, from_index):get_name()) then
+					return count
+				end
+
+				return 0
+			end,
 		})
+
 		inventory:set_size("main", 16)
 		inventory:set_size("core",  1)
 		inventory:set_size("wield_item", 1)
