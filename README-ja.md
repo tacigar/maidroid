@@ -2,75 +2,127 @@
 
 <img src="http://i.imgur.com/q9fC9SQ.png" />
 
-## Overview
+この MOD は Maidroid というメイドのロボットと, その Maidroid に農業やプレイヤーの追跡など, 様々なことをさせるコア, それらに関連する種々のツールを提供します.
+Minecraft の著名な MOD, littleMaidMob にインスパイアされて開発を始めました.
 
-Maidroid MOD は, Minecraft のMOD `littleMaidMob` にインスパイアされて開発を始めた, 孤独な Minetest の世界にメイドのロボットを追加する MOD です。
+## 使い方
 
-## Usage
+### Maidroid の卵の作成
 
-Maidroid を作り出すには, まず空の卵と卵に命を吹き込むための, Maidroid-Egg Writer を作成しなければなりません.
-それらのレシピを以下に示します.
+1. 空の卵と Maidroid-Egg Writer を後に示すレシピに従ってクラフトテーブルで作成します.
+2. Maidroid-Egg Writer を設置し, 右クリックして formspec を開きます.
+3. `Egg` と書かれたスロットに先に作成しておいた空の卵, `Fuel` と書かれたスロットに石炭, `Dye` と書かれたスロットに染料を配置します.
+4. すると, Maidroid-Egg Writer が起動し, 浮いた卵が回転を始めます.
+5. しばらく待つと, 命の吹き込まれた Maidroid の卵が完成しますので, 再度 Maidroid-Egg Writer を右クリックし取り出してください.
 
-<img src="http://i.imgur.com/6ZGQF4J.png" />
-<img src="http://i.imgur.com/Y5tzPGM.png" />
+### コアの作成
 
-次に, Maidroid-Egg Writer 設置, 右クリックし, `Egg` と書かれたスロットに先ほど作成した空の卵を置きます.
-また, `Fuel` と書かれたスロットには石炭を, `Dye` と書かれたスロットには染料を設置します.
-この染料の色によって, 生成される卵の種類が変化します.
-以下に染料と, 生成される卵の対応を示します.
+1. 空のコアと Core Writer を後に示すレシピに従ってクラフトテーブルで作成します.
+2. Core Writer を設置し, 右クリックして formspec を開きます.
+3. `Core` と書かれたスロットに先に作成しておいた空のコア, `Fuel` と書かれたスロットに石炭, `Dye` と書かれたスロットに染料を配置します.
+4. すると, Core Writer が起動し, 上のコアが回転を始めます.
+5. しばらく待つと, 情報が書き込まれたコアが完成しますので, 再度 Core Writer を右クリックし取り出してください.
 
-|染料|Egg|
-|:--|:--|
-|dye:white|maidroid:maidroid_mk1_egg|
-|dye:grey|maidroid:maidroid_mk2_egg|
-|dye:dark_grey|maidroid:maidroid_mk3_egg|
-|dye:black|maidroid:maidroid_mk4_egg|
-|dye:blue|maidroid:maidroid_mk5_egg|
-|dye:cyan|maidroid:maidroid_mk6_egg|
-|dye:green|maidroid:maidroid_mk7_egg|
-|dye:dark_green|maidroid:maidroid_mk8_egg|
-|dye:yellow|maidroid:maidroid_mk9_egg|
-|dye:orange|maidroid:maidroid_mk10_egg|
-|dye:brown|maidroid:maidroid_mk11_egg|
-|dye:red|maidroid:maidroid_mk12_egg|
-|dye:pink|maidroid:maidroid_mk13_egg|
-|dye:magenta|maidroid:maidroid_mk14_egg|
-|dye:violet|maidroid:maidroid_mk15_egg|
+### Maidroid の起動
 
-しばらく待つと, 空の卵に命が吹き込まれ, 新しい卵に変換されます.
-この卵を取り出し地面に投げつけると, Maidroid が誕生します.
+1. 先に作成しておいた, 命の吹き込まれた Maidroid の卵を床に投げつけ, Maidroid を生成します.
+2. 生成された Maidroid を右クリックし, `Core` と書かれたスロットに先ほど作成したコアを配置します.
+3. すると, Maidroid はそのコアの情報に従って行動を始めます.
 
-この状態では, Maidroid は止まったままです.
-Maidroid を動かすためには, Core, つまり Maidroid の脳を埋め込む必要があります.
-Core を作り出す手順は Maidroid を作り出す手順と非常に似ています.
-まず, 空の Core と Core に情報を書き込む為の Core Writer を作成します.
-それらのレシピを以下に示します.
+### レシピ / 染料と卵 / 染料とコア
 
-<img src="http://i.imgur.com/Sxnr38Y.png">
-<img src="http://i.imgur.com/97VENIl.png">
+クラフトテーブルで作成するノードやアイテムのレシピを以下に示します.
 
-Core Writer を設置 & 右クリックし, `Core` スロットに空の Core, `Fuel` スロットに石炭, `Dye` スロットに染料を設置します.
-Maidroid-Egg Writer 同様, 設置される染料の種類によって, 生成される Core の種類が変化します.
-以下に染料と, 生成される Core の対応を示します.
+```
+b = dye:black            c = default:cobble        d = default:diamond
+f = farming:cotton       o = default:obsidian      p = default:paper
+s = default:steel_ingot  w = bucket:bucket_water   z = default:bronze_ingot  
 
-|染料|Core|説明|
-|:--|:--|:--|
-|`dye:red`|`maidroid_core:basic`|プレーヤーを追いかけてくる. |
-|`dye:yellow`|`maidroid_core:farming`|農耕をする. |
-|`dye:white`|`maidroid_core:ocr`|プログラムが記述された本を持たせると, そのプログラムを実行する. |
+Core Writer      Egg Writer       Nametag          Empty Core       Empty Egg
 
-Core が生成されたら早速 Maidroid に埋め込みましょう.
-Maidroid を右クリックし, Core と書かれたスロットに先ほど作成した Core を設置します.
-すると, Maidroid が動き始めるでしょう.
+| s | d | s |    | d | w | d |    |   | f |   |    | s | s | s |    | z | z | z |
+| c | s | c |    | c | s | c |    | p | p | p |    | s | o | s |    | z | s | z |
+| c | c | c |    | s | c | s |    | s | b | s |    | s | s | s |    | z | z | z |
+```
 
-## Dependencies
+次に, 染料と対応する卵から生まれる Maidroid について以下に示します.
+
+<table>
+<tr>
+<td>White</td><td><img src=http://i.imgur.com/lsdq79e.png> Mk1</td>
+<td></td>
+<td>Grey</td><td><img src=http://i.imgur.com/9ffUTjB.png> Mk2</td>
+<td></td>
+<td>Dark Grey</td><td><img src=http://i.imgur.com/HWtLvqb.png> Mk3</td>
+</tr>
+
+<tr>
+<td>Black</td><td><img src=http://i.imgur.com/GoHRTRC.png> Mk4</td>
+<td></td>
+<td>Blue</td><td><img src=http://i.imgur.com/JTZTCS9.png> Mk5</td>
+<td></td>
+<td>Cyan</td><td><img src=http://i.imgur.com/hHw6mbD.png> Mk6</td>
+</tr>
+
+<tr>
+<td>Green</td><td><img src=http://i.imgur.com/YdzOgvM.png> Mk7</td>
+<td></td>
+<td>Dark Green</td><td><img src=http://i.imgur.com/UXB52Ce.png> Mk8</td>
+<td></td>
+<td>Yellow</td><td><img src=http://i.imgur.com/hcd9vk4.png> Mk9</td>
+</tr>
+
+<tr>
+<td>Orange</td><td><img src=http://i.imgur.com/6UjS63j.png> Mk10</td>
+<td></td>
+<td>Brown</td><td><img src=http://i.imgur.com/ayz4uP3.png> Mk11</td>
+<td></td>
+<td>Red</td><td><img src=http://i.imgur.com/rqknHh7.png> Mk12</td>
+</tr>
+
+<tr>
+<td>Pink</td><td><img src=http://i.imgur.com/UNALjMo.png> MK13</td>
+<td></td>
+<td>Magenta</td><td><img src=http://i.imgur.com/iorRtmf.png> Mk14</td>
+<td></td>
+<td>Violet</td><td><img src=http://i.imgur.com/UX3w1Cx.png> Mk15</td>
+</tr>
+
+</table>
+
+最後に, 染料とコアとの対応と, 各コアの簡易的な説明を以下に示します.
+
+<table>
+<tr>
+<td>Red</td><td><img src=http://i.imgur.com/DlMzSGK.png> Basic Core</td><td>プレイヤーを追跡する. 荷物持ちに使える.</td>
+</tr>
+<tr>
+<td>Yellow</td><td><img src=http://i.imgur.com/ALor72m.png> Farming Core</td><td>農業を行う.</td>
+</tr>
+<tr>
+<td>White</td><td><img src=http://i.imgur.com/ypI2Fs6.png> OCR Core</td><td>プログラムが書かれた本を読み実行. 要 pdisc MOD.</td>
+</tr>
+<tr>
+<td>Orange</td><td>Torcher Core</td><td>プレイヤーを追跡し, 暗い所を松明で照らす.</td>
+</tr>
+</table>
+
+## 各コアの詳細
+
+TODO
+
+## 依存 MOD
 
 - bucket
 - default
 - dye
 - [pdisc?](https://github.com/HybridDog/pdisc)
 
-## Lisense
+## 必要条件
+
+- Minetest v0.4.14 以降
+
+## ライセンス
 
 - Source Code : [LGPLv2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt) or later
 - Resources : [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) or later
