@@ -517,6 +517,11 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- on_step is a callback function that is called every delta times.
 	local function on_step(self, dtime)
+		-- if owner didn't login, the maidroid does nothing.
+		if not minetest.get_player_by_name(self.owner_name) then
+			return
+		end
+
 		-- pickup surrounding item.
 		pickup_item(self)
 
