@@ -57,7 +57,7 @@ for name, _ in pairs(maidroid.registered_maidroids) do
 	local inv_img = "maidroid_tool_capture_rod_plate.png^" .. egg_def.inventory_image
 
 	minetest.register_tool("maidroid_tool:captured_" .. maidroid_name .. "_egg", {
-		description = "captured " .. egg_def.description,
+		description = "maidroid tool : captured " .. egg_def.description,
 		inventory_image = inv_img,
 		groups = {not_in_creative_inventory = 1},
 		on_use = function(itemstack, user, pointed_thing)
