@@ -29,3 +29,13 @@ minetest.register_craft{
 		{"default:steel_ingot",      "dye:black", "default:steel_ingot"},
 	},
 }
+
+minetest.register_craft{
+	output = "maidroid_tool:capture_rod",
+	recipe = {
+		{         "wool:white",            "dye:pink", "default:mese_crystal"},
+		{                   "", "default:steel_ingot",             "dye:pink"},
+		{"default:steel_ingot",                    "",           "wool:white"},
+	},
+}
+
