@@ -274,7 +274,7 @@ do
 			local luaentity = obj:get_luaentity()
 
 			if maidroid.is_maidroid(luaentity.name) then
-				self.object:set_attach(obj, "Arm_R", {x = 0.075, y = 0.60, z = -0.20}, {x = 0, y = 90, z = 0})
+				self.object:set_attach(obj, "Arm_R", {x = 0.065, y = 0.50, z = -0.15}, {x = -45, y = 0, z = 0})
 				self.object:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
 				return
 			end
