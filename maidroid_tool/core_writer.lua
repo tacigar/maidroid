@@ -9,6 +9,7 @@ do -- register core writer
 		["dye:red"]    = "maidroid_core:basic",
 		["dye:yellow"] = "maidroid_core:farming",
 		["dye:white"]  = "maidroid_core:ocr",
+		["dye:orange"] = "maidroid_core:torcher"
 	}
 
 	local node_box = {

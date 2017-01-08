@@ -95,8 +95,8 @@ function maidroid.maidroid.get_nearest_player(self, range_distance)
 	return player
 end
 
--- maidroid.maidroid.get_front_node returns a node that exists in front of the maidroid.
-function maidroid.maidroid.get_front_node(self)
+-- maidroid.maidroid.get_front returns a position in front of the maidroid.
+function maidroid.maidroid.get_front(self)
 	local direction = self:get_look_direction()
 	if math.abs(direction.x) >= 0.5 then
 		if direction.x > 0 then	direction.x = 1	else direction.x = -1 end
@@ -110,7 +110,12 @@ function maidroid.maidroid.get_front_node(self)
 		direction.z = 0
 	end
 
-	local front = vector.add(vector.round(self.object:getpos()), direction)
+	return vector.add(vector.round(self.object:getpos()), direction)
+end
+
+-- maidroid.maidroid.get_front_node returns a node that exists in front of the maidroid.
+function maidroid.maidroid.get_front_node(self)
+	local front = self:get_front()
 	return minetest.get_node(front)
 end
 
@@ -269,7 +274,7 @@ do
 			local luaentity = obj:get_luaentity()
 
 			if maidroid.is_maidroid(luaentity.name) then
-				self.object:set_attach(obj, "Arm_R", {x = 0.075, y = 0.60, z = -0.20}, {x = 0, y = 90, z = 0})
+				self.object:set_attach(obj, "Arm_R", {x = 0.065, y = 0.50, z = -0.15}, {x = -45, y = 0, z = 0})
 				self.object:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
 				return
 			end
@@ -624,6 +629,7 @@ function maidroid.register_maidroid(product_name, def)
 		get_core                     = maidroid.maidroid.get_core,
 		get_core_name                = maidroid.maidroid.get_core_name,
 		get_nearest_player           = maidroid.maidroid.get_nearest_player,
+		get_front                    = maidroid.maidroid.get_front,
 		get_front_node               = maidroid.maidroid.get_front_node,
 		get_look_direction           = maidroid.maidroid.get_look_direction,
 		set_animation                = maidroid.maidroid.set_animation,
