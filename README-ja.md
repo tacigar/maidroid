@@ -1,6 +1,6 @@
 # Maidroid
 
-<img src="http://i.imgur.com/q9fC9SQ.png" />
+<img src=http://i.imgur.com/oWjrLtK.png>
 
 この MOD は Maidroid というメイドのロボットと, その Maidroid に農業やプレイヤーの追跡など, 様々なことをさせるコア, それらに関連する種々のツールを提供します.
 Minecraft の著名な MOD, littleMaidMob にインスパイアされて開発を始めました.
