@@ -112,7 +112,7 @@ Core Writer      Egg Writer       Nametag          Empty Core       Empty Egg
 ### Basic Core
 
 このコアが埋め込まれた Maidroid はプレイヤーを追跡します.
-Maidroid 自体の場所移動, あるいは荷物持ちくらいにはなると思われます.
+Maidroid 自体の場所移動に使えますし, あるいは荷物持ちくらいにはなると思われます.
 
 ### Farming Core
 
@@ -134,6 +134,9 @@ jmp start
 ```
 
 ### Torcher Core
+
+このコアが埋め込まれた Maidroid はプレイヤーを追跡し, 自分の周りが暗いと判断したら松明を設置し, 周りを照らしてくれます.
+採掘の際には結構役に立つと思われます.
 
 ## 依存 MOD
 
