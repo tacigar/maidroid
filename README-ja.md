@@ -109,7 +109,31 @@ Core Writer      Egg Writer       Nametag          Empty Core       Empty Egg
 
 ## 各コアの詳細
 
-TODO
+### Basic Core
+
+このコアが埋め込まれた Maidroid はプレイヤーを追跡します.
+Maidroid 自体の場所移動, あるいは荷物持ちくらいにはなると思われます.
+
+### Farming Core
+
+このコアが埋め込まれた Maidroid は農業をします.
+Farming Core を埋め込んだ状態で種を持たせれば, 土壌に種を植え始めます.
+また, 収穫の時期になったら自動で回収して回ります.
+このコアが埋め込まれた状態では柵を飛び越えないので, 農地の周りを柵で囲むことをお勧めします.
+
+### OCR Core
+
+pdisc MOD と連携するコアです.
+このコアが埋め込まれた Maidroid は, 自身のインベントリ内のプログラムが書かれた本を読み, そのプログラムを実行します. 例えば, 以下のようなプログラムが書かれた本を OCR Core が埋め込まれた Maidroid に読ませると, 一秒ごとにビープ音とジャンプをします. 本のタイトルは `main` としなければなりません.
+
+```
+start: sleep 1
+beep
+jump 0.9
+jmp start
+```
+
+### Torcher Core
 
 ## 依存 MOD
 
