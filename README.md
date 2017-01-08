@@ -1,6 +1,6 @@
 # Maidroid
 
-<img src="http://i.imgur.com/q9fC9SQ.png" />
+<img src=http://i.imgur.com/oWjrLtK.png>
 
 ## Overview
 
