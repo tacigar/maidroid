@@ -2,77 +2,125 @@
 
 <img src=http://i.imgur.com/oWjrLtK.png>
 
-## Overview
+This mod is inspired littleMaidMob mod (for Minecraft), and provides maid robots called 'maidroid', cores that command them to do farming, following their owner and so on, involved tools.
 
-Maidroid MOD is a MOD for Minetest which adds maid robots, inspired by littleMaidMob.
+## How to Use
 
-## Usage
+### Create Maidroid Eggs
 
-First, in order to create a maidroid, you have to craft an empty egg and an egg writer that convert eggs.
-Those recipe is as follows.
+1. Create an empty egg and Maidroid-Egg Writer by following the recipe below.
+2. Place Maidroid-Egg Writer and open formspec by right-clicking it.
+3. Put an empty egg into the slot labeled `Egg`, a coal into `Fuel`, and a dye into `Dye`.
+4. Then, Maidroid-Egg Writer activates.
+5. A short time later, a new maidroid egg will be created.
 
-<img src="http://i.imgur.com/6ZGQF4J.png" />
-<img src="http://i.imgur.com/Y5tzPGM.png" />
+### Create Cores
 
-After you place an egg writer node, and rightclick it, you have to place an empty egg to the slot labeled `Egg`, a coal to the slot labeled `Fuel`, and a dye to the slot labeled `Dye`.
-The kind of the dye placed decides a egg produced.
-The correspondences are as follows.
+1. Create an empty core and Core Writer by following the recipe below.
+2. Place Core Writer and open formspec by right-clicking it.
+3. Put an empty core into the slot labeled `Core`, a coal into `Fuel`, and a dye into `Dye`.
+4. Then, Core Writer activates.
+5. A short time later, a new core will be created.
 
-|Dye|Egg|
-|:--|:--|
-|dye:white|maidroid:maidroid_mk1_egg|
-|dye:grey|maidroid:maidroid_mk2_egg|
-|dye:dark_grey|maidroid:maidroid_mk3_egg|
-|dye:black|maidroid:maidroid_mk4_egg|
-|dye:blue|maidroid:maidroid_mk5_egg|
-|dye:cyan|maidroid:maidroid_mk6_egg|
-|dye:green|maidroid:maidroid_mk7_egg|
-|dye:dark_green|maidroid:maidroid_mk8_egg|
-|dye:yellow|maidroid:maidroid_mk9_egg|
-|dye:orange|maidroid:maidroid_mk10_egg|
-|dye:brown|maidroid:maidroid_mk11_egg|
-|dye:red|maidroid:maidroid_mk12_egg|
-|dye:pink|maidroid:maidroid_mk13_egg|
-|dye:magenta|maidroid:maidroid_mk14_egg|
-|dye:violet|maidroid:maidroid_mk15_egg|
+### Activate Maidroid
 
-After a while, the empty egg will be converted to an new egg.
-If you take and use it, a new maidroid will be born.
+1. Throw the egg created, then a new maidroid will be spawned.
+2. Open formspec by right-clicking the maidroid, and put the core created into `Core` slot.
+3. Then, the maidroid will be activated.
 
-The maidroid, however, doesn't move now.
-In order to have them move, you have to put a Core that is their brain.
-You can create a core in a similar way to a maidroid egg.
-First, you have to create an empty core and a core writer.
-Those recipe is as follows.
+### Recipes / Dye and Egg / Dye and Core
 
-<img src="http://i.imgur.com/Sxnr38Y.png">
-<img src="http://i.imgur.com/97VENIl.png">
+```
+b = dye:black            c = default:cobble        d = default:diamond
+f = farming:cotton       o = default:obsidian      p = default:paper
+s = default:steel_ingot  w = bucket:bucket_water   z = default:bronze_ingot  
 
-After you place a core writer node, rightclick it, and place a empty core to the slot labeled `Core`, a coal to the slot labeled `Fuel`, and a dye to the slot labeled `Dye`.
-The correspondences of dyes and cores are as follows.
+Core Writer      Egg Writer       Nametag          Empty Core       Empty Egg
 
-|Dye|Core|Description|
-|:--|:--|:--|
-|`dye:red`|`maidroid_core:basic`|Following the player.|
-|`dye:yello`|`maidroid_core:farming`|Farming.|
-|`dye:white`|`maidroid_core:ocr`|Reading a book written a program, and executing the program.|
+| s | d | s |    | d | w | d |    |   | f |   |    | s | s | s |    | z | z | z |
+| c | s | c |    | c | s | c |    | p | p | p |    | s | o | s |    | z | s | z |
+| c | c | c |    | s | c | s |    | s | b | s |    | s | s | s |    | z | z | z |
+```
 
-When a new core is created, put it to the maidroid.
-Rightclick it, and put the core to the slot labeled `Core`.
-The maidroid will start.
+<table>
+<tr>
+<td>White</td><td><img src=http://i.imgur.com/lsdq79e.png> Mk1</td>
+<td></td>
+<td>Grey</td><td><img src=http://i.imgur.com/9ffUTjB.png> Mk2</td>
+<td></td>
+<td>Dark Grey</td><td><img src=http://i.imgur.com/HWtLvqb.png> Mk3</td>
+</tr>
+
+<tr>
+<td>Black</td><td><img src=http://i.imgur.com/GoHRTRC.png> Mk4</td>
+<td></td>
+<td>Blue</td><td><img src=http://i.imgur.com/JTZTCS9.png> Mk5</td>
+<td></td>
+<td>Cyan</td><td><img src=http://i.imgur.com/hHw6mbD.png> Mk6</td>
+</tr>
+
+<tr>
+<td>Green</td><td><img src=http://i.imgur.com/YdzOgvM.png> Mk7</td>
+<td></td>
+<td>Dark Green</td><td><img src=http://i.imgur.com/UXB52Ce.png> Mk8</td>
+<td></td>
+<td>Yellow</td><td><img src=http://i.imgur.com/hcd9vk4.png> Mk9</td>
+</tr>
+
+<tr>
+<td>Orange</td><td><img src=http://i.imgur.com/6UjS63j.png> Mk10</td>
+<td></td>
+<td>Brown</td><td><img src=http://i.imgur.com/ayz4uP3.png> Mk11</td>
+<td></td>
+<td>Red</td><td><img src=http://i.imgur.com/rqknHh7.png> Mk12</td>
+</tr>
+
+<tr>
+<td>Pink</td><td><img src=http://i.imgur.com/UNALjMo.png> MK13</td>
+<td></td>
+<td>Magenta</td><td><img src=http://i.imgur.com/iorRtmf.png> Mk14</td>
+<td></td>
+<td>Violet</td><td><img src=http://i.imgur.com/UX3w1Cx.png> Mk15</td>
+</tr>
+
+</table>
+
+<table>
+<tr>
+<td>Red</td><td>Basic Core</td><td>Maidroids embeded this core will follow a player.</td>
+</tr>
+<tr>
+<td>Yellow</td><td>Farming Core</td><td>Maidroids embeded this core will do farming. Embed this core and put seed into them, then they will plant the seeds. And the plant will be grown, they mow it. The farmlang should be surrounded by fences, because maidroids embeded this core cannot jump over fences.</td>
+</tr>
+<tr>
+<td>White</td><td>OCR Core</td><td>Maidroids embeded this core will read a book written a program in their inventory, and execute the program. Program example:
+<pre><code>start: sleep 1
+beep
+jump 0.9
+jmp start
+</code></pre>
+</tr>
+<tr>
+<td>Orange</td><td>Torcher Core</td><td>Maidroids embeded this core will follow a player, and put torch if it is dark.</td>
+</tr>
+</table>
 
 ## Dependencies
 
 - bucket
 - default
 - dye
-- [pdisc?](https://github.com/HybridDog/pdisc)
+- [pdisc](https://github.com/HybridDog/pdisc)?
+
+## Requirements
+
+- Minetest v0.4.14 or later
 
 ## Forum Topic
 
 The forum topic for this mod on the Minetest Forums is located at:
 
-* https://forum.minetest.net/viewtopic.php?f=9&t=14808
+- https://forum.minetest.net/viewtopic.php?f=9&t=14808
 
 ## License
 
