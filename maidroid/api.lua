@@ -267,17 +267,15 @@ do
 		wield_image = "maidroid_dummy_empty_craftitem.png",
 	})
 
-	local function on_activate(self, staticdata)
-		-- attach to the nearest maidroid.
-		local all_objects = minetest.get_objects_inside_radius(self.object:getpos(), 0.1)
-		for _, obj in ipairs(all_objects) do
-			local luaentity = obj:get_luaentity()
+	local remove_flag_word = "remove"
 
-			if maidroid.is_maidroid(luaentity.name) then
-				self.object:set_attach(obj, "Arm_R", {x = 0.065, y = 0.50, z = -0.15}, {x = -45, y = 0, z = 0})
-				self.object:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
-				return
-			end
+	local function get_staticdata(self)
+		return remove_flag_word
+	end
+
+	local function on_activate(self, staticdata)
+		if staticdata == remove_flag_word then
+			self.object:remove()
 		end
 	end
 
@@ -307,15 +305,17 @@ do
 	end
 
 	minetest.register_entity("maidroid:dummy_item", {
-		hp_max		    = 1,
-		visual		    = "wielditem",
-		visual_size	  = {x = 0.025, y = 0.025},
-		collisionbox	= {0, 0, 0, 0, 0, 0},
-		physical	    = false,
-		textures	    = {"air"},
-		on_activate	  = on_activate,
-		on_step       = on_step,
-		itemname      = "",
+		hp_max		     = 1,
+		visual		     = "wielditem",
+		visual_size	   = {x = 0.025, y = 0.025},
+		collisionbox	 = {0, 0, 0, 0, 0, 0},
+		physical	     = false,
+		textures	     = {"air"},
+		on_activate	   = on_activate,
+		on_step        = on_step,
+		get_staticdata = get_staticdata,
+		itemname       = itemname,
+		is_initialized = false,
 	})
 end
 
@@ -471,8 +471,6 @@ function maidroid.register_maidroid(product_name, def)
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
 
-			-- attach dummy item to new maidroid.
-			minetest.add_entity(self.object:getpos(), "maidroid:dummy_item")
 		else
 			-- if static data is not empty string, this object has beed already created.
 			local data = minetest.deserialize(staticdata)
@@ -492,6 +490,11 @@ function maidroid.register_maidroid(product_name, def)
 		self.object:set_nametag_attributes{
 			text = self.nametag
 		}
+
+		-- attach dummy item to new maidroid.
+		local dummy_item = minetest.add_entity(self.object:getpos(), "maidroid:dummy_item")
+		dummy_item:set_attach(self.object, "Arm_R", {x = 0.065, y = 0.50, z = -0.15}, {x = -45, y = 0, z = 0})
+		dummy_item:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
 
 		local core = self:get_core()
 		if core ~= nil then
