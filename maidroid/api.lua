@@ -267,24 +267,14 @@ do
 		wield_image = "maidroid_dummy_empty_craftitem.png",
 	})
 
-	local remove_flag_word = "remove"
-
-	local function get_staticdata(self)
-		return remove_flag_word
-	end
-
 	local function on_activate(self, staticdata)
-		if staticdata == remove_flag_word then
-			self.object:remove()
-		end
+		self.object:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
 	end
 
 	local function on_step(self, dtime)
-		local all_objects = minetest.get_objects_inside_radius(self.object:getpos(), 0.1)
-		for _, obj in ipairs(all_objects) do
-			local luaentity = obj:get_luaentity()
-
-			if maidroid.is_maidroid(luaentity.name) then
+		if self.maidroid_object then
+			local luaentity = self.maidroid_object:get_luaentity()
+			if luaentity then
 				local stack = luaentity:get_wield_item_stack()
 
 				if stack:get_name() ~= self.itemname then
@@ -299,6 +289,7 @@ do
 				return
 			end
 		end
+
 		-- if cannot find maidroid, delete empty item.
 		self.object:remove()
 		return
@@ -313,9 +304,8 @@ do
 		textures	     = {"air"},
 		on_activate	   = on_activate,
 		on_step        = on_step,
-		get_staticdata = get_staticdata,
-		itemname       = itemname,
-		is_initialized = false,
+		itemname       = "",
+		maidroid_object  = nil
 	})
 end
 
@@ -494,7 +484,7 @@ function maidroid.register_maidroid(product_name, def)
 		-- attach dummy item to new maidroid.
 		local dummy_item = minetest.add_entity(self.object:getpos(), "maidroid:dummy_item")
 		dummy_item:set_attach(self.object, "Arm_R", {x = 0.065, y = 0.50, z = -0.15}, {x = -45, y = 0, z = 0})
-		dummy_item:set_properties{textures={"maidroid:dummy_empty_craftitem"}}
+		dummy_item:get_luaentity().maidroid_object = self.object
 
 		local core = self:get_core()
 		if core ~= nil then
