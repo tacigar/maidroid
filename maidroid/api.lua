@@ -370,7 +370,7 @@ function maidroid.register_maidroid(product_name, def)
 
 	-- create_inventory creates a new inventory, and returns it.
 	local function create_inventory(self)
-		self.inventory_name = self.product_name .. "_" .. tostring(self.manufacturing_number)
+		self.inventory_name = product_name .. "_" .. tostring(self.manufacturing_number)
 		local inventory = minetest.create_detached_inventory(self.inventory_name, {
 			on_put = function(inv, listname, index, stack, player)
 				if listname == "core" then
@@ -467,7 +467,6 @@ function maidroid.register_maidroid(product_name, def)
 	local function on_activate(self, staticdata)
 		-- parse the staticdata, and compose a inventory.
 		if staticdata == "" then
-			self.product_name = product_name
 			self.manufacturing_number = maidroid.manufacturing_data[product_name]
 			maidroid.manufacturing_data[product_name] = maidroid.manufacturing_data[product_name] + 1
 			create_inventory(self)
@@ -478,7 +477,6 @@ function maidroid.register_maidroid(product_name, def)
 			-- if static data is not empty string, this object has beed already created.
 			local data = minetest.deserialize(staticdata)
 
-			self.product_name = data["product_name"]
 			self.manufacturing_number = data["manufacturing_number"]
 			self.nametag = data["nametag"]
 			self.owner_name = data["owner_name"]
@@ -508,7 +506,6 @@ function maidroid.register_maidroid(product_name, def)
 	local function get_staticdata(self)
 		local inventory = self:get_inventory()
 		local data = {
-			["product_name"] = self.product_name,
 			["manufacturing_number"] = self.manufacturing_number,
 			["nametag"] = self.nametag,
 			["owner_name"] = self.owner_name,
@@ -613,7 +610,6 @@ function maidroid.register_maidroid(product_name, def)
 
 		-- extra initial properties
 		pause                        = false,
-		product_name                 = "",
 		manufacturing_number         = -1,
 		owner_name                   = "",
 
