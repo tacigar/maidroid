@@ -28,7 +28,7 @@ minetest.register_craftitem("maidroid_tool:nametag", {
 		if not obj:is_player() and luaentity then
 			local name = luaentity.name
 
-			if maidroid.registered_maidroids[name] and not luaentity:is_named() then
+			if maidroid.registered_maidroids[name] then
 				local player_name = user:get_player_name()
 
 				minetest.show_formspec(player_name, "maidroid_tool:nametag", formspec)
@@ -51,8 +51,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		local luaentity = maidroid_buf[player:get_player_name()]
 		luaentity.nametag = fields.name
 
-		luaentity.object:set_nametag_attributes{
-			text = fields.name,
+		luaentity.object:set_properties{
+			nametag = fields.name,
 		}
 	end
 end)
