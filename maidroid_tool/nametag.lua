@@ -8,7 +8,7 @@ local formspec = "size[4,1.25]"
 			.. default.gui_bg_img
  			.. default.gui_slots
 			.. "button_exit[3,0.25;1,0.875;apply_name;Apply]"
-			.. "field[0.5,0.5;2.75,1;name;name;]"
+			.. "field[0.5,0.5;2.75,1;name;name;%s]"
 
 local maidroid_buf = {} -- for buffer of target maidroids.
 
@@ -28,14 +28,15 @@ minetest.register_craftitem("maidroid_tool:nametag", {
 		if not obj:is_player() and luaentity then
 			local name = luaentity.name
 
-			if maidroid.registered_maidroids[name] then
+			if maidroid.is_maidroid(name) then
 				local player_name = user:get_player_name()
+				local nametag = luaentity.nametag or ""
 
-				minetest.show_formspec(player_name, "maidroid_tool:nametag", formspec)
-				maidroid_buf[player_name] = luaentity
-
-				itemstack:take_item()
-				return itemstack
+				minetest.show_formspec(player_name, "maidroid_tool:nametag", formspec:format(nametag))
+				maidroid_buf[player_name] = {
+					object = obj,
+					itemstack = itemstack
+				}
 			end
 		end
 		return nil
@@ -47,12 +48,21 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		return
 	end
 
+	local player_name = player:get_player_name()
 	if fields.name then
-		local luaentity = maidroid_buf[player:get_player_name()]
-		luaentity.nametag = fields.name
+		local luaentity = maidroid_buf[player_name].object:get_luaentity()
+		if luaentity then
+			luaentity.nametag = fields.name
 
-		luaentity.object:set_properties{
-			nametag = fields.name,
-		}
+			luaentity.object:set_properties{
+				nametag = fields.name,
+			}
+
+			local itemstack = maidroid_buf[player_name].itemstack
+			itemstack:take_item()
+			player:set_wielded_item(itemstack)
+		end
 	end
+
+	maidroid_buf[player_name] = nil
 end)
