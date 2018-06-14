@@ -162,7 +162,9 @@ do -- register egg writer
 
 	local function on_metadata_inventory_take_from_main(pos)
 		local egg_entity = get_nearest_egg_entity(pos)
-		egg_entity.object:remove()
+		if egg_entity then
+			egg_entity.object:remove()
+		end
 	end
 
 	maidroid_tool._aux.register_writer("maidroid_tool:egg_writer", {
