@@ -1,4 +1,16 @@
 ------------------------------------------------------------
+-- This Modpack is based on maidroid of
+-- tacigar and thePlasm's Version, 
+-- Modified version by:
+-- IFRFSX(BingFengFSX)<IFRFSX@protonmail.com>
+-- at 2020 years.
+-- Copyright (c) 2020 IFRFSX.
+-- Modified's Content:
+-- 1. repair farming.lua's bug of get plants name error.
+-- 2. repair basic.lua and torcher.lua's bug
+-- of follow other player.
+-- 3. modified textures.
+------------------------------------------------------------
 -- Copyright (c) 2016 tacigar. All rights reserved.
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
@@ -18,7 +30,9 @@ local function on_stop(self)
 end
 
 local function on_step(self, dtime)
-	local player = self:get_nearest_player(10)
+	local player = minetest.get_player_by_name(self.owner_name)
+	--[[ [IFRFSX] replace self:get_nearest_player(10) to minetest.get_player_by_name(self.owner_name), repair bug.
+	--]]
 	if player == nil then
 		self:set_animation(maidroid.animation_frames.STAND)
 		return

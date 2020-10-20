@@ -1,4 +1,16 @@
 ------------------------------------------------------------
+-- This Modpack is based on maidroid of
+-- tacigar and thePlasm's Version, 
+-- Modified version by:
+-- IFRFSX(BingFengFSX)<IFRFSX@protonmail.com>
+-- at 2020 years.
+-- Copyright (c) 2020 IFRFSX.
+-- Modified's Content:
+-- 1. repair farming.lua's bug of get plants name error.
+-- 2. repair basic.lua and torcher.lua's bug
+-- of follow other player.
+-- 3. modified textures.
+------------------------------------------------------------
 -- Copyright (c) 2016 tacigar. All rights reserved.
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
@@ -21,8 +33,15 @@ else
         local n = 0
         for k, v in pairs(farming.registered_plants) do
                 n = n + 1
-                local plant = k .. "_" .. v.steps
+                local plant = v.crop .. "_" .. v.steps
                 target_plants[n] = plant
+                --[IFRFSX]replace k to v.crop,this is plant's real name.
+                --[[ [IFRFSX]用来调试的代码：
+                minetest.log(plant .. "名字前端是" .. k)
+                for i1,i2 in pairs(v) do
+                    minetest.log(i1 .. "==" .. i2)
+                end
+                --]]
         end
 end
 
@@ -261,7 +280,8 @@ end
 local get_plantname = function(itemname)
         for k, v in pairs(farming.registered_plants) do
                 if v.seed == itemname then
-                       return k .. "_1" 
+                       --[IFRFSX]replace k to v.crop.
+                       return v.crop .. "_1" 
                 end
         end
         return itemname

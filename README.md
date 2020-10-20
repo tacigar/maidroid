@@ -1,4 +1,4 @@
-# Maidroid
+# BingFeng-Maidroid
 
 <img src=http://i.imgur.com/oWjrLtK.png>
 
@@ -114,15 +114,30 @@ jmp start
 
 ## Requirements
 
-- Minetest v0.4.14 or later
+- Minetest v0.4.14 or later(use without farming_redo mod of new version).  
+- Minetest v5.0.1 or later(use with farming_redo mod of new version).
 
 ## Forum Topic
 
-The forum topic for this mod on the Minetest Forums is located at:
+The forum topic for **this version** mod on the Minetest Forum is localted at:
 
-- https://forum.minetest.net/viewtopic.php?f=9&t=14808
+- [Minetest Forum](https://forum.minetest.net/viewtopic.php?f=9&t=25523)
 
-## License
+The forum topic for **old version** mod on the Minetest Forums is located at:
+
+- [Minetest Forum](https://forum.minetest.net/viewtopic.php?f=9&t=14808)
+
+## Github Page
+
++ [This Version](https://github.com/IFRFSX/bingfeng-maidroid "Github")
+   + [tacigar's Origin Version](https://github.com/tacigar/maidroid "Github")
+   + [thePlasm's Version](https://github.com/thePlasm/maidroid "Github")
+
+## Author and License
+
+The bingfeng-maidroid, by IFRFSX, based on tacigar and thePlasm's Version.  
+
+The License("GNU LGPL v2.1" and "CC BY-SA 4.0") is not upgraded.  
 
 - The source code of Maidroid is available under the [LGPLv2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt) or later license.
 - The resouces included in Maidroid are available under the [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) or later license.
