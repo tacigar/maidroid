@@ -1,4 +1,17 @@
-local rod_uses = 100
+------------------------------------------------------------
+-- This Modpack is based on maidroid of
+-- tacigar and thePlasm's Version, 
+-- Modified version by:
+-- IFRFSX(BingFengFSX)<IFRFSX@protonmail.com>
+-- at 2020 years.
+-- Copyright (c) 2020 IFRFSX.
+------------------------------------------------------------
+-- Copyright (c) 2016 tacigar. All rights reserved.
+-- https://github.com/tacigar/maidroid
+------------------------------------------------------------
+
+
+--local rod_uses = 100
 
 minetest.register_tool("maidroid_tool:capture_rod", {
 	description = "maidroid tool : capture rod",
@@ -24,7 +37,7 @@ minetest.register_tool("maidroid_tool:capture_rod", {
 
 		obj:remove()
 		minetest.add_item(drop_pos, stack)
-		itemstack:add_wear(65535 / (rod_uses - 1))
+		--itemstack:add_wear(65535 / (rod_uses - 1))
 
 		minetest.sound_play("maidroid_tool_capture_rod_use", {pos = drop_pos})
 		minetest.add_particlespawner({

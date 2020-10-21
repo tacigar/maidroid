@@ -1,4 +1,11 @@
 ------------------------------------------------------------
+-- This Modpack is based on maidroid of
+-- tacigar and thePlasm's Version, 
+-- Modified version by:
+-- IFRFSX(BingFengFSX)<IFRFSX@protonmail.com>
+-- at 2020 years.
+-- Copyright (c) 2020 IFRFSX.
+------------------------------------------------------------
 -- Copyright (c) 2016 tacigar. All rights reserved.
 -- https://github.com/tacigar/maidroid
 ------------------------------------------------------------
@@ -33,9 +40,9 @@ minetest.register_craft{
 minetest.register_craft{
 	output = "maidroid_tool:capture_rod",
 	recipe = {
-		{         "wool:white",            "dye:pink", "default:mese_crystal"},
-		{                   "", "default:steel_ingot",             "dye:pink"},
-		{"default:steel_ingot",                    "",           "wool:white"},
+		{         "wool:blue",            "dye:red", "default:mese_crystal"},
+		{                   "", "default:steel_ingot",             "dye:red"},
+		{"default:steel_ingot",                    "",           "wool:violet"},
 	},
 }
 
