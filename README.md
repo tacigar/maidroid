@@ -1,3 +1,5 @@
+※ This repository has not been actively updated for a long time.
+
 # Maidroid
 
 <img src=http://i.imgur.com/oWjrLtK.png>
